@@ -677,6 +677,20 @@
         @endif
     </a>
 
+    <a href="{{ route('admin.ai.settings') }}"
+        class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-white/10 transition-colors duration-200 {{ request()->routeIs('admin.ai.*') ? 'bg-white/20 text-white' : 'text-gray-300' }}">
+        <i class="fas fa-brain w-5 h-5 mr-3"></i>
+        TKDS AI Settings
+        @php
+        $aiSettings = \App\Models\AiSettings::getSettings();
+        @endphp
+        @if($aiSettings->isEnabled())
+        <span class="ml-auto text-xs bg-green-500 text-white px-2 py-1 rounded-full">ON</span>
+        @else
+        <span class="ml-auto text-xs bg-red-500 text-white px-2 py-1 rounded-full">OFF</span>
+        @endif
+    </a>
+
     {{-- Future security features --}}
     {{--
     <a href="{{ route('admin.security.firewall') }}"
