@@ -55,23 +55,23 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                                 <input type="text" name="name" required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                                 <input type="email" name="email" required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900">
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
                             <input type="tel" name="phone" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Additional Message (Optional)</label>
                             <textarea name="message" rows="3"
-                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"></textarea>
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900"></textarea>
                         </div>
                         <input type="hidden" name="question" id="original-question">
                         <div class="flex space-x-3">
@@ -94,7 +94,7 @@
                 <form id="chat-form" class="flex items-center space-x-3">
                     <input type="text" id="user-message"
                            placeholder="Type your message here..."
-                           class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                           class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900"
                            required>
                     <button type="submit" id="send-button"
                             class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center space-x-2">
