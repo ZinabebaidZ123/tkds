@@ -188,7 +188,7 @@ class AiController extends Controller
                     $aiContext .= 'Featured products include: ';
                     foreach ($products as $index => $product) {
                         if ($index < 5) {
-                            $productUrl = route('shop.product.show', $product->slug);
+                            $productUrl = route('product', $product->slug);
                             $aiContext .= "{$product->name} (Price: {$product->price} EGP, URL: {$productUrl}), ";
                         }
                     }
@@ -253,7 +253,7 @@ class AiController extends Controller
                 if (isset($searchResults['products']) && count($searchResults['products']) > 0) {
                     $aiContext .= 'Found ' . count($searchResults['products']) . ' related products. ';
                     foreach ($searchResults['products'] as $product) {
-                        $productUrl = route('shop.product.show', $product->slug);
+                        $productUrl = route('product', $product->slug);
                         $aiContext .= "{$product->name} (Price: {$product->price} EGP, URL: {$productUrl}), ";
                     }
                 }
