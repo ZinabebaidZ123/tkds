@@ -4,12 +4,12 @@
 @section('meta_description', 'Chat with our AI assistant to get instant help with services, products, and pricing.')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-5xl mx-auto">
 
         <!-- Header -->
         <div class="text-center mb-8" data-aos="fade-down">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-red-600 to-red-700 rounded-full mb-4">
                 <i class="fas fa-robot text-white text-3xl"></i>
             </div>
             <h1 class="text-4xl font-bold text-white mb-3">
@@ -28,13 +28,13 @@
                 <!-- Welcome Message -->
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <div class="w-10 h-10 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center">
                             <i class="fas fa-robot text-white text-sm"></i>
                         </div>
                     </div>
                     <div class="flex-1">
-                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl rounded-tl-none px-4 py-3 max-w-md">
-                            <p class="text-sm font-medium text-blue-900 mb-1">TKDS AI</p>
+                        <div class="bg-gradient-to-r from-red-50 to-red-50 rounded-2xl rounded-tl-none px-4 py-3 max-w-md border border-red-200">
+                            <p class="text-sm font-medium text-red-900 mb-1">TKDS AI</p>
                             <p class="text-gray-800">
                                 Hello! I'm TKDS AI, your virtual assistant. How can I help you today?
                             </p>
@@ -44,10 +44,10 @@
             </div>
 
             <!-- Contact Form (Hidden by default) -->
-            <div id="contact-form-container" class="hidden p-6 bg-blue-50 border-t border-blue-200">
+            <div id="contact-form-container" class="hidden p-6 bg-red-50 border-t border-red-200">
                 <div class="max-w-2xl mx-auto">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fas fa-envelope mr-2 text-blue-600"></i>
+                        <i class="fas fa-envelope mr-2 text-red-600"></i>
                         We'd love to help! Please provide your contact information
                     </h3>
                     <form id="ai-contact-form" class="space-y-4">
@@ -55,28 +55,28 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                                 <input type="text" name="name" required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                                 <input type="email" name="email" required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
                             <input type="tel" name="phone" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Additional Message (Optional)</label>
                             <textarea name="message" rows="3"
-                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"></textarea>
                         </div>
                         <input type="hidden" name="question" id="original-question">
                         <div class="flex space-x-3">
                             <button type="submit"
-                                    class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+                                    class="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300">
                                 <i class="fas fa-paper-plane mr-2"></i>
                                 Submit
                             </button>
@@ -94,16 +94,16 @@
                 <form id="chat-form" class="flex items-center space-x-3">
                     <input type="text" id="user-message"
                            placeholder="Type your message here..."
-                           class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500"
                            required>
                     <button type="submit" id="send-button"
-                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center space-x-2">
+                            class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center space-x-2">
                         <i class="fas fa-paper-plane"></i>
                         <span class="hidden sm:inline">Send</span>
                     </button>
                 </form>
                 <div id="loading-indicator" class="hidden mt-3 text-center">
-                    <div class="inline-flex items-center space-x-2 text-blue-600">
+                    <div class="inline-flex items-center space-x-2 text-red-600">
                         <i class="fas fa-circle-notch fa-spin"></i>
                         <span class="text-sm">TKDS AI is thinking...</span>
                     </div>
@@ -168,7 +168,7 @@ function addUserMessage(message) {
     messageDiv.className = 'flex items-start space-x-3 justify-end';
     messageDiv.innerHTML = `
         <div class="flex-1 flex justify-end">
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl rounded-tr-none px-4 py-3 max-w-md">
+            <div class="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl rounded-tr-none px-4 py-3 max-w-md">
                 <p>${escapeHtml(message)}</p>
             </div>
         </div>
@@ -192,13 +192,13 @@ function addAiMessage(message) {
 
     messageDiv.innerHTML = `
         <div class="flex-shrink-0">
-            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+            <div class="w-10 h-10 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center">
                 <i class="fas fa-robot text-white text-sm"></i>
             </div>
         </div>
         <div class="flex-1">
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl rounded-tl-none px-4 py-3 max-w-md">
-                <p class="text-sm font-medium text-blue-900 mb-1">TKDS AI</p>
+            <div class="bg-gradient-to-r from-red-50 to-red-50 rounded-2xl rounded-tl-none px-4 py-3 max-w-md border border-red-200">
+                <p class="text-sm font-medium text-red-900 mb-1">TKDS AI</p>
                 <p class="text-gray-800">${formattedMessage}</p>
             </div>
         </div>
