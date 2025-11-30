@@ -25,8 +25,7 @@ class AiHelper
      */
     public static function getServices($limit = null)
     {
-        $query = Service::where('status', 'active')
-            ->orderBy('order', 'asc');
+        $query = Service::active()->ordered();
 
         if ($limit) {
             $query->limit($limit);
@@ -40,8 +39,7 @@ class AiHelper
      */
     public static function getProducts($limit = null)
     {
-        $query = ShopProduct::where('status', 'active')
-            ->orderBy('created_at', 'desc');
+        $query = ShopProduct::active()->ordered();
 
         if ($limit) {
             $query->limit($limit);
@@ -83,9 +81,7 @@ class AiHelper
      */
     public static function getPricingPlans()
     {
-        return PricingPlan::where('status', 'active')
-            ->orderBy('price', 'asc')
-            ->get();
+        return PricingPlan::active()->ordered()->get();
     }
 
     /**
@@ -157,8 +153,7 @@ class AiHelper
      */
     public static function getTeamMembers($limit = null)
     {
-        $query = TeamMember::where('status', 'active')
-            ->orderBy('order', 'asc');
+        $query = TeamMember::active()->ordered();
 
         if ($limit) {
             $query->limit($limit);
