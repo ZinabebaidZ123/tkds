@@ -173,8 +173,8 @@ class AiController extends Controller
                     $aiContext .= 'Our services include: ';
                     foreach ($services as $index => $service) {
                         if ($index < 5) {
-                            $serviceUrl = route('services') . '#service-' . $service->id;
-                            $aiContext .= "{$service->title} ({$serviceUrl}), ";
+                            $serviceUrl = route('services.show', $service->slug);
+                            $aiContext .= "{$service->title} (URL: {$serviceUrl}), ";
                         }
                     }
                     $aiContext = rtrim($aiContext, ', ') . '. ';
@@ -188,7 +188,7 @@ class AiController extends Controller
                     $aiContext .= 'Featured products include: ';
                     foreach ($products as $index => $product) {
                         if ($index < 5) {
-                            $productUrl = route('product', $product->slug);
+                            $productUrl = route('shop.product', $product->slug);
                             $aiContext .= "{$product->name} (Price: {$product->price} EGP, URL: {$productUrl}), ";
                         }
                     }
@@ -245,15 +245,15 @@ class AiController extends Controller
                 if (isset($searchResults['services']) && count($searchResults['services']) > 0) {
                     $aiContext .= 'Found ' . count($searchResults['services']) . ' related services. ';
                     foreach ($searchResults['services'] as $service) {
-                        $serviceUrl = route('services') . '#service-' . $service->id;
-                        $aiContext .= "{$service->title} ({$serviceUrl}), ";
+                        $serviceUrl = route('services.show', $service->slug);
+                        $aiContext .= "{$service->title} (URL: {$serviceUrl}), ";
                     }
                 }
 
                 if (isset($searchResults['products']) && count($searchResults['products']) > 0) {
                     $aiContext .= 'Found ' . count($searchResults['products']) . ' related products. ';
                     foreach ($searchResults['products'] as $product) {
-                        $productUrl = route('product', $product->slug);
+                        $productUrl = route('shop.product', $product->slug);
                         $aiContext .= "{$product->name} (Price: {$product->price} EGP, URL: {$productUrl}), ";
                     }
                 }
