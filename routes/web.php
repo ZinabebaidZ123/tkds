@@ -74,6 +74,11 @@ Route::post('/service/contact/send', [App\Http\Controllers\ServiceContactControl
 Route::get('/service/contact/items', [App\Http\Controllers\ServiceContactController::class, 'getItems'])
     ->name('service.contact.items');
 
+// ===================== AI CHAT ROUTES =====================
+Route::get('/ai/chat', [App\Http\Controllers\AiController::class, 'showChat'])->name('ai.chat');
+Route::post('/ai/chat', [App\Http\Controllers\AiController::class, 'chatWithAi'])->name('ai.chat.send');
+Route::post('/ai/contact', [App\Http\Controllers\AiController::class, 'submitContactInfo'])->name('ai.contact');
+
 // ===================== BLOG ROUTES =====================
 Route::get('/blog/api', [BlogController::class, 'api'])->name('blog.api');
 Route::get('/blog/search', [BlogController::class, 'search'])->name('blog.search');

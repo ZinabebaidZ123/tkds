@@ -542,4 +542,10 @@ Route::prefix('newsletter')->name('newsletter.')->group(function () {
     Route::get('occasions/section-data/{sectionType}', [App\Http\Controllers\Admin\OccasionController::class, 'getSectionData'])
         ->name('occasions.sectionData');
 
+    // AI Settings Routes
+    Route::prefix('ai')->name('ai.')->group(function () {
+        Route::get('/settings', [App\Http\Controllers\Admin\AiSettingsController::class, 'index'])->name('settings');
+        Route::put('/settings', [App\Http\Controllers\Admin\AiSettingsController::class, 'update'])->name('settings.update');
+    });
+
 });
