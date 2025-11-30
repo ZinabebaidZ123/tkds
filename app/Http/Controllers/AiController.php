@@ -398,8 +398,43 @@ class AiController extends Controller
         try {
             Log::info('AI Contact form submission received');
 
-            // You can store this in database or send email
-            // For now, let's just return success
+            // Get site settings for email
+            $aboutSettings = AboutSetting::first();
+            $contactSettings = ContactSetting::first();
+
+            // Configure SMTP for AI emails
+            config([
+                'mail.default'                 => 'smtp',
+                'mail.mailers.smtp.host'       => 'mail.tkds.email',
+                'mail.mailers.smtp.port'       => 465,
+                'mail.mailers.smtp.encryption' => 'ssl',
+                'mail.mailers.smtp.username'   => 'ai@tkds.email',
+                'mail.mailers.smtp.password'   => 'Ichn2020',
+                'mail.from.address'            => 'ai@tkds.email',
+                'mail.from.name'               => ($aboutSettings->site_title ?? 'TKDS') . ' AI Assistant',
+            ]);
+
+            // Recipient email (admin or sales)
+            $recipientEmail = $contactSettings->email ?? 'info@tkds.email';
+
+            // Prepare email content
+            $emailData = [
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'question' => $request->question,
+                'message' => $request->message,
+                'submitted_at' => now()->format('Y-m-d H:i:s'),
+            ];
+
+            // Send email to admin
+            \Mail::send([], [], function ($message) use ($emailData, $recipientEmail, $aboutSettings) {
+                $message->to($recipientEmail)
+                    ->subject('New AI Chat Contact Request - ' . $emailData['name'])
+                    ->html($this->buildAiContactEmailHtml($emailData, $aboutSettings));
+            });
+
+            Log::info('AI Contact email sent successfully to: ' . $recipientEmail);
 
             return response()->json([
                 'success' => true,
@@ -414,5 +449,72 @@ class AiController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Build HTML email for AI contact form
+     */
+    private function buildAiContactEmailHtml($data, $settings)
+    {
+        $siteName = $settings->site_title ?? 'TKDS Media';
+
+        return "
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset='UTF-8'>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #c53030, #e53e3e); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                .header h1 { color: white; margin: 0; font-size: 24px; }
+                .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
+                .field { margin-bottom: 20px; }
+                .label { font-weight: bold; color: #4b5563; margin-bottom: 5px; }
+                .value { color: #1f2937; padding: 10px; background: white; border-radius: 5px; border-left: 3px solid #c53030; }
+                .footer { background: #1f2937; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>🤖 New AI Chat Contact Request</h1>
+                </div>
+                <div class='content'>
+                    <div class='field'>
+                        <div class='label'>👤 Name:</div>
+                        <div class='value'>{$data['name']}</div>
+                    </div>
+                    <div class='field'>
+                        <div class='label'>📧 Email:</div>
+                        <div class='value'><a href='mailto:{$data['email']}'>{$data['email']}</a></div>
+                    </div>
+                    <div class='field'>
+                        <div class='label'>📱 Phone:</div>
+                        <div class='value'><a href='tel:{$data['phone']}'>{$data['phone']}</a></div>
+                    </div>
+                    <div class='field'>
+                        <div class='label'>❓ Original Question:</div>
+                        <div class='value'>{$data['question']}</div>
+                    </div>
+                    " . ($data['message'] ? "
+                    <div class='field'>
+                        <div class='label'>💬 Additional Message:</div>
+                        <div class='value'>{$data['message']}</div>
+                    </div>
+                    " : "") . "
+                    <div class='field'>
+                        <div class='label'>🕐 Submitted At:</div>
+                        <div class='value'>{$data['submitted_at']}</div>
+                    </div>
+                </div>
+                <div class='footer'>
+                    <p>This is an automated message from {$siteName} AI Assistant</p>
+                    <p style='font-size: 12px; color: #9ca3af;'>Please respond to the customer as soon as possible</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
     }
 }

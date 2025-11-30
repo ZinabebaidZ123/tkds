@@ -528,7 +528,14 @@
                         </a>
                         
                         @if($heroSection->second_button_text && $heroSection->second_button_link)
-                        <a href="{{ $heroSection->second_button_link }}" class="w-full sm:w-auto px-8 py-4 glass-effect text-white font-bold text-lg rounded-xl hover:bg-white/20 transition-all duration-300">
+                        @php
+                            // If button text contains "AI" and link is not set to AI chat, use AI chat link
+                            $buttonLink = $heroSection->second_button_link;
+                            if (stripos($heroSection->second_button_text, 'AI') !== false && !str_contains($buttonLink, '/ai/chat')) {
+                                $buttonLink = '/ai/chat';
+                            }
+                        @endphp
+                        <a href="{{ $buttonLink }}" class="w-full sm:w-auto px-8 py-4 glass-effect text-white font-bold text-lg rounded-xl hover:bg-white/20 transition-all duration-300">
                             <span class="flex items-center justify-center space-x-2">
                                 <i class="fas fa-comments text-blue-400"></i>
                                 <span>{{ $heroSection->second_button_text }}</span>
