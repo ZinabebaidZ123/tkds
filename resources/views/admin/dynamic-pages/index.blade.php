@@ -130,11 +130,11 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
-                        <button onclick="toggleSection({{ $page->id }}, 'hero')" 
+                        <button onclick="toggleSection({{ $page->id }}, 'hero')"
                                 class="w-10 h-10 rounded-xl {{ $page->hero_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-power-off text-sm"></i>
                         </button>
-                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'hero']) }}" 
+                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'hero']) }}"
                            class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-edit text-sm"></i>
                         </a>
@@ -146,7 +146,32 @@
                     </span>
                 </div>
             </div>
-            
+
+            <!-- Why Choose Us Section (Index Only - No Edit) -->
+            <div class="group py-6 hover:bg-gray-50 transition-all duration-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-check-circle text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 text-base">Why Choose Us <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <p class="text-sm text-gray-600">{{ $page->why_choose_title ?? 'Why Choose Us Section' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
+                        <button onclick="toggleSection({{ $page->id }}, 'why_choose')"
+                                class="w-10 h-10 rounded-xl {{ $page->why_choose_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-power-off text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center mt-3 ml-16">
+                    <span class="text-xs px-2.5 py-1 bg-cyan-100 text-cyan-800 rounded-full font-medium">
+                        {{ ucfirst($page->why_choose_status) }}
+                    </span>
+                </div>
+            </div>
 
             <!-- Services Section -->
             <div class="group py-6 hover:bg-gray-50 transition-all duration-200">
@@ -221,11 +246,11 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
-                        <button onclick="toggleSection({{ $page->id }}, 'products')" 
+                        <button onclick="toggleSection({{ $page->id }}, 'products')"
                                 class="w-10 h-10 rounded-xl {{ $page->products_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-power-off text-sm"></i>
                         </button>
-                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'products']) }}" 
+                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'products']) }}"
                            class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-edit text-sm"></i>
                         </a>
@@ -234,6 +259,114 @@
                 <div class="flex items-center mt-3 ml-16">
                     <span class="text-xs px-2.5 py-1 bg-indigo-100 text-indigo-800 rounded-full font-medium">
                         {{ ucfirst($page->products_status) }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Video Section -->
+            <div class="group py-6 hover:bg-gray-50 transition-all duration-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-play-circle text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 text-base">Video</h4>
+                            <p class="text-sm text-gray-600">{{ $page->video_title ?? 'Video Section' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
+                        <button onclick="toggleSection({{ $page->id }}, 'video')"
+                                class="w-10 h-10 rounded-xl {{ $page->video_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-power-off text-sm"></i>
+                        </button>
+                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'video']) }}"
+                           class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-edit text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center mt-3 ml-16">
+                    <span class="text-xs px-2.5 py-1 bg-red-100 text-red-800 rounded-full font-medium">
+                        {{ ucfirst($page->video_status) }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Reviews Section (Index Only - No Edit) -->
+            <div class="group py-6 hover:bg-gray-50 transition-all duration-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-star-half-alt text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 text-base">Reviews <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <p class="text-sm text-gray-600">{{ $page->reviews_title ?? 'Reviews Section' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
+                        <button onclick="toggleSection({{ $page->id }}, 'reviews')"
+                                class="w-10 h-10 rounded-xl {{ $page->reviews_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-power-off text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center mt-3 ml-16">
+                    <span class="text-xs px-2.5 py-1 bg-yellow-100 text-yellow-800 rounded-full font-medium">
+                        {{ ucfirst($page->reviews_status) }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Clients Section (Index Only - No Edit) -->
+            <div class="group py-6 hover:bg-gray-50 transition-all duration-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-green-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-users text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 text-base">Clients <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <p class="text-sm text-gray-600">{{ $page->clients_title ?? 'Clients Section' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
+                        <button onclick="toggleSection({{ $page->id }}, 'clients')"
+                                class="w-10 h-10 rounded-xl {{ $page->clients_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-power-off text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center mt-3 ml-16">
+                    <span class="text-xs px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full font-medium">
+                        {{ ucfirst($page->clients_status) }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Contact Section (Index Only - No Edit) -->
+            <div class="group py-6 hover:bg-gray-50 transition-all duration-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-envelope text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 text-base">Contact <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <p class="text-sm text-gray-600">{{ $page->contact_title ?? 'Contact Section' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all ml-4">
+                        <button onclick="toggleSection({{ $page->id }}, 'contact')"
+                                class="w-10 h-10 rounded-xl {{ $page->contact_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-power-off text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center mt-3 ml-16">
+                    <span class="text-xs px-2.5 py-1 bg-rose-100 text-rose-800 rounded-full font-medium">
+                        {{ ucfirst($page->contact_status) }}
                     </span>
                 </div>
             </div>
