@@ -506,7 +506,7 @@
                     @if($heroSection->show_ai_badge && $heroSection->ai_badge_text)
                     {{-- AI Badge --}}
                     <div class="mb-8" data-aos="fade-up" data-aos-delay="200">
-                        <div class="ai-badge inline-flex items-center space-x-3 rounded-2xl px-16 py-3 shadow-2xl">
+                        <a href="/ai/chat" class="ai-badge inline-flex items-center space-x-3 rounded-2xl px-16 py-3 shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer">
                             <i class="fas fa-robot text-white text-xl"></i>
                             <span class="text-white font-bold text-sm sm:text-base tracking-wide">{{ $heroSection->ai_badge_text }}</span>
                             <div class="flex space-x-1">
@@ -514,7 +514,7 @@
                                 <div class="w-2 h-2 bg-white rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
                                 <div class="w-2 h-2 bg-white rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     @endif
                     
