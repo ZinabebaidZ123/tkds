@@ -458,6 +458,7 @@ fetch(`/admin/dynamic-pages/${pageId}/sections/${section}`, {
         button.disabled = false;
         alert('Error: ' + data.message);
     }
+    
 })
 .catch(error => {
     console.error('Error:', error);
