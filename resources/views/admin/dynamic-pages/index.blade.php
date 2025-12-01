@@ -1,15 +1,15 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dynamic Pages Manager')
-@section('page-title', 'Dynamic Pages Manager')
+@section('title', 'Occasions Page Manager')
+@section('page-title', 'Occasions Page Manager')
 
 @section('content')
 <div class="space-y-6">
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Dynamic Pages</h1>
-            <p class="text-gray-600 text-sm mt-1">Manage all sections of your dynamic landing pages</p>
+            <h1 class="text-3xl font-bold text-gray-900">Occasions Page</h1>
+            <p class="text-gray-600 text-sm mt-1">Manage all sections of your dynamic landing page</p>
         </div>
         <a href="{{ route('occasions') }}" target="_blank" 
            class="inline-flex items-center justify-center bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
@@ -76,8 +76,8 @@
                         <i class="fas fa-file-alt text-white text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">{{ $page->page_title }}</h3>
-                        <p class="text-sm text-gray-500 mt-1">Slug: <span class="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{{ $page->page_slug }}</span></p>
+                        <h3 class="text-xl font-bold text-gray-900">{{ $page->page_slug }} page</h3>
+                        {{-- <p class="text-sm text-gray-500 mt-1">Slug: <span class="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{{ $page->page_slug }}</span></p> --}}
                     </div>
                 </div>
                 <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold {{ $page->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -155,7 +155,7 @@
                             <i class="fas fa-check-circle text-white text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-base">Why Choose Us <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <h4 class="font-semibold text-gray-900 text-base">Why Choose Us </h4>
                             <p class="text-sm text-gray-600">{{ $page->why_choose_title ?? 'Why Choose Us Section' }}</p>
                         </div>
                     </div>
@@ -164,6 +164,11 @@
                                 class="w-10 h-10 rounded-xl {{ $page->why_choose_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-power-off text-sm"></i>
                         </button>
+
+                           <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'why-choose']) }}"
+                           class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-edit text-sm"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="flex items-center mt-3 ml-16">
@@ -301,7 +306,7 @@
                             <i class="fas fa-star-half-alt text-white text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-base">Reviews <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <h4 class="font-semibold text-gray-900 text-base">Reviews </h4>
                             <p class="text-sm text-gray-600">{{ $page->reviews_title ?? 'Reviews Section' }}</p>
                         </div>
                     </div>
@@ -310,6 +315,11 @@
                                 class="w-10 h-10 rounded-xl {{ $page->reviews_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-power-off text-sm"></i>
                         </button>
+
+                            <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'reviews']) }}"
+                           class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-edit text-sm"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="flex items-center mt-3 ml-16">
@@ -327,7 +337,7 @@
                             <i class="fas fa-users text-white text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-base">Clients <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <h4 class="font-semibold text-gray-900 text-base">Clients </h4>
                             <p class="text-sm text-gray-600">{{ $page->clients_title ?? 'Clients Section' }}</p>
                         </div>
                     </div>
@@ -336,6 +346,11 @@
                                 class="w-10 h-10 rounded-xl {{ $page->clients_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-power-off text-sm"></i>
                         </button>
+
+                            <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'clients']) }}"
+                           class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-edit text-sm"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="flex items-center mt-3 ml-16">
@@ -353,7 +368,7 @@
                             <i class="fas fa-envelope text-white text-lg"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-base">Contact <span class="text-xs text-gray-400 ml-2">(Index Only)</span></h4>
+                            <h4 class="font-semibold text-gray-900 text-base">Contact </h4>
                             <p class="text-sm text-gray-600">{{ $page->contact_title ?? 'Contact Section' }}</p>
                         </div>
                     </div>
@@ -362,6 +377,11 @@
                                 class="w-10 h-10 rounded-xl {{ $page->contact_status == 'active' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }} flex items-center justify-center shadow-sm hover:shadow-md transition-all">
                             <i class="fas fa-power-off text-sm"></i>
                         </button>
+                        
+                            <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => 'contact']) }}"
+                           class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 shadow-sm hover:shadow-md transition-all">
+                            <i class="fas fa-edit text-sm"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="flex items-center mt-3 ml-16">

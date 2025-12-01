@@ -225,10 +225,7 @@
                         <i class="fas fa-home mr-2"></i>
                         Home Page
                     </div>
-<a href="{{ route('admin.dynamic-pages.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-white10 transition-all duration-200 {{ request()->routeIs('admin.dynamic-pages.*') ? 'bg-white20 text-white' : 'text-gray-300' }}">
-    <i class="fas fa-layer-group w-5 h-5 mr-3"></i>
-    Dynamic Pages
-</a>
+
 
 
                     <a href="{{ route('admin.hero-sections.index') }}"
@@ -239,7 +236,11 @@
                     <a href="{{ route('admin.video-sections.index') }}"
     class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-white/10 transition-colors duration-200 {{ request()->routeIs('admin.video-sections.*') ? 'bg-white/20 text-white' : 'text-gray-300' }}">
     <i class="fas fa-video w-5 h-5 mr-3"></i>
-    Video Sections
+    Video Section
+</a>
+<a href="{{ route('admin.dynamic-pages.index') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-white10 transition-all duration-200 {{ request()->routeIs('admin.dynamic-pages.*') ? 'bg-white20 text-white' : 'text-gray-300' }}">
+    <i class="fas fa-layer-group w-5 h-5 mr-3"></i>
+    Special Offers
 </a>
 
                     <a href="{{ route('admin.perfect-for-cards.index') }}"

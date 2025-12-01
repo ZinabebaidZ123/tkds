@@ -90,7 +90,7 @@
                 <a href="{{ route('occasions') }}" class="relative group text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text hover:from-pink-400 hover:via-red-500 hover:to-pink-600 transition-all duration-300 font-bold animate-pulse">
     <span class="flex items-center space-x-1">
         <i class="fas fa-fire text-sm text-red-500 group-hover:text-pink-500"></i>
-        <span>Special Sale</span>
+        <span>Occasions</span>
     </span>
     <!-- Glow effect -->
     <div class="absolute -inset-1 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
@@ -446,7 +446,7 @@
                     Contact
                 </a>
                 <a href="{{ route('occasions') }}" class="block py-3 text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text font-bold animate-pulse">
-    <i class="fas fa-fire mr-2 text-red-500"></i>Special Sale
+    <i class="fas fa-fire mr-2 text-red-500"></i>Special Offers
 </a>
             </div>
 

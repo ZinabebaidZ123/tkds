@@ -156,7 +156,7 @@
         </h1>
 
         <!-- Subtitle -->
-        <div class="text-2xl md:text-4xl font-bold text-gradient-red mb-4 slide-in-right font-bebas tracking-wider">
+        <div class="text-2xl md:text-4xl font-bold text-white md:text-gradient-red mb-4 slide-in-right font-bebas tracking-wider">
             {{ $page->hero_subtitle ?? 'Expand Your TV Network' }}
         </div>
         <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto slide-in-right font-oswald">
@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 {{-- Native MP4 video with custom controls --}}
                                 <video id="videoPlayer" 
                                        class="w-full h-full object-cover" 
-                                       poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80' }}"
+                                       poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
                                        preload="metadata">
                                     <source src="{{ $page->video_url }}" type="video/mp4">
                                     Your browser does not support the video tag.
@@ -1113,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <div class="container mx-auto px-6 relative z-10">
         <div class="text-center mb-16">
-            <h2 class="text-5xl md:text-6xl font-black font-orbitron text-gradient mb-4">
+            <h2 class="text-5xl md:text-6xl font-black font-orbitron  mb-4">
                 {{ $page->reviews_title ?? 'WHAT CLIENTS SAY' }}
             </h2>
             <p class="text-xl text-gray-300 max-w-2xl mx-auto">
