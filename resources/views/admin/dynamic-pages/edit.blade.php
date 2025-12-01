@@ -29,10 +29,10 @@
 
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Edit Page: {{ $page->page_title }}</h1>
+            <h1 class="text-3xl font-bold text-gray-900">Edit Page</h1>
             <p class="text-gray-600 text-sm mt-1">
-                Manage sections for
-                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{{ $page->page_slug }}</span>
+                {{-- Manage sections for
+                <span class="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{{ $page->page_slug }}</span> --}}
             </p>
         </div>
         <div class="flex space-x-3">

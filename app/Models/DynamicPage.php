@@ -227,4 +227,11 @@ public function getActiveSectionsAttribute()
     
     return $activeSections;
 }
+
+
+
+public function hasActiveSection($section)
+{
+    return $this->isSectionActive($section);
+}
 }

@@ -9,6 +9,7 @@ use App\Models\PricingPlan;
 use App\Models\ShopProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log; 
 
 class DynamicPageController extends Controller
 {
@@ -285,7 +286,7 @@ public function toggleSection(Request $request, DynamicPage $page, string $secti
 {
     $statusField = $section . '_status';
     
-    if (!\Schema::hasColumn($page->getTable(), $statusField)) {
+    if (!in_array($statusField, $page->getFillable())) {
         return response()->json([
             'success' => false,
             'message' => 'Section field not found.',
@@ -307,8 +308,8 @@ public function toggleSection(Request $request, DynamicPage $page, string $secti
 
 public function reorderSections(Request $request, DynamicPage $page)
 {
-    $order = $request->input('order', []);
-    
+    try {
+        $order = $request->input('order', []);
     // التحقق من أن جميع السيكشنز صالحة
     $validSections = [
         'header', 'hero', 'why_choose', 'services', 
@@ -331,6 +332,14 @@ public function reorderSections(Request $request, DynamicPage $page)
         'message' => 'Sections order updated successfully',
         'new_order' => $filteredOrder
     ]);
+} catch (\Exception $e) {
+    \Log::error('Error updating sections order: ' . $e->getMessage());
+    
+    return response()->json([
+        'success' => false,
+        'message' => 'Failed to update sections order: ' . $e->getMessage(),
+    ], 500);
+}
 }
 
     public function services(DynamicPage $page)

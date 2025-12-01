@@ -71,6 +71,16 @@
 <script src="{{ asset('js/sales.js') }}"></script>
 </head>
 <body class="bg-dark-bg text-white font-exo overflow-x-hidden bg-gradient-dark font-oswald  min-h-screen">
+
+@php
+    $activeSections = $activeSections ?? $page->getActiveSectionsAttribute();
+@endphp
+{{-- Loop through active sections in order --}}
+@foreach($activeSections as $sectionKey)
+    @switch($sectionKey)
+
+     @case('header')
+     @if($page->hasActiveSection('header'))
 <!-- Header -->
 <header class="absolute top-0 w-full z-50 p-6">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -103,10 +113,11 @@
 
     </div>
 </header>
+   @endif
+ @break
 
-
-
-
+ @case('hero')
+@if($page->hasActiveSection('hero'))
 <!-- Hero Section -->
 <section class="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
  
@@ -200,7 +211,11 @@
     </div>
 </section>
 
+  @endif
+ @break
 
+  @case('why_choose')
+@if($page->hasActiveSection('why_choose'))
 <!-- Why Choose Us Section -->
 <section class="py-20 relative overflow-hidden min-h-screen">
     <!-- Full Width Background Image -->
@@ -346,7 +361,13 @@
     </div>
 </section>
 
+  @endif
+ @break
 
+
+ @case('services')
+ @if($page->hasActiveSection('services') && $services && $services->count() > 0)
+        
 <!-- Services Slider Section -->
 <section class="services-section">
     <div class="container">
@@ -427,6 +448,9 @@
         </div>
     </div>
 </section>
+
+  @endif
+ @break
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -575,7 +599,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
+  @case('products')
+        @if($page->hasActiveSection('products') && $products && $products->count() > 0)
 <!-- Products Showcase -->
 <section class="py-20">
     <div class="container mx-auto px-6">
@@ -640,7 +665,11 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </section>
 
+  @endif
+ @break
 
+  @case('video')
+@if($page->hasActiveSection('video'))
 <!-- Video Section -->
 <section class="py-20 relative overflow-hidden" 
          style="background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80
@@ -777,7 +806,8 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </section>
-
+  @endif
+ @break
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -905,6 +935,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+    @case('clients')
+     @if($page->hasActiveSection('clients'))
 <!-- Clients Slider -->
 <section class="py-20">
     <div class="container mx-auto px-6">
@@ -1080,6 +1112,8 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </section>
+  @endif
+ @break
 
 <style>
 @keyframes scroll-smooth {
@@ -1101,7 +1135,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 
-
+  @case('reviews')
+@if($page->hasActiveSection('reviews'))
 <!-- Customer Reviews Section -->
 <section class="py-20 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-dark-bg via-purple-900/10 to-dark-bg"></div>
@@ -1430,7 +1465,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </section>
 
+  @endif
+ @break
 
+ @case('contact')
+@if($page->hasActiveSection('contact'))
    <!-- Contact Form Section -->
 <section class="py-20 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-pink-900/20"></div>
@@ -1587,8 +1626,11 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     -->
 </section>
+  @endif
+ @break
 
-
+@case('footer')
+@if($page->hasActiveSection('footer'))
 <!-- Footer -->
 <footer class="relative bg-gradient-to-br from-dark-card via-gray-900 to-black py-16 border-t border-gray-800/50 overflow-hidden">
     <!-- Background Effects -->
@@ -1732,7 +1774,35 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </footer>
+ @endif
+@break
 
+@endswitch
+@endforeach
 
+<script>
+// في sales.js - إضافة دالة للتحكم في ظهور الأقسام
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle section visibility based on status
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('section-visible');
+            }
+        });
+    }, observerOptions);
+
+    // Observe all sections
+    document.querySelectorAll('section').forEach(section => {
+        sectionObserver.observe(section);
+    });
+});
+</script>
 </body>
 </html>

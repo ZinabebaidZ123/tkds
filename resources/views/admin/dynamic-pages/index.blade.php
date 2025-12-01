@@ -4,7 +4,6 @@
 @section('page-title', 'Dynamic Pages Manager')
 
 @push('styles')
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css">
 <style>
 .section-item {
     cursor: move;
@@ -14,19 +13,17 @@
     background-color: #f8fafc;
     transform: translateX(4px);
 }
-.ui-sortable-helper {
-    background: #fff;
-    border: 2px solid #3b82f6;
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-    transform: scale(1.02);
+.sortable-ghost {
+    background: linear-gradient(90deg, #e0e7ff, #ddd6fe) !important;
+    border: 2px dashed #8b5cf6 !important;
+    border-radius: 0.75rem !important;
+    opacity: 0.7 !important;
 }
-.ui-sortable-placeholder {
-    background: linear-gradient(90deg, #e0e7ff, #ddd6fe);
-    border: 2px dashed #8b5cf6;
-    border-radius: 0.75rem;
-    height: 70px;
-    margin: 8px 0;
-    opacity: 0.7;
+.sortable-chosen {
+    background: #fff !important;
+    border: 2px solid #3b82f6 !important;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3) !important;
+    transform: scale(1.02) !important;
 }
 .drag-handle {
     cursor: grab;
@@ -71,8 +68,8 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Dynamic Pages Manager</h1>
-            <p class="text-gray-600 text-sm mt-1">Manage sections and their order for your dynamic pages</p>
+            <h1 class="text-3xl font-bold text-gray-900">Special Offer Page Manager</h1>
+            <p class="text-gray-600 text-sm mt-1">Manage sections and their order.</p>
         </div>
         <div class="flex gap-3">
             <a href="{{ route('occasions') }}" target="_blank" 
@@ -80,17 +77,13 @@
                 <i class="fas fa-external-link-alt mr-2"></i>
                 Preview Page
             </a>
-            <a href="{{ route('admin.dynamic-pages.create') }}" 
-               class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
-                <i class="fas fa-plus mr-2"></i>
-                Create Page
-            </a>
+         
         </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+        {{-- <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-blue-100 text-sm font-medium">Total Pages</p>
@@ -98,7 +91,7 @@
                 </div>
                 <i class="fas fa-layer-group text-3xl text-blue-200"></i>
             </div>
-        </div>
+        </div> --}}
 
         <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-center justify-between">
@@ -120,17 +113,17 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+        {{-- <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-purple-100 text-sm font-medium">Total Sections</p>
                     <p class="text-2xl font-bold">
-                        {{ $pages->sum(fn($page) => $page->services_count + $page->pricing_plans_count + $page->products_count) }}
+                         {{ collect($page->sections_status)->filter(fn($status) => $status === 'active')->count() }}
                     </p>
                 </div>
                 <i class="fas fa-cogs text-3xl text-purple-200"></i>
             </div>
-        </div>
+        </div> --}}
     </div>
 
     @forelse($pages as $page)
@@ -168,14 +161,14 @@
                         $allSections = [
                             'header' => ['name' => 'Header', 'icon' => 'fas fa-header', 'color' => 'blue', 'editable' => true],
                             'hero' => ['name' => 'Hero Section', 'icon' => 'fas fa-star', 'color' => 'purple', 'editable' => true],
-                            'why_choose' => ['name' => 'Why Choose Us', 'icon' => 'fas fa-check-circle', 'color' => 'cyan', 'editable' => false],
+                            'why_choose' => ['name' => 'Why Choose Us', 'icon' => 'fas fa-check-circle', 'color' => 'cyan', 'editable' => true],
                             'services' => ['name' => 'Services', 'icon' => 'fas fa-cogs', 'color' => 'emerald', 'editable' => true],
                             'packages' => ['name' => 'Packages', 'icon' => 'fas fa-box', 'color' => 'orange', 'editable' => true],
                             'products' => ['name' => 'Products', 'icon' => 'fas fa-shopping-bag', 'color' => 'indigo', 'editable' => true],
                             'video' => ['name' => 'Video Section', 'icon' => 'fas fa-play-circle', 'color' => 'red', 'editable' => true],
-                            'clients' => ['name' => 'Clients', 'icon' => 'fas fa-users', 'color' => 'teal', 'editable' => false],
-                            'reviews' => ['name' => 'Reviews', 'icon' => 'fas fa-star-half-alt', 'color' => 'yellow', 'editable' => false],
-                            'contact' => ['name' => 'Contact', 'icon' => 'fas fa-envelope', 'color' => 'rose', 'editable' => false],
+                            'clients' => ['name' => 'Clients', 'icon' => 'fas fa-users', 'color' => 'teal', 'editable' => true],
+                            'reviews' => ['name' => 'Reviews', 'icon' => 'fas fa-star-half-alt', 'color' => 'yellow', 'editable' => true],
+                            'contact' => ['name' => 'Contact', 'icon' => 'fas fa-envelope', 'color' => 'rose', 'editable' => true],
                             'footer' => ['name' => 'Footer', 'icon' => 'fas fa-columns', 'color' => 'gray', 'editable' => true]
                         ];
                     @endphp
@@ -206,9 +199,6 @@
                                     </div>
                                     <div>
                                         <h5 class="font-medium text-gray-900">{{ $section['name'] }}</h5>
-                                        @if(!$section['editable'])
-                                            <span class="text-xs text-gray-500">(View Only)</span>
-                                        @endif
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2">
@@ -220,7 +210,7 @@
                                         <i class="fas fa-power-off text-xs"></i>
                                     </button>
                                     @if($section['editable'])
-                                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => $sectionKey]) }}" 
+                                        <a href="{{ route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => str_replace('_', '-', $sectionKey)]) }}" 
                                            class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center hover:bg-blue-200 transition-all opacity-0 group-hover:opacity-100">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
@@ -314,7 +304,7 @@
             </div>
 
             <!-- Page Stats -->
-            <div class="mt-6 pt-6 border-t border-gray-200">
+            {{-- <div class="mt-6 pt-6 border-t border-gray-200">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="text-center">
                         <div class="text-2xl font-bold text-emerald-600">{{ $page->services_count }}</div>
@@ -335,12 +325,12 @@
                         <div class="text-sm text-gray-600">Active Sections</div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
     @empty
     <div class="text-center py-16">
-        <div class="mx-auto h-24 w-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6">
+        {{-- <div class="mx-auto h-24 w-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6">
             <i class="fas fa-layer-group text-4xl text-blue-500"></i>
         </div>
         <h3 class="text-xl font-semibold text-gray-900 mb-2">No pages found</h3>
@@ -349,33 +339,51 @@
            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
             <i class="fas fa-plus mr-2"></i>
             Create First Page
-        </a>
+        </a> --}}
     </div>
     @endforelse
 </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
+    console.log('SortableJS loaded:', typeof Sortable);
     
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        return;
+    }
+
     // Initialize sortable for each list
     document.querySelectorAll('.sortable-list').forEach(function(list) {
-        new Sortable(list, {
+        console.log('Initializing sortable for:', list.id);
+        
+        const sortable = Sortable.create(list, {
             handle: '.drag-handle',
-            animation: 150,
-            ghostClass: 'ui-sortable-placeholder',
-            chosenClass: 'ui-sortable-helper',
-            onUpdate: function() {
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            fallbackOnBody: true,
+            swapThreshold: 0.65,
+            onStart: function(evt) {
+                console.log('Drag started');
+            },
+            onEnd: function(evt) {
+                console.log('Drag ended');
                 const pageId = list.dataset.pageId;
                 const saveBtn = document.querySelector(`.save-order-btn[data-page-id="${pageId}"]`);
                 if (saveBtn) {
                     saveBtn.style.display = 'block';
+                    saveBtn.classList.add('animate-pulse');
                 }
             }
         });
+        
+        console.log('Sortable initialized successfully for:', list.id);
     });
 
     // Save order functionality
@@ -383,34 +391,52 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const pageId = this.dataset.pageId;
             const list = document.querySelector(`#sections-${pageId}`);
-            const sectionsOrder = [];
             
+            if (!list) {
+                console.error('List not found for page:', pageId);
+                return;
+            }
+            
+            const sectionsOrder = [];
             list.querySelectorAll('.section-item').forEach(function(item) {
-                sectionsOrder.push(item.dataset.section);
+                const section = item.dataset.section;
+                if (section) {
+                    sectionsOrder.push(section);
+                }
             });
 
-            console.log('Saving order:', sectionsOrder);
+            console.log('Saving order for page', pageId, ':', sectionsOrder);
 
             // Show loading state
             const originalText = this.innerHTML;
             this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
             this.disabled = true;
+            this.classList.remove('animate-pulse');
 
+            // Send AJAX request
             fetch(`/admin/dynamic-pages/${pageId}/reorder-sections`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Content-Type': 'application/json'
+                    'X-CSRF-TOKEN': csrfToken.content,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     order: sectionsOrder
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
                     this.innerHTML = '<i class="fas fa-check mr-1"></i>Saved!';
                     this.className = this.className.replace('bg-green-500 hover:bg-green-600', 'bg-green-600');
+                    
+                    // Show success message
+                    showNotification('Sections order updated successfully!', 'success');
                     
                     setTimeout(() => {
                         this.innerHTML = originalText;
@@ -418,57 +444,102 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.disabled = false;
                         this.style.display = 'none';
                     }, 2000);
+                } else {
+                    throw new Error(data.message || 'Unknown error occurred');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 this.innerHTML = '<i class="fas fa-times mr-1"></i>Error!';
-                this.setTimeout(() => {
-                this.innerHTML = originalText;
-                this.className = this.className.replace('bg-red-500', 'bg-green-500 hover:bg-green-600');
-                this.disabled = false;
-            }, 2000);
+                this.className = this.className.replace('bg-green-500 hover:bg-green-600', 'bg-red-500 hover:bg-red-600');
+                
+                showNotification('Failed to save sections order: ' + error.message, 'error');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.className = this.className.replace('bg-red-500 hover:bg-red-600', 'bg-green-500 hover:bg-green-600');
+                    this.disabled = false;
+                }, 3000);
+            });
         });
     });
 });
-});
+
+// Toggle section function
 function toggleSection(pageId, section) {
-console.log('Toggle section:', pageId, section);
-const button = event.target.closest('button');
-const originalClasses = button.className;
+    console.log('Toggle section:', pageId, section);
+    const button = event.target.closest('button');
+    const originalClasses = button.className;
 
-button.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
-button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
+    button.disabled = true;
 
-fetch(`/admin/dynamic-pages/${pageId}/sections/${section}`, {
-    method: 'PATCH',
-    headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ status: 'toggle' })
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        window.location.reload();
-    } else {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        return;
+    }
+
+    fetch(`/admin/dynamic-pages/${pageId}/sections/${section}`, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ status: 'toggle' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            button.innerHTML = '<i class="fas fa-power-off text-xs"></i>';
+            button.className = originalClasses;
+            button.disabled = false;
+            showNotification('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
         button.innerHTML = '<i class="fas fa-power-off text-xs"></i>';
         button.className = originalClasses;
         button.disabled = false;
-        alert('Error: ' + data.message);
-    }
+        showNotification('Something went wrong!', 'error');
+    });
+}
 
-
+// Notification function
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${type === 'success' ? 'fa-check' : 'fa-times'} mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
     
-})
-.catch(error => {
-    console.error('Error:', error);
-    button.innerHTML = '<i class="fas fa-power-off text-xs"></i>';
-    button.className = originalClasses;
-    button.disabled = false;
-    alert('Something went wrong!');
-});
+    document.body.appendChild(notification);
+    
+    // Animation
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+        notification.style.opacity = '1';
+    }, 100);
+    
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
 }
 </script>
 @endpush
