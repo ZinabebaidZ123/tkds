@@ -450,7 +450,9 @@
                         <!-- Featured & Trending -->
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2">
+                             <input type="hidden" name="is_featured" value="0">
                                 <label class="flex items-center space-x-3">
+                                  
                                     <input type="checkbox" 
                                            name="is_featured" 
                                            value="1"
@@ -464,6 +466,7 @@
                             </div>
                             <div class="space-y-2">
                                 <label class="flex items-center space-x-3">
+                                <input type="hidden" name="is_trending" value="0">
                                     <input type="checkbox" 
                                            name="is_trending" 
                                            value="1"
@@ -477,14 +480,17 @@
                             </div>
 
                         </div>
-                                                    <!-- Newsletter Notification -->
-<div class="space-y-2 mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+<!-- Newsletter Notification -->
+<div class="space-y-2 mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200" id="newsletter-section">
+    <!-- ✅ إضافة hidden input للـ send_newsletter -->
+    <input type="hidden" name="send_newsletter" value="0" id="newsletter-hidden">
     <label class="flex items-center space-x-3">
         <input type="checkbox" 
                name="send_newsletter" 
                value="1"
-               {{ old('send_newsletter', false) ? 'checked' : '' }}
-               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+               {{ old('send_newsletter', request('send_newsletter', false)) ? 'checked' : '' }}
+               class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+               id="send_newsletter_checkbox">
         <div class="flex-1">
             <span class="text-sm font-semibold text-gray-700">
                 <i class="fas fa-envelope mr-1 text-blue-500"></i>
@@ -498,6 +504,20 @@
     <div class="text-xs text-blue-700 bg-blue-100 p-2 rounded">
         <i class="fas fa-info-circle mr-1"></i>
         Newsletter will only be sent when post status is "Published" and this option is checked
+    </div>
+    
+    <!-- ✅ Status suggestion message (will be shown dynamically) -->
+    <div id="newsletter-suggestion" class="hidden mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+        <div class="flex items-start space-x-3">
+            <i class="fas fa-lightbulb text-amber-500 mt-0.5"></i>
+            <div class="flex-1">
+                <p class="text-sm text-amber-800 font-medium">Newsletter automatically selected!</p>
+                <p class="text-xs text-amber-600 mt-1">Since you selected "Published" status, newsletter option was automatically checked. You can uncheck it if you don't want to send a newsletter.</p>
+            </div>
+            <button type="button" onclick="dismissNewsletterSuggestion()" class="text-amber-400 hover:text-amber-600">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
     </div>
 </div>
                     </div>
@@ -1823,18 +1843,7 @@ function initializeNewsletterValidation() {
             return isValid;
         };
         
-        // ✅ NEW: Prevent form submission if newsletter validation fails
-        document.getElementById('postForm').addEventListener('submit', function(e) {
-            if (!validateNewsletterSelection()) {
-                e.preventDefault();
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i><span>{{ isset($post) ? 'Update' : 'Create' }} Post</span>';
-                
-                showNotification('Cannot submit: Newsletter can only be sent with Published status', 'error');
-                return false;
-            }
-        });
+
         
         // ✅ NEW: Initial validation on page load
         setTimeout(() => {
@@ -1918,5 +1927,305 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Newsletter validation and suggestions initialized');
     }, 200);
 });
+
+// ✅ COMPLETELY FIXED: Newsletter Checkbox Management System
+let newsletterManuallyChanged = false; // Track if user manually changed the checkbox
+let initialNewsletterState = false; // Track initial state
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeNewsletterSystem();
+});
+
+function initializeNewsletterSystem() {
+    const newsletterCheckbox = document.getElementById('send_newsletter_checkbox');
+    const statusSelect = document.getElementById('status');
+    const newsletterSection = document.getElementById('newsletter-section');
+    const suggestionDiv = document.getElementById('newsletter-suggestion');
+    
+    if (!newsletterCheckbox || !statusSelect) {
+        console.log('Newsletter elements not found');
+        return;
+    }
+    
+    // ✅ Set initial state
+    initialNewsletterState = newsletterCheckbox.checked;
+    
+    // ✅ Check if there's a saved state in session storage
+    const savedState = sessionStorage.getItem('newsletter_checkbox_state');
+    const savedManualFlag = sessionStorage.getItem('newsletter_manually_changed');
+    
+    if (savedState !== null) {
+        newsletterCheckbox.checked = savedState === 'true';
+        newsletterManuallyChanged = savedManualFlag === 'true';
+        console.log('Restored newsletter state:', savedState, 'Manual:', savedManualFlag);
+    }
+    
+    // ✅ Handle status change
+    statusSelect.addEventListener('change', function() {
+        const newStatus = this.value;
+        console.log('Status changed to:', newStatus);
+        
+        if (newStatus === 'published') {
+            // Only auto-check if user hasn't manually changed it
+            if (!newsletterManuallyChanged) {
+                newsletterCheckbox.checked = true;
+                showNewsletterSuggestion();
+                console.log('Auto-checked newsletter for published status');
+            }
+        } else {
+            // Hide suggestion when not published
+            hideNewsletterSuggestion();
+        }
+        
+        // Save state
+        saveNewsletterState();
+        
+        // Validate
+        validateNewsletterSelection();
+    });
+    
+    // ✅ Handle checkbox manual change
+    newsletterCheckbox.addEventListener('change', function() {
+        console.log('Newsletter checkbox manually changed to:', this.checked);
+        newsletterManuallyChanged = true;
+        
+        // If user unchecks, hide suggestion
+        if (!this.checked) {
+            hideNewsletterSuggestion();
+        }
+        
+        // Save state
+        saveNewsletterState();
+        
+        // Validate
+        validateNewsletterSelection();
+    });
+    
+    // ✅ Initial validation
+    setTimeout(() => {
+        validateNewsletterSelection();
+    }, 100);
+    
+    console.log('Newsletter system initialized successfully');
+}
+
+function saveNewsletterState() {
+    const checkbox = document.getElementById('send_newsletter_checkbox');
+    if (checkbox) {
+        sessionStorage.setItem('newsletter_checkbox_state', checkbox.checked);
+        sessionStorage.setItem('newsletter_manually_changed', newsletterManuallyChanged);
+        console.log('Saved newsletter state:', checkbox.checked, 'Manual:', newsletterManuallyChanged);
+    }
+}
+
+function showNewsletterSuggestion() {
+    const suggestionDiv = document.getElementById('newsletter-suggestion');
+    if (suggestionDiv && !newsletterManuallyChanged) {
+        suggestionDiv.classList.remove('hidden');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            hideNewsletterSuggestion();
+        }, 5000);
+    }
+}
+
+function hideNewsletterSuggestion() {
+    const suggestionDiv = document.getElementById('newsletter-suggestion');
+    if (suggestionDiv) {
+        suggestionDiv.classList.add('hidden');
+    }
+}
+
+function dismissNewsletterSuggestion() {
+    hideNewsletterSuggestion();
+    newsletterManuallyChanged = true; // Mark as manually changed
+    saveNewsletterState();
+}
+
+function validateNewsletterSelection() {
+    const newsletterCheckbox = document.getElementById('send_newsletter_checkbox');
+    const statusSelect = document.getElementById('status');
+    const newsletterSection = document.getElementById('newsletter-section');
+    
+    if (!newsletterCheckbox || !statusSelect) return true;
+    
+    const isNewsletterChecked = newsletterCheckbox.checked;
+    const currentStatus = statusSelect.value;
+    
+    // Remove any existing error styling
+    newsletterSection?.classList.remove('border-red-500', 'bg-red-50');
+    let existingError = newsletterSection?.querySelector('.newsletter-error-message');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Check for conflict
+    if (isNewsletterChecked && currentStatus !== 'published') {
+        // Add error styling
+        if (newsletterSection) {
+            newsletterSection.classList.add('border-red-500', 'bg-red-50');
+            
+            // Add error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'newsletter-error-message mt-2 p-2 text-sm text-red-600 bg-red-100 border border-red-300 rounded flex items-center';
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                Newsletter can only be sent when status is "Published". Please change status to Published or uncheck this option.
+            `;
+            newsletterSection.appendChild(errorDiv);
+        }
+        
+        return false;
+    }
+    
+    return true;
+}
+
+// ✅ Update the main form validation to include newsletter validation
+const originalValidateForm = window.validateForm;
+window.validateForm = function() {
+    // Run original validation first
+    let isValid = true;
+    if (originalValidateForm) {
+        isValid = originalValidateForm();
+    }
+    
+    // Add newsletter validation
+    if (!validateNewsletterSelection()) {
+        showNotification('Please fix the newsletter configuration before submitting', 'error');
+        isValid = false;
+    }
+    
+    return isValid;
+};
+
+// ✅ Enhanced form submission handling
+document.getElementById('postForm').addEventListener('submit', function(e) {
+    console.log('Form submission started');
+    
+    // Validate newsletter
+    if (!validateNewsletterSelection()) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i><span>{{ isset($post) ? 'Update' : 'Create' }} Post</span>';
+        
+        showNotification('Cannot submit: Newsletter can only be sent with Published status', 'error');
+        return false;
+    }
+    
+    // Clear saved state on successful submission (only if no validation errors)
+    const errorElements = document.querySelectorAll('.newsletter-error-message');
+    if (errorElements.length === 0) {
+        sessionStorage.removeItem('newsletter_checkbox_state');
+        sessionStorage.removeItem('newsletter_manually_changed');
+        console.log('Cleared newsletter state - form will be submitted');
+    }
+});
+
+// ✅ Reset system when page loads with success message
+@if(session('success') && !$errors->any())
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear saved state after successful submission
+    setTimeout(function() {
+        sessionStorage.removeItem('newsletter_checkbox_state');
+        sessionStorage.removeItem('newsletter_manually_changed');
+        newsletterManuallyChanged = false;
+        console.log('Reset newsletter system after successful submission');
+    }, 100);
+});
+@endif
+
+// ✅ Smart suggestion system
+function addSmartStatusSuggestions() {
+    const newsletterCheckbox = document.getElementById('send_newsletter_checkbox');
+    const statusSelect = document.getElementById('status');
+    
+    if (!newsletterCheckbox || !statusSelect) return;
+    
+    // Show suggestion when newsletter is checked but status is not published
+    newsletterCheckbox.addEventListener('change', function() {
+        if (this.checked && statusSelect.value !== 'published') {
+            showStatusChangeSuggestion();
+        }
+    });
+}
+
+function showStatusChangeSuggestion() {
+    // Remove any existing suggestion
+    const existingSuggestion = document.querySelector('.status-change-suggestion');
+    if (existingSuggestion) {
+        existingSuggestion.remove();
+    }
+    
+    const suggestionDiv = document.createElement('div');
+    suggestionDiv.className = 'status-change-suggestion mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-start space-x-3';
+    suggestionDiv.innerHTML = `
+        <i class="fas fa-lightbulb text-blue-500 mt-0.5"></i>
+        <div class="flex-1">
+            <p class="text-sm text-blue-800 font-medium">Newsletter selected!</p>
+            <p class="text-xs text-blue-600 mt-1">Would you like to change the status to "Published" to send the newsletter?</p>
+            <div class="mt-2 space-x-2">
+                <button type="button" onclick="setStatusToPublished()" class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                    Yes, set to Published
+                </button>
+                <button type="button" onclick="dismissStatusSuggestion()" class="text-xs text-blue-600 hover:text-blue-800">
+                    No, keep current status
+                </button>
+            </div>
+        </div>
+        <button type="button" onclick="dismissStatusSuggestion()" class="text-blue-400 hover:text-blue-600">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+    `;
+    
+    // Add suggestion after the newsletter section
+    const newsletterSection = document.getElementById('newsletter-section');
+    if (newsletterSection) {
+        newsletterSection.appendChild(suggestionDiv);
+    }
+}
+
+// Helper functions for suggestions
+window.setStatusToPublished = function() {
+    const statusSelect = document.getElementById('status');
+    if (statusSelect) {
+        statusSelect.value = 'published';
+        statusSelect.dispatchEvent(new Event('change')); // Trigger change event
+        
+        // Remove suggestion
+        dismissStatusSuggestion();
+        
+        showNotification('Status changed to Published. Newsletter will be sent when post is saved!', 'success');
+    }
+};
+
+window.dismissStatusSuggestion = function() {
+    const suggestionDiv = document.querySelector('.status-change-suggestion');
+    if (suggestionDiv) {
+        suggestionDiv.remove();
+    }
+};
+
+// ✅ Initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        addSmartStatusSuggestions();
+        console.log('Newsletter suggestions system initialized');
+    }, 200);
+});
+
+// ✅ Debug function (remove in production)
+window.debugNewsletter = function() {
+    console.log('Newsletter Debug Info:');
+    console.log('Manual changed:', newsletterManuallyChanged);
+    console.log('Checkbox state:', document.getElementById('send_newsletter_checkbox')?.checked);
+    console.log('Status:', document.getElementById('status')?.value);
+    console.log('Session state:', sessionStorage.getItem('newsletter_checkbox_state'));
+    console.log('Session manual:', sessionStorage.getItem('newsletter_manually_changed'));
+};
+
+
 </script>
 @endpush 

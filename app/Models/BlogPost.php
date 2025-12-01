@@ -41,6 +41,7 @@ class BlogPost extends Model
         'meta_keywords',
         'title_part1',
         'title_part2',
+
         'subtitle'
     ];
 

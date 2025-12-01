@@ -354,5 +354,7 @@ Route::get('/test-occasions-simple', function () {
     }
 });
 
+
+
 Route::get('/special-occasions', [App\Http\Controllers\OccasionFrontendController::class, 'index'])
     ->name('occasions');

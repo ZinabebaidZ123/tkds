@@ -281,33 +281,57 @@ class DynamicPageController extends Controller
             ->with('success', 'Page section updated successfully.');
     }
 
-    public function toggleSection(Request $request, DynamicPage $page, string $section)
-    {
-        $status = $request->boolean('status') ? 'active' : 'inactive';
-        $field  = $section . '_status';
-
-        if (! \Schema::hasColumn($page->getTable(), $field)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Section field not found.',
-            ], 422);
-        }
-
-        $page->update([$field => $status]);
-
+public function toggleSection(Request $request, DynamicPage $page, string $section)
+{
+    $statusField = $section . '_status';
+    
+    if (!\Schema::hasColumn($page->getTable(), $statusField)) {
         return response()->json([
-            'success' => true,
-            'status'  => $status,
-        ]);
+            'success' => false,
+            'message' => 'Section field not found.',
+        ], 422);
     }
+    
+    // Toggle the status
+    $currentStatus = $page->$statusField;
+    $newStatus = $currentStatus === 'active' ? 'inactive' : 'active';
+    
+    $page->update([$statusField => $newStatus]);
 
-    public function reorderSections(Request $request, DynamicPage $page)
-    {
-        $order = $request->input('order', []);
-        $page->update(['sections_order' => json_encode($order)]);
+    return response()->json([
+        'success' => true,
+        'status'  => $newStatus,
+        'message' => "Section {$section} is now {$newStatus}",
+    ]);
+}
 
-        return response()->json(['success' => true]);
+public function reorderSections(Request $request, DynamicPage $page)
+{
+    $order = $request->input('order', []);
+    
+    // التحقق من أن جميع السيكشنز صالحة
+    $validSections = [
+        'header', 'hero', 'why_choose', 'services', 
+        'packages', 'products', 'video', 'clients', 
+        'reviews', 'contact', 'footer'
+    ];
+    
+    $filteredOrder = array_intersect($order, $validSections);
+    
+    // التأكد من وجود جميع السيكشنز
+    if (count($filteredOrder) !== count($validSections)) {
+        $missingSections = array_diff($validSections, $filteredOrder);
+        $filteredOrder = array_merge($filteredOrder, $missingSections);
     }
+    
+    $page->update(['sections_order' => $filteredOrder]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Sections order updated successfully',
+        'new_order' => $filteredOrder
+    ]);
+}
 
     public function services(DynamicPage $page)
     {

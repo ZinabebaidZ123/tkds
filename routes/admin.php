@@ -490,38 +490,43 @@ Route::prefix('newsletter')->name('newsletter.')->group(function () {
     });
 // Occasion Management Routes
 
-    Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
-        // Index - Sections Cards
-        Route::get('/', [DynamicPageController::class, 'index'])->name('index');
-        
-        // Edit Page Settings
-        Route::get('/{page}/edit', [DynamicPageController::class, 'edit'])->name('edit');
-        Route::put('/{page}', [DynamicPageController::class, 'update'])->name('update');
-        
-        // Toggle Section Status
-        Route::patch('/{page}/sections/{section}', [DynamicPageController::class, 'toggleSection'])->name('toggle-section');
-        
-        // Reorder Sections
-        Route::patch('/{page}/sections/reorder', [DynamicPageController::class, 'reorderSections'])->name('reorder-sections');
-        
-        // Services Management
-        Route::get('/{page}/services', [DynamicPageController::class, 'services'])->name('services.index');
-        Route::post('/{page}/services', [DynamicPageController::class, 'servicesStore'])->name('services.store');
-        Route::delete('/services/{id}', [DynamicPageController::class, 'servicesDestroy'])->name('services.destroy');
-        
-        // Packages Management
-        Route::get('/{page}/packages', [DynamicPageController::class, 'packages'])->name('packages.index');
-        Route::post('/{page}/packages', [DynamicPageController::class, 'packagesStore'])->name('packages.store');
-        Route::delete('/packages/{id}', [DynamicPageController::class, 'packagesDestroy'])->name('packages.destroy');
-        
-        // Products Management
-        Route::get('/{page}/products', [DynamicPageController::class, 'products'])->name('products.index');
-        Route::post('/{page}/products', [DynamicPageController::class, 'productsStore'])->name('products.store');
-        Route::delete('/products/{id}', [DynamicPageController::class, 'productsDestroy'])->name('products.destroy');
-    });
+// Dynamic Pages Management Routes - Add this section after line 400 (before the closing of middleware group)
+Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
+    // Index - Sections Cards
+    Route::get('/', [DynamicPageController::class, 'index'])->name('index');
     
-    // Occasion Management Routes (Resource routes)
-    Route::resource('occasions', App\Http\Controllers\Admin\OccasionController::class);
+    // Create & Store
+    Route::get('/create', [DynamicPageController::class, 'create'])->name('create');
+    Route::post('/', [DynamicPageController::class, 'store'])->name('store');
+    
+    // Edit Page Settings
+    Route::get('/{page}/edit', [DynamicPageController::class, 'edit'])->name('edit');
+    Route::put('/{page}', [DynamicPageController::class, 'update'])->name('update');
+    
+    // Toggle Section Status - Fixed route
+    Route::patch('/{page}/sections/{section}', [DynamicPageController::class, 'toggleSection'])->name('toggle-section');
+    
+    // Reorder Sections - Fixed route  
+    Route::post('/{page}/reorder-sections', [DynamicPageController::class, 'reorderSections'])->name('reorder-sections');
+    
+    // Services Management
+    Route::get('/{page}/services', [DynamicPageController::class, 'services'])->name('services.index');
+    Route::post('/{page}/services', [DynamicPageController::class, 'servicesStore'])->name('services.store');
+    Route::put('/{page}/services/{serviceId}', [DynamicPageController::class, 'servicesUpdate'])->name('services.update');
+    Route::delete('/services/{id}', [DynamicPageController::class, 'servicesDestroy'])->name('services.destroy');
+    
+    // Packages Management
+    Route::get('/{page}/packages', [DynamicPageController::class, 'packages'])->name('packages.index');
+    Route::post('/{page}/packages', [DynamicPageController::class, 'packagesStore'])->name('packages.store');
+    Route::put('/{page}/packages/{packageId}', [DynamicPageController::class, 'packagesUpdate'])->name('packages.update');
+    Route::delete('/packages/{id}', [DynamicPageController::class, 'packagesDestroy'])->name('packages.destroy');
+    
+    // Products Management
+    Route::get('/{page}/products', [DynamicPageController::class, 'products'])->name('products.index');
+    Route::post('/{page}/products', [DynamicPageController::class, 'productsStore'])->name('products.store');
+    Route::put('/{page}/products/{productId}', [DynamicPageController::class, 'productsUpdate'])->name('products.update');
+    Route::delete('/products/{id}', [DynamicPageController::class, 'productsDestroy'])->name('products.destroy');
+});
     
     // Additional custom routes for occasions
     Route::post('occasions/{id}/status', [App\Http\Controllers\Admin\OccasionController::class, 'updateStatus'])

@@ -68,31 +68,72 @@ class BlogPostController extends Controller
         return view('admin.blog.posts.addedit', compact('categories', 'authors', 'tags'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:500',
-            'slug' => 'nullable|string|max:500|unique:blog_posts,slug',
-            'excerpt' => 'nullable|string|max:1000',
-            'content' => 'required|string',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'featured_image_alt' => 'nullable|string|max:255',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'category_id' => 'required|exists:blog_categories,id',
-            'author_id' => 'required|exists:blog_authors,id',
-            'status' => 'required|in:draft,published,scheduled,archived',
-            'is_featured' => 'boolean',
-            'is_trending' => 'boolean',
-            'published_at' => 'nullable|date',
-            'scheduled_at' => 'nullable|date|after:now',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:500',
-            'tags' => 'nullable|array',
-            'media_files.*' => 'nullable|file|max:10240',
-        ]);
 
+   public function store(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string|max:500',
+        'slug' => 'nullable|string|max:500|unique:blog_posts,slug',
+        'excerpt' => 'nullable|string|max:1000',
+        'content' => 'required|string|min:10', // ✅ إضافة validation للـ content
+        'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        'featured_image_alt' => 'nullable|string|max:255',
+        'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        'category_id' => 'required|exists:blog_categories,id',
+        'author_id' => 'required|exists:blog_authors,id',
+        'status' => 'required|in:draft,published,scheduled,archived',
+        'is_featured' => 'boolean',
+        'is_trending' => 'boolean',
+        'published_at' => 'nullable|date',
+        'scheduled_at' => 'nullable|date|after:now',
+        'meta_title' => 'nullable|string|max:255',
+        'meta_description' => 'nullable|string|max:500',
+        'meta_keywords' => 'nullable|string|max:500',
+        'tags' => 'nullable|array',
+        'media_files.*' => 'nullable|file|max:10240',
+        'send_newsletter' => 'boolean',
+    ], [
+        // ✅ Custom error messages
+        'content.required' => 'Content is required.',
+        'content.min' => 'Content must be at least 10 characters long.',
+        'title.required' => 'Post title is required.',
+        'category_id.required' => 'Please select a category.',
+        'author_id.required' => 'Please select an author.',
+        'status.required' => 'Please select a status.',
+        'featured_image.image' => 'Featured image must be a valid image file.',
+        'featured_image.max' => 'Featured image size must not exceed 5MB.',
+        'gallery.*.image' => 'All gallery files must be valid image files.',
+        'gallery.*.max' => 'Each gallery image must not exceed 5MB.',
+        'media_files.*.max' => 'Each media file must not exceed 10MB.',
+        'scheduled_at.after' => 'Scheduled date must be in the future.',
+    ]);
+
+    // ✅ Custom validation for content (strip HTML tags and check)
+    $contentText = strip_tags($request->content);
+    if (strlen(trim($contentText)) < 10) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['content' => 'Content must contain at least 10 characters of actual text.']);
+    }
+
+    // ✅ Custom validation for newsletter checkbox
+    if ($request->has('send_newsletter') && $request->send_newsletter == '1') {
+        if ($request->status !== 'published') {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors([
+                    'send_newsletter' => 'Newsletter can only be sent when the post status is "Published". Please change the status to Published or uncheck the newsletter option.'
+                ]);
+        }
+    }
+
+    try {
         $data = $request->all();
+        
+        // ✅ Handle checkboxes properly
+        $data['is_featured'] = $request->has('is_featured') && $request->is_featured == '1';
+        $data['is_trending'] = $request->has('is_trending') && $request->is_trending == '1';
+        
         $data['slug'] = $request->slug ?: Str::slug($request->title);
         
         // Handle status-specific dates
@@ -112,23 +153,36 @@ class BlogPostController extends Controller
 
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
-            $imagePath = $request->file('featured_image')->store('blog/posts', 'public');
-            $data['featured_image'] = $imagePath;
+            try {
+                $imagePath = $request->file('featured_image')->store('blog/posts', 'public');
+                $data['featured_image'] = $imagePath;
+            } catch (\Exception $e) {
+                Log::error('Featured image upload failed: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['featured_image' => 'Failed to upload featured image. Please try again.']);
+            }
         }
 
-        // ✅ FIXED: Handle gallery upload for CREATE - support multiple images
+        // ✅ Handle gallery upload for CREATE - support multiple images
         $galleryPaths = [];
         if ($request->hasFile('gallery')) {
             Log::info('Creating new post with gallery images: ' . count($request->file('gallery')));
             
             foreach ($request->file('gallery') as $file) {
-                $galleryPath = $file->store('blog/gallery', 'public');
-                $galleryPaths[] = $galleryPath;
-                Log::info('Stored gallery image: ' . $galleryPath);
+                try {
+                    $galleryPath = $file->store('blog/gallery', 'public');
+                    $galleryPaths[] = $galleryPath;
+                    Log::info('Stored gallery image: ' . $galleryPath);
+                } catch (\Exception $e) {
+                    Log::error('Gallery image upload failed: ' . $e->getMessage());
+                    // Continue with other images instead of failing completely
+                }
             }
         }
         $data['gallery'] = $galleryPaths;
 
+        // ✅ Create the post
         $post = BlogPost::create($data);
 
         Log::info('Created new post with gallery', [
@@ -138,34 +192,62 @@ class BlogPostController extends Controller
         ]);
 
         // Sync tags
-        if ($request->tags) {
-            $post->tags()->sync($request->tags);
+        if ($request->has('tags') && is_array($request->tags)) {
+            $validTags = array_filter($request->tags, function($tagId) {
+                return is_numeric($tagId) || (is_string($tagId) && strpos($tagId, 'temp_') === 0);
+            });
+            
+            if (!empty($validTags)) {
+                $post->tags()->sync($validTags);
+            }
         }
 
         // Handle additional media files
         if ($request->hasFile('media_files')) {
             foreach ($request->file('media_files') as $index => $file) {
-                BlogMedia::create([
-                    'post_id' => $post->id,
-                    'file_name' => $file->getClientOriginalName(),
-                    'file_path' => $file->store('blog/media', 'public'),
-                    'file_type' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
-                    'file_size' => $file->getSize(),
-                    'mime_type' => $file->getMimeType(),
-                    'sort_order' => $index,
-                ]);
+                try {
+                    BlogMedia::create([
+                        'post_id' => $post->id,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_path' => $file->store('blog/media', 'public'),
+                        'file_type' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
+                        'file_size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType(),
+                        'sort_order' => $index,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Media file upload failed: ' . $e->getMessage());
+                    // Continue with other files
+                }
             }
         }
 
-        // Send newsletter if requested and post is published
-if ($request->send_newsletter && $data['status'] === 'published') {
-    $this->sendNewsletterNotification($post);
-}
+        // ✅ Send newsletter if requested and post is published
+        if ($request->has('send_newsletter') && $request->send_newsletter == '1' && $data['status'] === 'published') {
+            try {
+                $this->sendNewsletterNotification($post);
+                Log::info('Newsletter sent for new post', ['post_id' => $post->id]);
+            } catch (\Exception $e) {
+                Log::error('Newsletter sending failed for new post: ' . $e->getMessage());
+                return redirect()->route('admin.blog.posts.index')
+                    ->with('success', 'Post created successfully!')
+                    ->with('newsletter_error', 'Post created, but newsletter sending failed: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('admin.blog.posts.index')
-            ->with('success', 'Post created successfully.');
-    }
+            ->with('success', 'Post created successfully' . ($request->has('send_newsletter') && $request->send_newsletter == '1' && $data['status'] === 'published' ? ' and newsletter sent!' : '!'));
 
+    } catch (\Exception $e) {
+        Log::error('Post creation failed: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['general' => 'Failed to create post. Please try again. Error: ' . $e->getMessage()]);
+    }
+}
     public function show(BlogPost $post)
     {
         $post->load(['category', 'author', 'tags', 'media']);
@@ -181,14 +263,13 @@ if ($request->send_newsletter && $data['status'] === 'published') {
         
         return view('admin.blog.posts.addedit', compact('post', 'categories', 'authors', 'tags'));
     }
-
 public function update(Request $request, BlogPost $post)
 {
     $request->validate([
         'title' => 'required|string|max:500',
         'slug' => 'nullable|string|max:500|unique:blog_posts,slug,' . $post->id,
         'excerpt' => 'nullable|string|max:1000',
-        'content' => 'required|string',
+        'content' => 'required|string|min:10', // ✅ إضافة validation للـ content
         'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         'featured_image_alt' => 'nullable|string|max:255',
         'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
@@ -206,10 +287,33 @@ public function update(Request $request, BlogPost $post)
         'media_files.*' => 'nullable|file|max:10240',
         'remove_gallery_images' => 'nullable|array',
         'remove_gallery_images.*' => 'string',
+        'send_newsletter' => 'boolean',
+    ], [
+        // ✅ Custom error messages
+        'content.required' => 'Content is required.',
+        'content.min' => 'Content must be at least 10 characters long.',
+        'title.required' => 'Post title is required.',
+        'category_id.required' => 'Please select a category.',
+        'author_id.required' => 'Please select an author.',
+        'status.required' => 'Please select a status.',
+        'featured_image.image' => 'Featured image must be a valid image file.',
+        'featured_image.max' => 'Featured image size must not exceed 5MB.',
+        'gallery.*.image' => 'All gallery files must be valid image files.',
+        'gallery.*.max' => 'Each gallery image must not exceed 5MB.',
+        'media_files.*.max' => 'Each media file must not exceed 10MB.',
+        'scheduled_at.after' => 'Scheduled date must be in the future.',
     ]);
 
-    // ✅ NEW: Custom validation for newsletter checkbox
-    if ($request->has('send_newsletter') && $request->send_newsletter) {
+    // ✅ Custom validation for content (strip HTML tags and check)
+    $contentText = strip_tags($request->content);
+    if (strlen(trim($contentText)) < 10) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['content' => 'Content must contain at least 10 characters of actual text.']);
+    }
+
+    // ✅ Custom validation for newsletter checkbox
+    if ($request->has('send_newsletter') && $request->send_newsletter == '1') {
         if ($request->status !== 'published') {
             return redirect()->back()
                 ->withInput()
@@ -219,116 +323,172 @@ public function update(Request $request, BlogPost $post)
         }
     }
 
-    $data = $request->all();
-    $data['slug'] = $request->slug ?: Str::slug($request->title);
-
-    // ✅ FIXED: Handle status-specific dates properly with null checks
-    if ($data['status'] === 'published') {
-        // Only set published_at if post wasn't already published and no custom date provided
-        if (!$post->published_at && empty($data['published_at'])) {
-            $data['published_at'] = now();
-        }
-    } elseif ($data['status'] === 'scheduled') {
-        // For scheduled posts, use scheduled_at as published_at
-        if (!empty($data['scheduled_at'])) {
-            $data['published_at'] = $data['scheduled_at'];
-        }
-    } else {
-        // For draft or archived posts, clear published_at only if it wasn't set before
-        if ($data['status'] === 'draft' && !$post->published_at) {
-            $data['published_at'] = null;
-        }
-    }
-
-    // Handle featured image upload
-    if ($request->hasFile('featured_image')) {
-        // Delete old image
-        if ($post->featured_image && !filter_var($post->featured_image, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete($post->featured_image);
-        }
+    try {
+        $data = $request->all();
         
-        $imagePath = $request->file('featured_image')->store('blog/posts', 'public');
-        $data['featured_image'] = $imagePath;
-    }
+        // ✅ Handle checkboxes properly
+        $data['is_featured'] = $request->has('is_featured') && $request->is_featured == '1';
+        $data['is_trending'] = $request->has('is_trending') && $request->is_trending == '1';
+        
+        $data['slug'] = $request->slug ?: Str::slug($request->title);
 
-    // Gallery Management (same as before)
-    $currentGallery = is_array($post->gallery) ? $post->gallery : [];
-    
-    if ($request->has('remove_gallery_images') && is_array($request->remove_gallery_images)) {
-        foreach ($request->remove_gallery_images as $imageToRemove) {
-            if (!filter_var($imageToRemove, FILTER_VALIDATE_URL)) {
-                if (Storage::disk('public')->exists($imageToRemove)) {
-                    Storage::disk('public')->delete($imageToRemove);
+        // ✅ Handle status-specific dates properly with null checks
+        if ($data['status'] === 'published') {
+            // Only set published_at if post wasn't already published and no custom date provided
+            if (!$post->published_at && empty($data['published_at'])) {
+                $data['published_at'] = now();
+            }
+        } elseif ($data['status'] === 'scheduled') {
+            // For scheduled posts, use scheduled_at as published_at
+            if (!empty($data['scheduled_at'])) {
+                $data['published_at'] = $data['scheduled_at'];
+            }
+        } else {
+            // For draft or archived posts, clear published_at only if it wasn't set before
+            if ($data['status'] === 'draft' && !$post->published_at) {
+                $data['published_at'] = null;
+            }
+        }
+
+        // Handle featured image upload
+        if ($request->hasFile('featured_image')) {
+            try {
+                // Delete old image
+                if ($post->featured_image && !filter_var($post->featured_image, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($post->featured_image);
+                }
+                
+                $imagePath = $request->file('featured_image')->store('blog/posts', 'public');
+                $data['featured_image'] = $imagePath;
+            } catch (\Exception $e) {
+                Log::error('Featured image upload failed during update: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['featured_image' => 'Failed to upload featured image. Please try again.']);
+            }
+        }
+
+        // ✅ Gallery Management
+        $currentGallery = is_array($post->gallery) ? $post->gallery : [];
+        
+        // Remove selected images
+        if ($request->has('remove_gallery_images') && is_array($request->remove_gallery_images)) {
+            foreach ($request->remove_gallery_images as $imageToRemove) {
+                try {
+                    if (!filter_var($imageToRemove, FILTER_VALIDATE_URL)) {
+                        if (Storage::disk('public')->exists($imageToRemove)) {
+                            Storage::disk('public')->delete($imageToRemove);
+                        }
+                    }
+                    
+                    $currentGallery = array_filter($currentGallery, function($image) use ($imageToRemove) {
+                        return $image !== $imageToRemove;
+                    });
+                } catch (\Exception $e) {
+                    Log::error('Failed to delete gallery image: ' . $e->getMessage());
+                    // Continue with other images
                 }
             }
             
-            $currentGallery = array_filter($currentGallery, function($image) use ($imageToRemove) {
-                return $image !== $imageToRemove;
-            });
+            $currentGallery = array_values($currentGallery);
+        }
+
+        // Add new images
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                try {
+                    $newImagePath = $file->store('blog/gallery', 'public');
+                    $currentGallery[] = $newImagePath;
+                    Log::info('Added new gallery image: ' . $newImagePath);
+                } catch (\Exception $e) {
+                    Log::error('Failed to upload new gallery image: ' . $e->getMessage());
+                    // Continue with other images
+                }
+            }
         }
         
-        $currentGallery = array_values($currentGallery);
-    }
+        $data['gallery'] = $currentGallery;
 
-    if ($request->hasFile('gallery')) {
-        foreach ($request->file('gallery') as $file) {
-            $newImagePath = $file->store('blog/gallery', 'public');
-            $currentGallery[] = $newImagePath;
+        // Store previous status to check for newsletter sending
+        $previousStatus = $post->status;
+        
+        // ✅ Update the post
+        $post->update($data);
+
+        // Sync tags
+        if ($request->has('tags')) {
+            $validTags = [];
+            if (is_array($request->tags)) {
+                $validTags = array_filter($request->tags, function($tagId) {
+                    return is_numeric($tagId) || (is_string($tagId) && strpos($tagId, 'temp_') === 0);
+                });
+            }
+            $post->tags()->sync($validTags);
+        } else {
+            $post->tags()->sync([]);
         }
-    }
-    
-    $data['gallery'] = $currentGallery;
 
-    // Store previous status to check for newsletter sending
-    $previousStatus = $post->status;
-    
-    $post->update($data);
-
-    // Sync tags
-    if ($request->has('tags')) {
-        $post->tags()->sync($request->tags ?: []);
-    }
-
-    // Handle additional media files
-    if ($request->hasFile('media_files')) {
-        foreach ($request->file('media_files') as $index => $file) {
-            BlogMedia::create([
-                'post_id' => $post->id,
-                'file_name' => $file->getClientOriginalName(),
-                'file_path' => $file->store('blog/media', 'public'),
-                'file_type' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
-                'file_size' => $file->getSize(),
-                'mime_type' => $file->getMimeType(),
-                'sort_order' => $post->media()->count() + $index,
-            ]);
+        // Handle additional media files
+        if ($request->hasFile('media_files')) {
+            $existingMediaCount = $post->media()->count();
+            foreach ($request->file('media_files') as $index => $file) {
+                try {
+                    BlogMedia::create([
+                        'post_id' => $post->id,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_path' => $file->store('blog/media', 'public'),
+                        'file_type' => pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION),
+                        'file_size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType(),
+                        'sort_order' => $existingMediaCount + $index,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Media file upload failed during update: ' . $e->getMessage());
+                    // Continue with other files
+                }
+            }
         }
-    }
 
-    // ✅ ENHANCED: Newsletter logic with better validation
-    $isNewlyPublished = ($previousStatus !== 'published' && $data['status'] === 'published');
-    
-    // Send newsletter if requested and newly published
-    if ($request->has('send_newsletter') && $request->send_newsletter && $isNewlyPublished) {
-        try {
-            $this->sendNewsletterNotification($post);
-            Log::info('Newsletter notification triggered successfully', [
-                'post_id' => $post->id,
-                'post_title' => $post->title
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Newsletter notification failed: ' . $e->getMessage(), [
-                'post_id' => $post->id,
-                'error' => $e->getMessage()
-            ]);
-            
-            return redirect()->route('admin.blog.posts.index')
-                ->with('success', 'Post updated successfully.')
-                ->with('newsletter_error', 'Post updated successfully, but newsletter notification failed: ' . $e->getMessage());
+        // ✅ Newsletter logic with better validation
+        $isNewlyPublished = ($previousStatus !== 'published' && $data['status'] === 'published');
+        
+        // Send newsletter if requested and newly published
+        if ($request->has('send_newsletter') && $request->send_newsletter == '1' && $isNewlyPublished) {
+            try {
+                $this->sendNewsletterNotification($post);
+                Log::info('Newsletter notification triggered successfully', [
+                    'post_id' => $post->id,
+                    'post_title' => $post->title
+                ]);
+                
+                return redirect()->route('admin.blog.posts.index')
+                    ->with('success', 'Post updated successfully and newsletter sent!');
+                    
+            } catch (\Exception $e) {
+                Log::error('Newsletter notification failed: ' . $e->getMessage(), [
+                    'post_id' => $post->id,
+                    'error' => $e->getMessage()
+                ]);
+                
+                return redirect()->route('admin.blog.posts.index')
+                    ->with('success', 'Post updated successfully.')
+                    ->with('newsletter_error', 'Post updated successfully, but newsletter notification failed: ' . $e->getMessage());
+            }
         }
-    }
 
-    return redirect()->route('admin.blog.posts.index')
-        ->with('success', 'Post updated successfully.');
+        return redirect()->route('admin.blog.posts.index')
+            ->with('success', 'Post updated successfully.');
+
+    } catch (\Exception $e) {
+        Log::error('Post update failed: ' . $e->getMessage(), [
+            'post_id' => $post->id ?? 'unknown',
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['general' => 'Failed to update post. Please try again. Error: ' . $e->getMessage()]);
+    }
 }
 
     // ✅ NEW: Method to remove single gallery image via AJAX

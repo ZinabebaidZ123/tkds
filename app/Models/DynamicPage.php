@@ -17,6 +17,7 @@ class DynamicPage extends Model
         'page_title',
         'page_description',
         'status',
+        'sections_order',
 
         // Header
         'header_logo_image',
@@ -114,6 +115,7 @@ class DynamicPage extends Model
         'clients_logos'         => 'array',
         'reviews_items'         => 'array',
         'footer_social_links'   => 'array',
+         'sections_order' => 'array',
     ];
 
     public function services()
@@ -193,4 +195,36 @@ class DynamicPage extends Model
         $field = $section . '_status';
         return $query->where($field, 'active');
     }
+
+public function getSectionsOrderAttribute($value)
+{
+    if (!$value) {
+        return [
+            'header', 'hero', 'why_choose', 'services', 
+            'packages', 'products', 'video', 'clients', 
+            'reviews', 'contact', 'footer'
+        ];
+    }
+    return is_string($value) ? json_decode($value, true) : $value;
+}
+
+public function isSectionActive($section)
+{
+    $statusField = $section . '_status';
+    return $this->$statusField === 'active';
+}
+
+public function getActiveSectionsAttribute()
+{
+    $sectionsOrder = $this->sections_order;
+    $activeSections = [];
+    
+    foreach ($sectionsOrder as $section) {
+        if ($this->isSectionActive($section)) {
+            $activeSections[] = $section;
+        }
+    }
+    
+    return $activeSections;
+}
 }
