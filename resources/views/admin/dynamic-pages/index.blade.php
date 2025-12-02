@@ -77,22 +77,11 @@
                 <i class="fas fa-external-link-alt mr-2"></i>
                 Preview Page
             </a>
-         
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {{-- <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-blue-100 text-sm font-medium">Total Pages</p>
-                    <p class="text-2xl font-bold">{{ $pages->count() }}</p>
-                </div>
-                <i class="fas fa-layer-group text-3xl text-blue-200"></i>
-            </div>
-        </div> --}}
-
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
@@ -113,17 +102,15 @@
             </div>
         </div>
 
-        {{-- <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-purple-100 text-sm font-medium">Total Sections</p>
-                    <p class="text-2xl font-bold">
-                         {{ collect($page->sections_status)->filter(fn($status) => $status === 'active')->count() }}
-                    </p>
+                    <p class="text-blue-100 text-sm font-medium">Total Pages</p>
+                    <p class="text-2xl font-bold">{{ $pages->count() }}</p>
                 </div>
-                <i class="fas fa-cogs text-3xl text-purple-200"></i>
+                <i class="fas fa-layer-group text-3xl text-blue-200"></i>
             </div>
-        </div> --}}
+        </div>
     </div>
 
     @forelse($pages as $page)
@@ -163,7 +150,6 @@
                             'hero' => ['name' => 'Hero Section', 'icon' => 'fas fa-star', 'color' => 'purple', 'editable' => true],
                             'why_choose' => ['name' => 'Why Choose Us', 'icon' => 'fas fa-check-circle', 'color' => 'cyan', 'editable' => true],
                             'services' => ['name' => 'Services', 'icon' => 'fas fa-cogs', 'color' => 'emerald', 'editable' => true],
-                            'packages' => ['name' => 'Packages', 'icon' => 'fas fa-box', 'color' => 'orange', 'editable' => true],
                             'products' => ['name' => 'Products', 'icon' => 'fas fa-shopping-bag', 'color' => 'indigo', 'editable' => true],
                             'video' => ['name' => 'Video Section', 'icon' => 'fas fa-play-circle', 'color' => 'red', 'editable' => true],
                             'clients' => ['name' => 'Clients', 'icon' => 'fas fa-users', 'color' => 'teal', 'editable' => true],
@@ -302,44 +288,15 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Page Stats -->
-            {{-- <div class="mt-6 pt-6 border-t border-gray-200">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-emerald-600">{{ $page->services_count }}</div>
-                        <div class="text-sm text-gray-600">Services</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-orange-600">{{ $page->pricing_plans_count }}</div>
-                        <div class="text-sm text-gray-600">Packages</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-indigo-600">{{ $page->products_count }}</div>
-                        <div class="text-sm text-gray-600">Products</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">
-                            {{ collect($page->sections_status)->filter(fn($status) => $status === 'active')->count() }}
-                        </div>
-                        <div class="text-sm text-gray-600">Active Sections</div>
-                    </div>
-                </div>
-            </div> --}}
         </div>
     </div>
     @empty
     <div class="text-center py-16">
-        {{-- <div class="mx-auto h-24 w-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6">
+        <div class="mx-auto h-24 w-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6">
             <i class="fas fa-layer-group text-4xl text-blue-500"></i>
         </div>
         <h3 class="text-xl font-semibold text-gray-900 mb-2">No pages found</h3>
         <p class="text-gray-500 mb-6 max-w-sm mx-auto">Get started by creating your first dynamic page.</p>
-        <a href="{{ route('admin.dynamic-pages.create') }}" 
-           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-            <i class="fas fa-plus mr-2"></i>
-            Create First Page
-        </a> --}}
     </div>
     @endforelse
 </div>

@@ -969,3 +969,211 @@
                 right: -25px;
             }
         }
+
+        /* Perfect seamless infinite marquee - ENHANCED */
+.marquee-container {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.marquee-content {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    will-change: transform;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translateZ(0);
+}
+
+/* Smooth Left Scroll - No Gaps - SAME AS PARTNERS */
+.marquee-left-smooth {
+    animation: marquee-smooth-left 80s linear infinite;
+}
+
+/* Smooth Right Scroll - No Gaps - SAME AS PARTNERS */
+.marquee-right-smooth {
+    animation: marquee-smooth-right 80s linear infinite;
+}
+
+@keyframes marquee-smooth-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-33.333%);
+    }
+}
+
+@keyframes marquee-smooth-right {
+    0% {
+        transform: translateX(-33.333%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Partners Track Animation - EXACT SAME LOGIC */
+.partners-track-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.partners-track {
+    width: max-content;
+    animation: smooth-scroll-partners 80s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translateZ(0);
+}
+
+@keyframes smooth-scroll-partners {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-33.333%);
+    }
+}
+
+/* Hover Effects for Client Cards */
+.client-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(197, 48, 48, 0.1);
+    transform: translateY(-2px);
+}
+
+.client-card:hover img,
+.client-card:hover span {
+    transform: scale(1.05);
+}
+
+/* Partner Logo Card Enhancements */
+.partner-logo-card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.partner-logo-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.partner-logo-card:hover::before {
+    left: 100%;
+}
+
+.partner-logo-card:hover {
+    box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.3),
+        0 25px 50px -12px rgba(197, 48, 48, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: rgba(197, 48, 48, 0.5);
+}
+
+/* Pause animations on container hover for better UX */
+.marquee-container:hover .marquee-content,
+.partners-track-container:hover .partners-track {
+    animation-play-state: paused;
+}
+
+/* Performance optimizations */
+.marquee-content *,
+.partners-track * {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .marquee-left-smooth,
+    .marquee-right-smooth {
+        animation-duration: 50s;
+    }
+    
+    .partners-track {
+        animation-duration: 50s;
+    }
+    
+    .client-card,
+    .partner-logo-card {
+        width: 180px;
+        height: 80px;
+    }
+    
+    .partner-logo-card {
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .marquee-left-smooth,
+    .marquee-right-smooth {
+        animation-duration: 35s;
+    }
+    
+    .partners-track {
+        animation-duration: 35s;
+    }
+    
+    .client-card,
+    .partner-logo-card {
+        width: 160px;
+        height: 70px;
+    }
+    
+    .partner-logo-card {
+        height: 90px;
+    }
+}
+
+/* Enhanced loading state */
+.client-card img,
+.partner-logo-card img {
+    opacity: 0;
+    animation: fadeInImage 0.5s ease-in-out 0.2s forwards;
+}
+
+@keyframes fadeInImage {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Smooth logo transitions */
+.client-card img,
+.partner-logo-card img {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scroll-smooth {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.animate-scroll-smooth {
+    animation: scroll-smooth 40s linear infinite;
+}
+@media (hover: hover) {
+    .animate-scroll-smooth:hover {
+        animation-play-state: paused;
+    }
+}
+@media (max-width: 768px) {
+    .animate-scroll-smooth {
+        animation-duration: 30s;
+    }
+}

@@ -75,6 +75,11 @@
 @php
     $activeSections = $activeSections ?? $page->getActiveSectionsAttribute();
 @endphp
+
+ @php
+    use App\Models\Client;
+    $clientsByCategory = Client::getGroupedByCategory();
+@endphp
 {{-- Loop through active sections in order --}}
 @foreach($activeSections as $sectionKey)
     @switch($sectionKey)
@@ -224,7 +229,7 @@
             src="{{ $page->why_choose_background_image 
                     ? asset('storage/'.$page->why_choose_background_image) 
                     : 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80' }}" 
-            alt="Streaming Technology" 
+            alt="" 
             class="w-full h-full object-cover object-center"
         />
         <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/60 to-gray-900/70"></div>
@@ -309,7 +314,6 @@
                             </div>
                         </li>
                     @empty
-                        {{-- لو مفيش كروت في الداتابيز، نعرض الأربع كروت الافتراضية اللي عندك --}}
                         <li class="group flex items-start space-x-4 p-4 bg-dark-card/50 rounded-xl border border-gray-700/50 hover:border-neon-pink/50 transition-all duration-300 hover:bg-dark-card/70 hover:translate-x-4">
                             <div class="w-12 h-12 bg-gradient-neon rounded-xl flex items-center justify-center flex-shrink-0 mt-1 group-hover:scale-110 transition-all duration-300 shadow-lg">
                                 <i class="fas fa-rocket text-xl text-white"></i>
@@ -366,7 +370,7 @@
 
 
  @case('services')
- @if($page->hasActiveSection('services') && $services && $services->count() > 0)
+ @if($page->hasActiveSection('services') )
         
 <!-- Services Slider Section -->
 <section class="services-section">
@@ -449,9 +453,6 @@
     </div>
 </section>
 
-  @endif
- @break
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const section   = document.querySelector('.services-section');
@@ -468,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentSlide = 0;
     let autoRotateInterval = null;
     const slideClasses = ['far-left', 'prev', 'active', 'next', 'far-right'];
-    const AUTO_INTERVAL = 7000; // 7 seconds
+    const AUTO_INTERVAL = 5000; // 7 seconds
 
     function updateSlides() {
         slides.forEach((slide, index) => {
@@ -576,6 +577,10 @@ document.addEventListener('DOMContentLoaded', function () {
     startAutoRotate();
 });
 </script>
+  @endif
+ @break
+
+
 
 
 
@@ -745,14 +750,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         @endif
 
                         <!-- Video Controls Overlay -->
-                        <div class="absolute inset-0 flex flex-col bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
+                        <div class="absolute inset-0 flex flex-col   opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
                             <!-- Top Controls -->
                             <div class="flex justify-between items-center p-4 pt-2">
                                 <div class="flex items-center space-x-2">
-                                    <button id="playPauseBtn" class="video-control-btn w-12 h-12 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="playpause">
+                                    <button id="playPauseBtn" class="video-control-btn w-12 h-12 bg-white/20  rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="playpause">
                                         <i class="fas fa-play"></i>
                                     </button>
-                                    <button id="muteBtn" class="video-control-btn w-12 h-12 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="mute">
+                                    <button id="muteBtn" class="video-control-btn w-12 h-12 bg-white/20  rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="mute">
                                         <i class="fas fa-volume-up"></i>
                                     </button>
                                 </div>
@@ -806,8 +811,6 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </section>
-  @endif
- @break
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -931,6 +934,10 @@ document.addEventListener('DOMContentLoaded', function() {
     centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
 });
 </script>
+  @endif
+ @break
+
+
 
 
 
@@ -938,8 +945,18 @@ document.addEventListener('DOMContentLoaded', function() {
     @case('clients')
      @if($page->hasActiveSection('clients'))
 <!-- Clients Slider -->
-<section class="py-20">
-    <div class="container mx-auto px-6">
+
+
+<section class="py-20 bg-dark relative overflow-hidden">
+    <!-- Epic Background -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary to-transparent opacity-30"></div>
+        <div class="absolute top-10 left-10 w-72 h-72 bg-primary/8 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-secondary/6 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/4 rounded-full blur-3xl animate-pulse"></div>
+    </div>
+    
+    <div class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center mb-16">
             <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
                 {{ $page->clients_title ?? 'TRUSTED BY GIANTS' }}
@@ -948,192 +965,221 @@ document.addEventListener('DOMContentLoaded', function() {
                 {{ $page->clients_subtitle ?? 'Join thousands of satisfied clients who trust our solutions' }}
             </p>
         </div>
-
-        <!-- Infinite Scroll Clients -->
-        <div class="overflow-hidden relative">
-            <div class="flex animate-scroll-smooth">
-                {{-- First pass - Real clients --}}
-                @if($page->clients_logos && is_array($page->clients_logos) && count($page->clients_logos) > 0)
-                    @foreach($page->clients_logos as $client)
-                        <div class="flex-shrink-0 mx-6">
-                            <div class="w-28 h-28 bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 flex items-center justify-center group hover:scale-110">
-                                @if(is_string($client))
-                                    {{-- Handle old format (string) --}}
-                                    <img src="{{ asset('storage/' . $client) }}"
-                                         alt="Client Logo"
-                                         class="w-16 h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300 max-h-20"
-                                         loading="lazy"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div class="text-center hidden">
-                                        <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300">
-                                            <i class="fas fa-building"></i>
-                                        </div>
-                                    </div>
-                                @elseif(is_array($client))
-                                    {{-- Handle new format (array) --}}
-                                    @if(isset($client['logo']) && $client['logo'])
-                                        <img src="{{ asset('storage/' . $client['logo']) }}"
-                                             alt="{{ $client['name'] ?? 'Client' }}"
-                                             class="w-16 h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300 max-h-20"
-                                             loading="lazy"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <div class="text-center hidden">
-                                            <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300 mb-2">
-                                                <i class="fas fa-building"></i>
-                                            </div>
-                                            @if(isset($client['name']))
-                                                <div class="text-xs text-gray-400 font-bold">{{ $client['name'] }}</div>
-                                            @endif
-                                        </div>
-                                    @elseif(isset($client['icon']) && $client['icon'])
-                                        <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300">
-                                            <i class="{{ $client['icon'] }}"></i>
-                                        </div>
-                                    @else
-                                        <div class="text-center">
-                                            <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300 mb-2">
-                                                <i class="fas fa-building"></i>
-                                            </div>
-                                            @if(isset($client['name']))
-                                                <div class="text-xs text-gray-400 font-bold">{{ $client['name'] }}</div>
-                                            @endif
-                                        </div>
-                                    @endif
+        
+        <!-- Epic Logo Showcase -->
+        <div class="space-y-12 w-full overflow-hidden">
+            
+            @if($clientsByCategory->has('streaming') && $clientsByCategory['streaming']->count() > 0)
+            <!-- First Row - Streaming Giants -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-black/40 via-primary/5 to-black/40 p-8 backdrop-blur-sm border border-white/5">
+                <!-- Gradient Overlays for Smooth Effect -->
+                <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/40 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/40 to-transparent z-10 pointer-events-none"></div>
+                
+                <div class="marquee-container">
+                    <div class="marquee-content marquee-left-smooth">
+                        @php
+                            $streamingClients = $clientsByCategory['streaming'];
+                            $tripleClients = $streamingClients->concat($streamingClients)->concat($streamingClients);
+                        @endphp
+                        
+                        @foreach($tripleClients as $client)
+                            <div class="flex-shrink-0 w-48 h-24 rounded-2xl flex items-center justify-center group transition-all duration-500 border backdrop-blur-sm mx-6 client-card"
+                                 style="background-color: {{ $client->background_color ?: '#FFFFFF' }}; 
+                                        border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};
+                                        opacity: {{ $client->opacity ?: '1' }};"
+                                 data-hover-bg="{{ $client->hover_background_color ?: '#F5F5F5' }}"
+                                 data-hover-opacity="{{ $client->hover_opacity ?: '0.8' }}"
+                                 data-hover-scale="{{ $client->hover_scale ?: '1.1' }}"
+                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" style="cursor: pointer;" @endif>
+                                @if($client->logo)
+                                    <img src="{{ $client->getLogoUrl() }}" 
+                                         alt="{{ $client->name }}" 
+                                         class="max-w-[75%] max-h-[55%] object-contain transition-transform duration-300"
+                                         loading="lazy">
+                                @else
+                                    <span class="text-lg font-bold transition-transform duration-300">{{ $client->name }}</span>
                                 @endif
                             </div>
-                        </div>
-                    @endforeach
-                @else
-                    {{-- Fallback logos if no clients --}}
-                    @php
-                        $fallbackLogos = [
-                            ['name' => 'Amazon', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/04/Amazon-Logo.png'],
-                            ['name' => 'Google', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/09/Google-Logo.png'],
-                            ['name' => 'Microsoft', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/06/Microsoft-Logo.png'],
-                            ['name' => 'Apple', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/04/Apple-Logo.png', 'invert' => true],
-                            ['name' => 'Meta', 'logo' => 'https://logos-world.net/wp-content/uploads/2021/10/Meta-Logo.png'],
-                            ['name' => 'Netflix', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/04/Netflix-Logo.png'],
-                            ['name' => 'Tesla', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/04/Tesla-Logo.png'],
-                            ['name' => 'Adobe', 'logo' => 'https://logos-world.net/wp-content/uploads/2020/04/Adobe-Logo.png']
-                        ];
-                    @endphp
-                    
-                    @foreach($fallbackLogos as $fallback)
-                        <div class="flex-shrink-0 mx-6">
-                            <div class="w-28 h-28 bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 flex items-center justify-center group hover:scale-110">
-                                <img src="{{ $fallback['logo'] }}"
-                                     alt="{{ $fallback['name'] }}"
-                                     class="w-16 h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300 max-h-20 {{ isset($fallback['invert']) ? 'filter brightness-0 invert' : '' }}"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="text-center hidden">
-                                    <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300 mb-1">
-                                        <i class="fas fa-building"></i>
-                                    </div>
-                                    <div class="text-xs text-gray-400 font-bold">{{ $fallback['name'] }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                @endif
-
-                {{-- Duplicate for seamless infinite loop --}}
-                @if($page->clients_logos && is_array($page->clients_logos) && count($page->clients_logos) > 0)
-                    @foreach($page->clients_logos as $client)
-                        <div class="flex-shrink-0 mx-6">
-                            <div class="w-28 h-28 bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 flex items-center justify-center group hover:scale-110">
-                                @if(is_string($client))
-                                    {{-- Handle old format (string) --}}
-                                    <img src="{{ asset('storage/' . $client) }}"
-                                         alt="Client Logo"
-                                         class="w-16 h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300 max-h-20"
-                                         loading="lazy"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div class="text-center hidden">
-                                        <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300">
-                                            <i class="fas fa-building"></i>
-                                        </div>
-                                    </div>
-                                @elseif(is_array($client))
-                                    {{-- Handle new format (array) --}}
-                                    @if(isset($client['logo']) && $client['logo'])
-                                        <img src="{{ asset('storage/' . $client['logo']) }}"
-                                             alt="{{ $client['name'] ?? 'Client' }}"
-                                             class="w-16 h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300 max-h-20"
-                                             loading="lazy"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <div class="text-center hidden">
-                                            <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300 mb-2">
-                                                <i class="fas fa-building"></i>
-                                            </div>
-                                            @if(isset($client['name']))
-                                                <div class="text-xs text-gray-400 font-bold">{{ $client['name'] }}</div>
-                                            @endif
-                                        </div>
-                                    @elseif(isset($client['icon']) && $client['icon'])
-                                        <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300">
-                                            <i class="{{ $client['icon'] }}"></i>
-                                        </div>
-                                    @else
-                                        <div class="text-center">
-                                            <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300 mb-2">
-                                                <i class="fas fa-building"></i>
-                                            </div>
-                                            @if(isset($client['name']))
-                                                <div class="text-xs text-gray-400 font-bold">{{ $client['name'] }}</div>
-                                            @endif
-                                        </div>
-                                    @endif
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                @else
-                    {{-- Duplicate fallback logos --}}
-                    @foreach($fallbackLogos as $fallback)
-                        <div class="flex-shrink-0 mx-6">
-                            <div class="w-28 h-28 bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 flex items-center justify-center group hover:scale-110">
-                                <img src="{{ $fallback['logo'] }}"
-                                     alt="{{ $fallback['name'] }}"
-                                     class="w-16 h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300 max-h-20 {{ isset($fallback['invert']) ? 'filter brightness-0 invert' : '' }}"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <div class="text-center hidden">
-                                    <div class="text-2xl text-gray-500 group-hover:text-neon-pink transition-all duration-300 mb-1">
-                                        <i class="fas fa-building"></i>
-                                    </div>
-                                    <div class="text-xs text-gray-400 font-bold">{{ $fallback['name'] }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                @endif
+                        @endforeach
+                    </div>
+                </div>
             </div>
+            @endif
+            
+            @if($clientsByCategory->has('news_sports') && $clientsByCategory['news_sports']->count() > 0)
+            <!-- Second Row - News & Sports -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-black/40 via-secondary/5 to-black/40 p-8 backdrop-blur-sm border border-white/5">
+                <!-- Gradient Overlays for Smooth Effect -->
+                <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/40 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/40 to-transparent z-10 pointer-events-none"></div>
+                
+                <div class="marquee-container">
+                    <div class="marquee-content marquee-right-smooth">
+                        @php
+                            $newsClients = $clientsByCategory['news_sports'];
+                            $tripleNewsClients = $newsClients->concat($newsClients)->concat($newsClients);
+                        @endphp
+                        
+                        @foreach($tripleNewsClients as $client)
+                            <div class="flex-shrink-0 w-48 h-24 rounded-2xl flex items-center justify-center group transition-all duration-500 border backdrop-blur-sm mx-6 client-card"
+                                 style="background-color: {{ $client->background_color ?: '#FFFFFF' }}; 
+                                        border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};
+                                        opacity: {{ $client->opacity ?: '1' }};"
+                                 data-hover-bg="{{ $client->hover_background_color ?: '#F5F5F5' }}"
+                                 data-hover-opacity="{{ $client->hover_opacity ?: '0.8' }}"
+                                 data-hover-scale="{{ $client->hover_scale ?: '1.1' }}"
+                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" style="cursor: pointer;" @endif>
+                                @if($client->logo)
+                                    <img src="{{ $client->getLogoUrl() }}" 
+                                         alt="{{ $client->name }}" 
+                                         class="max-w-[75%] max-h-[55%] object-contain transition-transform duration-300"
+                                         loading="lazy">
+                                @else
+                                    <span class="text-lg font-bold transition-transform duration-300">{{ $client->name }}</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+            
+            @if($clientsByCategory->has('tech_gaming') && $clientsByCategory['tech_gaming']->count() > 0)
+            <!-- Third Row - Tech & Gaming -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-black/40 via-accent/5 to-black/40 p-8 backdrop-blur-sm border border-white/5">
+                <!-- Gradient Overlays for Smooth Effect -->
+                <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/40 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/40 to-transparent z-10 pointer-events-none"></div>
+                
+                <div class="marquee-container">
+                    <div class="marquee-content marquee-left-smooth">
+                        @php
+                            $techClients = $clientsByCategory['tech_gaming'];
+                            $tripleTechClients = $techClients->concat($techClients)->concat($techClients);
+                        @endphp
+                        
+                        @foreach($tripleTechClients as $client)
+                            <div class="flex-shrink-0 w-48 h-24 rounded-2xl flex items-center justify-center group transition-all duration-500 border backdrop-blur-sm mx-6 client-card"
+                                 style="background-color: {{ $client->background_color ?: '#FFFFFF' }}; 
+                                        border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};
+                                        opacity: {{ $client->opacity ?: '1' }};"
+                                 data-hover-bg="{{ $client->hover_background_color ?: '#F5F5F5' }}"
+                                 data-hover-opacity="{{ $client->hover_opacity ?: '0.8' }}"
+                                 data-hover-scale="{{ $client->hover_scale ?: '1.1' }}"
+                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" style="cursor: pointer;" @endif>
+                                @if($client->logo)
+                                    <img src="{{ $client->getLogoUrl() }}" 
+                                         alt="{{ $client->name }}" 
+                                         class="max-w-[75%] max-h-[55%] object-contain transition-transform duration-300"
+                                         loading="lazy">
+                                @else
+                                    <span class="text-lg font-bold transition-transform duration-300">{{ $client->name }}</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+        
+        </div>
+        
+        <!-- Epic Closing -->
+        <div class="text-center mt-20">
+            <p class="text-xl text-gray-400 font-medium">
+                Ready to join the elite?
+            </p>
         </div>
     </div>
 </section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle all optional hover effects from admin settings
+    const clientCards = document.querySelectorAll('.client-card');
+    
+    clientCards.forEach(card => {
+        const hoverBg = card.dataset.hoverBg;
+        const hoverOpacity = card.dataset.hoverOpacity;
+        const hoverScale = card.dataset.hoverScale;
+        
+        const originalBg = card.style.backgroundColor;
+        const originalOpacity = card.style.opacity;
+        
+        card.addEventListener('mouseenter', function() {
+            // Apply hover background if set
+            if (hoverBg && hoverBg !== originalBg) {
+                this.style.backgroundColor = hoverBg;
+            }
+            
+            // Apply hover opacity if set
+            if (hoverOpacity && hoverOpacity !== originalOpacity) {
+                this.style.opacity = hoverOpacity;
+            }
+            
+            // Apply hover scale if set
+            if (hoverScale && hoverScale !== '1') {
+                this.style.transform = `scale(${hoverScale}) translateY(-2px)`;
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            // Reset to original values
+            this.style.backgroundColor = originalBg;
+            this.style.opacity = originalOpacity;
+            this.style.transform = 'scale(1) translateY(0)';
+        });
+    });
+    
+    // Intersection Observer for performance - only animate when visible
+    const marqueeElements = document.querySelectorAll('.marquee-content, .partners-track');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            } else {
+                entry.target.style.animationPlayState = 'paused';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+    });
+    
+    marqueeElements.forEach(element => {
+        observer.observe(element);
+    });
+
+    // Prevent animation jank on page load
+    window.addEventListener('load', function() {
+        document.body.classList.add('animations-ready');
+    });
+
+    // Add smooth scroll behavior for better performance
+    let ticking = false;
+    
+    function updateAnimations() {
+        // Update any dynamic animations here if needed
+        ticking = false;
+    }
+
+    function requestAnimationUpdate() {
+        if (!ticking) {
+            requestAnimationFrame(updateAnimations);
+            ticking = true;
+        }
+    }
+
+    // Optimize scroll performance
+    window.addEventListener('scroll', requestAnimationUpdate, { passive: true });
+});
+</script>
   @endif
  @break
 
-<style>
-@keyframes scroll-smooth {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-.animate-scroll-smooth {
-    animation: scroll-smooth 40s linear infinite;
-}
-@media (hover: hover) {
-    .animate-scroll-smooth:hover {
-        animation-play-state: paused;
-    }
-}
-@media (max-width: 768px) {
-    .animate-scroll-smooth {
-        animation-duration: 30s;
-    }
-}
-</style>
 
   @case('reviews')
 @if($page->hasActiveSection('reviews'))
@@ -1781,7 +1827,6 @@ document.addEventListener('DOMContentLoaded', function() {
 @endforeach
 
 <script>
-// في sales.js - إضافة دالة للتحكم في ظهور الأقسام
 document.addEventListener('DOMContentLoaded', function() {
     // Handle section visibility based on status
     const observerOptions = {

@@ -104,12 +104,12 @@
                     <i class="fas fa-cogs w-5 h-5 mr-2 {{ $currentTab == 'services' ? 'text-primary' : 'text-gray-400' }}"></i>
                     Services
                 </a>
-                <a href="#packages"
+                {{-- <a href="#packages"
                    class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'packages' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
                    data-tab="packages">
                     <i class="fas fa-box w-5 h-5 mr-2 {{ $currentTab == 'packages' ? 'text-primary' : 'text-gray-400' }}"></i>
                     Packages
-                </a>
+                </a> --}}
                 <a href="#products"
                    class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'products' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
                    data-tab="products">
@@ -498,7 +498,7 @@
             </div>
 
             {{-- PACKAGES TAB --}}
-            <div id="packages" class="tab-content p-8 {{ $currentTab == 'packages' ? '' : 'hidden' }}">
+            {{-- <div id="packages" class="tab-content p-8 {{ $currentTab == 'packages' ? '' : 'hidden' }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Packages Title</label>
@@ -520,7 +520,7 @@
                         </label>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- PRODUCTS TAB --}}
             <div id="products" class="tab-content p-8 {{ $currentTab == 'products' ? '' : 'hidden' }}">
