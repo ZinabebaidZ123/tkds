@@ -372,6 +372,7 @@
  @break
 
 
+
  @case('services')
  @if($page->hasActiveSection('services') )
         
@@ -583,8 +584,693 @@ document.addEventListener('DOMContentLoaded', function () {
   @endif
  @break
 
+@case('products')
+@if($page->hasActiveSection('products') && $products && $products->count() > 0)
+<!-- SaaS Products Section -->
+<section class="py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-purple-900/10"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
+                {{ $page->products_title ?? 'SAAS SOLUTIONS' }}
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                {{ $page->products_subtitle ?? 'Powerful software solutions to transform your business operations' }}
+            </p>
+        </div>
+
+        <!-- SaaS Products Slider Container -->
+        <div class="relative max-w-7xl mx-auto">
+            <div class="saas-slider-container relative h-96" id="saasProductsSlider">
+                <div class="slider-track absolute w-full h-full flex items-center justify-center">
+                    
+                    @foreach($products as $index => $product)
+                        @php
+                            $position = '';
+                            switch($index) {
+                                case 0: $position = 'active'; break;
+                                case 1: $position = 'next'; break;
+                                case count($products)-1: $position = 'prev'; break;
+                                case count($products)-2: $position = 'far-left'; break;
+                                case 2: $position = 'far-right'; break;
+                                default: $position = 'hidden'; break;
+                            }
+                        @endphp
+                        
+                        <div class="saas-slide {{ $position }}" data-index="{{ $index }}">
+                            <div class="saas-card">
+                                <!-- Card Background -->
+                                <div class="absolute inset-0">
+                                    @if($product->hero_image)
+                                        <img src="{{ asset('storage/' . $product->hero_image) }}" 
+                                             alt="{{ $product->title }}"
+                                             class="w-full h-full object-cover opacity-20">
+                                    @else
+                                        <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50"
+                                             style="background-image: url('https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;">
+                                        </div>
+                                    @endif
+                                    <div class="absolute inset-0 bg-gradient-to-br from-dark-card/90 to-gray-900/90"></div>
+                                </div>
+
+                                <!-- Card Content -->
+                                <div class="relative z-10 p-8 h-full flex flex-col justify-between">
+                                    <!-- Header -->
+                                    <div class="text-center">
+                                        <!-- Product Icon -->
+                                        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-gradient-to-br from-red-500 to-red-700 shadow-lg">
+                                            @if($product->icon)
+                                                <i class="{{ $product->icon }} text-2xl text-white"></i>
+                                            @else
+                                                <i class="fas fa-cube text-2xl text-white"></i>
+                                            @endif
+                                        </div>
+
+                                        <!-- Product Title -->
+                                        <h3 class="text-2xl font-bold text-white mb-2 font-orbitron">
+                                            {{ $product->title }}
+                                        </h3>
+
+                                        <!-- Product Subtitle -->
+                                        @if($product->subtitle)
+                                            <p class="text-gray-400 text-sm mb-4">{{ $product->subtitle }}</p>
+                                        @endif
+
+                                        <!-- Category Badge -->
+                                        @if($product->category)
+                                            <span class="inline-block px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium mb-4">
+                                                {{ $product->getCategoryLabel() }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="text-center mb-6">
+                                        <p class="text-gray-300 text-sm leading-relaxed">
+                                            {{ Str::limit($product->short_description ?? $product->description, 120) }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Features -->
+                                    @php
+                                        $keyFeatures = $product->getKeyFeatures(); 
+                                    @endphp
+                                    @if($keyFeatures && count($keyFeatures) > 0)
+                                        <div class="mb-6">
+                                            <ul class="space-y-2">
+                                                @foreach(array_slice($keyFeatures, 0, 3) as $feature)
+                                                    <li class="flex items-center text-gray-300 text-sm">
+                                                        <i class="fas fa-check text-green-400 mr-2 flex-shrink-0"></i>
+                                                        <span>{{ is_string($feature) ? $feature : $feature['name'] ?? 'Feature' }}</span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
+                                    <!-- Pricing -->
+                                    <div class="text-center mb-6">
+                                        @if($product->price && $product->price > 0)
+                                            <div class="text-3xl font-black text-white mb-1 font-orbitron">
+                                                {{ $product->getFormattedPrice() }}
+                                            </div>
+                                        @elseif($product->pricing_model === 'free')
+                                            <div class="text-3xl font-black text-green-400 mb-1 font-orbitron">
+                                                FREE
+                                            </div>
+                                        @elseif($product->pricing_model === 'quote')
+                                            <div class="text-lg font-bold text-yellow-400 mb-1 font-orbitron">
+                                                Contact for Quote
+                                            </div>
+                                        @endif
+                                        
+                                        @if($product->pricing_model)
+                                            <div class="text-gray-400 text-xs">
+                                                {{ ucfirst(str_replace('_', ' ', $product->pricing_model)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Action Button -->
+                                    <div class="text-center">
+                                        <a href="{{ $product->getUrl() }}" 
+                                           class="inline-block bg-gradient-to-r from-red-600 to-red-800 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/50">
+                                            @if($product->pricing_model === 'free')
+                                                <i class="fas fa-download mr-2"></i>Get Started Free
+                                            @elseif($product->pricing_model === 'quote')
+                                                <i class="fas fa-envelope mr-2"></i>Request Quote
+                                            @else
+                                                <i class="fas fa-eye mr-2"></i>View Details
+                                            @endif
+                                        </a>
+                                    </div>
+
+                                    <!-- Status Badges -->
+                                    <div class="absolute top-4 right-4 flex flex-col space-y-1">
+                                        @if($product->is_featured)
+                                            <span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                Featured
+                                            </span>
+                                        @endif
+                                        @if($product->show_in_homepage)
+                                            <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                Popular
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Glow Effect -->
+                                <div class="absolute -inset-1 bg-gradient-to-br from-red-500/30 to-red-600/30 rounded-3xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Navigation Arrows -->
+                <button class="saas-nav-button prev" type="button" id="saasPrevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="saas-nav-button next" type="button" id="saasNextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Dots Indicator -->
+            <div class="saas-dots-indicator" id="saasDotsIndicator">
+                @foreach($products as $index => $product)
+                    <div class="saas-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Global CTA -->
+        <div class="text-center mt-12">
+            <a href="{{ route('products') }}" 
+               class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-blue-500/50">
+                <i class="fas fa-rocket mr-3"></i>
+                Explore All SaaS Solutions
+            </a>
+        </div>
+    </div>
+</section>
 
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const saasSection = document.querySelector('#saasProductsSlider');
+    if (!saasSection) return;
+
+    const saasSlides = saasSection.querySelectorAll('.saas-slide');
+    const saasDots = saasSection.querySelectorAll('.saas-dot');
+    const saasPrevBtn = document.getElementById('saasPrevBtn');
+    const saasNextBtn = document.getElementById('saasNextBtn');
+    const totalSaasSlides = saasSlides.length;
+
+    if (!totalSaasSlides) return;
+
+    let currentSaasSlide = 0;
+    let saasAutoRotateInterval = null;
+    const saasSlideClasses = ['far-left', 'prev', 'active', 'next', 'far-right', 'hidden'];
+    const SAAS_AUTO_INTERVAL = 6000; // 6 seconds
+
+    function updateSaasSlides() {
+        saasSlides.forEach((slide, index) => {
+            saasSlideClasses.forEach(c => slide.classList.remove(c));
+
+            let position = index - currentSaasSlide;
+            if (position < -2) position += totalSaasSlides;
+            if (position > 2) position -= totalSaasSlides;
+
+            switch (position) {
+                case -2: slide.classList.add('far-left'); break;
+                case -1: slide.classList.add('prev'); break;
+                case 0: slide.classList.add('active'); break;
+                case 1: slide.classList.add('next'); break;
+                case 2: slide.classList.add('far-right'); break;
+                default: slide.classList.add('hidden'); break;
+            }
+        });
+
+        saasDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSaasSlide);
+        });
+    }
+
+    function slideSaas(direction) {
+        if (direction === 'next') {
+            currentSaasSlide = (currentSaasSlide + 1) % totalSaasSlides;
+        } else {
+            currentSaasSlide = (currentSaasSlide - 1 + totalSaasSlides) % totalSaasSlides;
+        }
+        updateSaasSlides();
+        resetSaasAutoRotate();
+    }
+
+    function slideToSaas(index) {
+        if (index < 0 || index >= totalSaasSlides) return;
+        currentSaasSlide = index;
+        updateSaasSlides();
+        resetSaasAutoRotate();
+    }
+
+    function startSaasAutoRotate() {
+        if (totalSaasSlides <= 1 || saasAutoRotateInterval) return;
+        saasAutoRotateInterval = setInterval(() => {
+            slideSaas('next');
+        }, SAAS_AUTO_INTERVAL);
+    }
+
+    function stopSaasAutoRotate() {
+        if (!saasAutoRotateInterval) return;
+        clearInterval(saasAutoRotateInterval);
+        saasAutoRotateInterval = null;
+    }
+
+    function resetSaasAutoRotate() {
+        stopSaasAutoRotate();
+        startSaasAutoRotate();
+    }
+
+    // Event Listeners
+    if (saasPrevBtn) saasPrevBtn.addEventListener('click', () => slideSaas('prev'));
+    if (saasNextBtn) saasNextBtn.addEventListener('click', () => slideSaas('next'));
+
+    saasDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.dataset.index, 10);
+            slideToSaas(index);
+        });
+    });
+
+    saasSlides.forEach((slide, index) => {
+        slide.addEventListener('click', function () {
+            if (!this.classList.contains('active')) {
+                slideToSaas(index);
+            }
+        });
+    });
+
+    // Hover events
+    if (saasSection) {
+        saasSection.addEventListener('mouseenter', stopSaasAutoRotate);
+        saasSection.addEventListener('mouseleave', startSaasAutoRotate);
+    }
+
+    // Touch support
+    let saasStartX = 0;
+    let saasEndX = 0;
+
+    if (saasSection) {
+        saasSection.addEventListener('touchstart', function (e) {
+            saasStartX = e.touches[0].clientX;
+        });
+
+        saasSection.addEventListener('touchend', function (e) {
+            saasEndX = e.changedTouches[0].clientX;
+            const threshold = 50;
+            const diff = saasStartX - saasEndX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) slideSaas('next');
+                else slideSaas('prev');
+            }
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') slideSaas('prev');
+        if (e.key === 'ArrowRight') slideSaas('next');
+    });
+
+    // Initialize
+    updateSaasSlides();
+    startSaasAutoRotate();
+});
+</script>
+@endif
+@break
+@case('packages')
+@if($page->hasActiveSection('packages') && $packages && $packages->count() > 0)
+<!-- Pricing Plans Section -->
+<section class="py-20 relative">
+    <div class="absolute inset-0 bg-gradient-to-br from-purple-900/10 to-pink-900/10"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
+                {{ $page->packages_title ?? 'EXPLOSIVE PACKAGES' }}
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                {{ $page->packages_subtitle ?? 'Discover our premium packages with special occasion pricing' }}
+            </p>
+        </div>
+
+        @php
+            $hasMonthlyPlans = $packages->filter(function($plan) {
+                return !empty($plan->price_monthly) && $plan->price_monthly > 0;
+            })->count() > 0;
+            
+            $hasYearlyPlans = $packages->filter(function($plan) {
+                return !empty($plan->price_yearly) && $plan->price_yearly > 0;
+            })->count() > 0;
+            
+            $showBillingToggle = $hasMonthlyPlans && $hasYearlyPlans;
+        @endphp
+
+        <!-- Billing Toggle (Only show if both monthly and yearly plans exist) -->
+        @if($showBillingToggle)
+            <div class="flex justify-center mb-12">
+                <div class="bg-dark-card/80 backdrop-blur-md rounded-2xl p-2 border border-gray-700/50 shadow-xl">
+                    <div class="flex items-center space-x-1">
+                        <button id="monthlyBtn" class="billing-toggle-btn active px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group">
+                            <span class="relative z-10">Monthly</span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-neon-pink to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        </button>
+                        <button id="yearlyBtn" class="billing-toggle-btn px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group">
+                            <span class="relative z-10">Yearly</span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-neon-pink to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                            <span class="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">Save up to 30%</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Pricing Plans Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto" id="pricingGrid">
+            @foreach($packages as $index => $package)
+                @php
+                    // Handle both pivot relationship and direct model access
+                    if (isset($package->pivot)) {
+                        $pivotData = $package->pivot;
+                        $isPackageFeatured = ($pivotData->is_featured ?? false) || $package->is_featured;
+                        $discountPercentage = $pivotData->discount_percentage ?? null;
+                    } else {
+                        $isPackageFeatured = $package->is_featured;
+                        $discountPercentage = null;
+                    }
+                    $originalMonthlyPrice = $package->price_monthly;
+                    $originalYearlyPrice = $package->price_yearly;
+                    $discountedMonthlyPrice = $discountPercentage ? $originalMonthlyPrice * (1 - $discountPercentage / 100) : $originalMonthlyPrice;
+                    $discountedYearlyPrice = $discountPercentage ? $originalYearlyPrice * (1 - $discountPercentage / 100) : $originalYearlyPrice;
+                @endphp
+
+                <div class="pricing-card group relative {{ $isPackageFeatured ? 'featured-plan' : '' }}" 
+                     data-has-monthly="{{ !empty($package->price_monthly) && $package->price_monthly > 0 ? 'true' : 'false' }}"
+                     data-has-yearly="{{ !empty($package->price_yearly) && $package->price_yearly > 0 ? 'true' : 'false' }}"
+                     data-monthly-price="{{ $originalMonthlyPrice }}"
+                     data-yearly-price="{{ $originalYearlyPrice }}"
+                     data-discounted-monthly="{{ $discountedMonthlyPrice }}"
+                     data-discounted-yearly="{{ $discountedYearlyPrice }}"
+                     data-discount="{{ $discountPercentage }}">
+                    
+                    <!-- Featured Badge -->
+                    @if($isPackageFeatured)
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                                <i class="fas fa-crown mr-1"></i> MOST POPULAR
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Discount Badge -->
+                    @if($discountPercentage)
+                        <div class="absolute -top-2 -right-2 z-10">
+                            <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg transform rotate-12 pulse-animation">
+                                <div class="text-center">
+                                    <div class="text-xs">{{ $discountPercentage }}%</div>
+                                    <div class="text-xs">OFF</div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <div class="relative h-full bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-700/50 shadow-2xl hover:shadow-neon-pink/20 transition-all duration-500 overflow-hidden group-hover:scale-105 {{ $isPackageFeatured ? 'border-neon-pink/50 shadow-neon-pink/30' : '' }}">
+                        
+                        <!-- Glow Effect -->
+                        @if($isPackageFeatured)
+                            <div class="absolute -inset-1 bg-gradient-to-r from-neon-pink/30 to-purple-600/30 rounded-3xl blur-xl opacity-60 -z-10 animate-pulse"></div>
+                        @endif
+
+                        <!-- Card Header -->
+                        <div class="p-8 text-center border-b border-gray-700/50">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center {{ $isPackageFeatured ? 'bg-gradient-to-br from-neon-pink to-purple-600' : 'bg-gradient-to-br from-gray-600 to-gray-700' }}">
+                                @if($package->icon)
+                                    <i class="{{ $package->icon }} text-2xl text-white"></i>
+                                @else
+                                    <i class="fas fa-server text-2xl text-white"></i>
+                                @endif
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold text-white mb-2 font-orbitron">{{ $package->name }}</h3>
+                            <p class="text-gray-400 text-sm leading-relaxed">{{ $package->short_description }}</p>
+                        </div>
+
+                        <!-- Pricing -->
+                        <div class="p-8 text-center border-b border-gray-700/50">
+                            <div class="pricing-display">
+                                <!-- Monthly Pricing -->
+                                @if(!empty($package->price_monthly) && $package->price_monthly > 0)
+                                    <div class="monthly-price {{ $showBillingToggle ? '' : 'block' }}">
+                                        @if($discountPercentage)
+                                            <div class="text-gray-500 text-lg line-through mb-1">
+                                                ${{ number_format($originalMonthlyPrice, 2) }}
+                                            </div>
+                                        @endif
+                                        <div class="text-5xl font-black text-white mb-2 font-orbitron">
+                                            ${{ number_format($discountedMonthlyPrice, 0) }}
+                                        </div>
+                                        <div class="text-gray-400 text-sm">per month</div>
+                                    </div>
+                                @endif
+
+                                <!-- Yearly Pricing -->
+                                @if(!empty($package->price_yearly) && $package->price_yearly > 0)
+                                    <div class="yearly-price {{ $showBillingToggle ? 'hidden' : 'block' }}">
+                                        @if($discountPercentage)
+                                            <div class="text-gray-500 text-lg line-through mb-1">
+                                                ${{ number_format($originalYearlyPrice, 2) }}
+                                            </div>
+                                        @endif
+                                        <div class="text-5xl font-black text-white mb-2 font-orbitron">
+                                            ${{ number_format($discountedYearlyPrice, 0) }}
+                                        </div>
+                                        <div class="text-gray-400 text-sm">per year</div>
+                                        @if($package->getYearlySavingsPercentage() > 0)
+                                            <div class="text-green-400 text-sm font-medium mt-1">
+                                                Save {{ $package->getYearlySavingsPercentage() }}% annually
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                <!-- Free Plan -->
+                                @if(empty($package->price_monthly) && empty($package->price_yearly))
+                                    <div class="text-5xl font-black text-white mb-2 font-orbitron">FREE</div>
+                                    <div class="text-gray-400 text-sm">forever</div>
+                                @endif
+                            </div>
+
+                            <!-- Setup Fee -->
+                            @if($package->hasSetupFee())
+                                <div class="mt-4 text-sm text-yellow-400">
+                                    + {{ $package->getFormattedSetupFee() }}
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Features -->
+                        <div class="p-8 flex-1">
+                            <h4 class="text-white font-bold mb-4 text-center">What's Included:</h4>
+                            <ul class="space-y-3">
+                                @if($package->features && count($package->features) > 0)
+                                    @foreach(array_slice($package->features, 0, 8) as $feature)
+                                        <li class="flex items-center text-gray-300 text-sm">
+                                            <i class="fas fa-check text-green-400 mr-3 flex-shrink-0"></i>
+                                            <span>{{ $feature }}</span>
+                                        </li>
+                                    @endforeach
+                                    
+                                    @if(count($package->features) > 8)
+                                        <li class="text-center">
+                                            <button class="text-primary hover:text-secondary text-sm font-medium" onclick="toggleFeatures(this)">
+                                                <span class="show-more">+ {{ count($package->features) - 8 }} more features</span>
+                                                <span class="show-less hidden">- Show less</span>
+                                            </button>
+                                            <div class="extra-features hidden mt-3 space-y-3">
+                                                @foreach(array_slice($package->features, 8) as $feature)
+                                                    <div class="flex items-center text-gray-300 text-sm">
+                                                        <i class="fas fa-check text-green-400 mr-3 flex-shrink-0"></i>
+                                                        <span>{{ $feature }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </li>
+                                    @endif
+                                @else
+                                    <li class="flex items-center text-gray-300 text-sm">
+                                        <i class="fas fa-check text-green-400 mr-3"></i>
+                                        <span>Full access to platform</span>
+                                    </li>
+                                    <li class="flex items-center text-gray-300 text-sm">
+                                        <i class="fas fa-check text-green-400 mr-3"></i>
+                                        <span>24/7 customer support</span>
+                                    </li>
+                                    <li class="flex items-center text-gray-300 text-sm">
+                                        <i class="fas fa-check text-green-400 mr-3"></i>
+                                        <span>Premium features included</span>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <div class="p-8 pt-0">
+                            <a href="{{ route('subscription.create', $package->slug) }}" 
+                               class="block w-full text-center py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 {{ $isPackageFeatured ? 'bg-gradient-to-r from-neon-pink to-purple-600 text-white shadow-lg hover:shadow-neon-pink/50' : 'bg-gradient-to-r from-gray-700 to-gray-600 text-white hover:from-gray-600 hover:to-gray-500' }}">
+                                @if(empty($package->price_monthly) && empty($package->price_yearly))
+                                    Get Started Free
+                                @else
+                                    Start {{ $package->trial_days ? $package->trial_days . '-Day' : '' }} Trial
+                                @endif
+                            </a>
+
+                            @if($package->trial_days)
+                                <p class="text-center text-gray-500 text-xs mt-2">
+                                    {{ $package->trial_days }}-day free trial • No credit card required
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Additional Info -->
+        <div class="text-center mt-16">
+        
+            <div class="flex justify-center space-x-8 text-sm text-gray-500">
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt text-green-400 mr-2"></i>
+                    SSL Security
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-headset text-blue-400 mr-2"></i>
+                    24/7 Support
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-sync-alt text-purple-400 mr-2"></i>
+                    Easy Migration
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Billing Toggle Functionality
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const yearlyBtn = document.getElementById('yearlyBtn');
+    const pricingCards = document.querySelectorAll('.pricing-card');
+    
+    if (monthlyBtn && yearlyBtn) {
+        function switchBilling(isYearly) {
+            // Toggle button states
+            if (isYearly) {
+                monthlyBtn.classList.remove('active');
+                yearlyBtn.classList.add('active');
+            } else {
+                yearlyBtn.classList.remove('active');
+                monthlyBtn.classList.add('active');
+            }
+            
+            // Show/hide pricing
+            pricingCards.forEach(card => {
+                const monthlyPrice = card.querySelector('.monthly-price');
+                const yearlyPrice = card.querySelector('.yearly-price');
+                const hasMonthly = card.dataset.hasMonthly === 'true';
+                const hasYearly = card.dataset.hasYearly === 'true';
+                
+                if (isYearly && hasYearly) {
+                    if (monthlyPrice) monthlyPrice.classList.add('hidden');
+                    if (yearlyPrice) yearlyPrice.classList.remove('hidden');
+                } else if (!isYearly && hasMonthly) {
+                    if (yearlyPrice) yearlyPrice.classList.add('hidden');
+                    if (monthlyPrice) monthlyPrice.classList.remove('hidden');
+                }
+                
+                // Hide cards that don't have the selected billing option
+                if ((isYearly && !hasYearly) || (!isYearly && !hasMonthly)) {
+                    card.style.opacity = '0.5';
+                    card.style.pointerEvents = 'none';
+                } else {
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                }
+            });
+        }
+        
+        monthlyBtn.addEventListener('click', () => switchBilling(false));
+        yearlyBtn.addEventListener('click', () => switchBilling(true));
+    }
+});
+
+// Toggle extra features
+function toggleFeatures(button) {
+    const showMore = button.querySelector('.show-more');
+    const showLess = button.querySelector('.show-less');
+    const extraFeatures = button.parentElement.querySelector('.extra-features');
+    
+    if (extraFeatures.classList.contains('hidden')) {
+        extraFeatures.classList.remove('hidden');
+        showMore.classList.add('hidden');
+        showLess.classList.remove('hidden');
+    } else {
+        extraFeatures.classList.add('hidden');
+        showLess.classList.add('hidden');
+        showMore.classList.remove('hidden');
+    }
+}
+</script>
+
+<style>
+.billing-toggle-btn {
+    background: transparent;
+    color: #9ca3af;
+    position: relative;
+}
+
+.billing-toggle-btn.active {
+    background: linear-gradient(90deg, #ff0040, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
+}
+
+.pricing-card.featured-plan {
+    transform: scale(1.05);
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1) rotate(12deg); }
+    50% { transform: scale(1.1) rotate(12deg); }
+}
+
+.pricing-display .monthly-price,
+.pricing-display .yearly-price {
+    transition: all 0.3s ease;
+}
+</style>
+@endif
+@break
 
 
 
@@ -607,74 +1293,89 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-  @case('products')
-        @if($page->hasActiveSection('products') && $products && $products->count() > 0)
-<!-- Products Showcase -->
-<section class="py-20">
-    <div class="container mx-auto px-6">
-        <div class="text-center mb-16">
-            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
-                {{ $page->products_title ?? 'FEATURED PRODUCTS' }}
-            </h2>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-                {{ $page->products_subtitle ?? 'Discover our premium products with exclusive special occasion pricing' }}
-            </p>
-        </div>
+@case('shop_products')
+    @if($page->shop_products_status === 'active' && isset($shopProducts) && $shopProducts->count() > 0)
+        <!-- Shop Products Showcase -->
+        <section class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
+                        {{ $page->shop_products_title ?? 'SHOP PRODUCTS' }}
+                    </h2>
+                    <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                        {{ $page->shop_products_subtitle ?? 'Discover our premium shop products with exclusive special occasion pricing' }}
+                    </p>
+                </div>
 
-        <!-- Products Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto" id="productsGrid">
-            @foreach($products as $index => $product)
-                <div class="group">
-                    <div class="relative bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl overflow-hidden glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 hover:scale-105">
-                        <!-- Product Image/Icon -->
-                        <div class="h-32 bg-gradient-to-br from-neon-pink/10 to-purple-600/10 flex items-center justify-center">
-                            @if(!empty($product->image))
-                                <img src="{{ asset('storage/'.$product->image) }}"
-                                     alt="{{ $product->title ?? $product->name }}"
-                                     class="w-full h-full object-cover">
-                            @else
-                                <div class="text-4xl text-neon-pink">
-                                    <i class="fas fa-{{ ['hdd', 'server', 'cloud', 'globe', 'lock', 'envelope'][$index % 6] }}"></i>
+                <!-- Shop Products Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto" id="shopProductsGrid">
+                    @foreach($shopProducts as $index => $shopProduct)
+                        <div class="group">
+                            <div class="relative bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl overflow-hidden glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 hover:scale-105">
+                                <!-- Product Image/Icon -->
+                                <div class="h-32 bg-gradient-to-br from-neon-pink/10 to-purple-600/10 flex items-center justify-center">
+                                    @if(!empty($shopProduct->image))
+                                        <img src="{{ asset('storage/'.$shopProduct->image) }}"
+                                             alt="{{ $shopProduct->title ?? $shopProduct->name }}"
+                                             class="w-full h-full object-cover">
+                                    @else
+                                        <div class="text-4xl text-neon-pink">
+                                            <i class="fas fa-{{ ['shopping-cart', 'store', 'gift', 'tag', 'percent', 'star'][$index % 6] }}"></i>
+                                        </div>
+                                    @endif
                                 </div>
-                            @endif
-                        </div>
-                        
-                        <!-- Content -->
-                        <div class="p-4">
-                            <h3 class="text-lg font-bold font-orbitron mb-2">
-                                {{ $product->title ?? $product->name }}
-                            </h3>
-                            <p class="text-gray-400 text-sm mb-3">
-                                {{ $product->short_description ?? 'Professional solution for your business' }}
-                            </p>
-                            
-                            <!-- Price + Order -->
-                            <div class="flex justify-between items-center">
-                                @if($product->price)
-                                    <span class="text-xl font-bold text-neon-pink font-orbitron">
-                                        {{ number_format($product->price, 2) }} /mo
-                                    </span>
-                                @else
-                                    <span></span>
-                                @endif
+                                
+                                <!-- Content -->
+                                <div class="p-4">
+                                    <h3 class="text-lg font-bold font-orbitron mb-2">
+                                        {{ $shopProduct->title ?? $shopProduct->name }}
+                                    </h3>
+                                    <p class="text-gray-400 text-sm mb-3">
+                                        {{ $shopProduct->short_description ?? 'Premium shop product for your needs' }}
+                                    </p>
+                                    
+                                    <!-- Price + Order -->
+                                    <div class="flex justify-between items-center">
+                                        @if($shopProduct->price)
+                                            <span class="text-xl font-bold text-neon-pink font-orbitron">
+                                                ${{ number_format($shopProduct->price, 2) }}
+                                            </span>
+                                        @else
+                                            <span></span>
+                                        @endif
 
-                                <a href="{{ route('shop.product', $product->slug ?? $product->id) }}"
-                                   class="bg-gradient-to-r from-neon-pink to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-all duration-300">
-                                    Order
-                                </a>
+                                        <a href="{{ route('shop.product', $shopProduct->slug ?? $shopProduct->id) }}"
+                                           class="bg-gradient-to-r from-neon-pink to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-all duration-300">
+                                            Buy Now
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Special Badge (Optional) -->
+                                @if($shopProduct->is_featured ?? false)
+                                    <div class="absolute top-2 right-2">
+                                        <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-full text-xs font-bold">
+                                            Featured
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
-
-                        <!-- تم إزالة خصم الكورنر -->
-                    </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
-    </div>
-</section>
 
-  @endif
- @break
+                <!-- View All Shop Products Button -->
+                <div class="text-center mt-12">
+                    <a href="{{ route('products') }}" 
+                       class="inline-flex items-center bg-gradient-to-r from-neon-pink to-purple-600 text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-shopping-bag mr-2"></i>
+                        View All Shop Products
+                    </a>
+                </div>
+            </div>
+        </section>
+    @endif
+@break
 
   @case('video')
 @if($page->hasActiveSection('video'))

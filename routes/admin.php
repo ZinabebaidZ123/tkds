@@ -490,7 +490,7 @@ Route::prefix('newsletter')->name('newsletter.')->group(function () {
     });
 // Occasion Management Routes
 
-// Dynamic Pages Management Routes - Add this section after line 400 (before the closing of middleware group)
+
 Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
     // Index - Sections Cards
     Route::get('/', [DynamicPageController::class, 'index'])->name('index');
@@ -502,6 +502,12 @@ Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
     // Edit Page Settings
     Route::get('/{page}/edit', [DynamicPageController::class, 'edit'])->name('edit');
     Route::put('/{page}', [DynamicPageController::class, 'update'])->name('update');
+    
+    // ✅ Routes الجديدة لإدارة تفعيل الصفحة
+    Route::patch('/{page}/toggle-status', [DynamicPageController::class, 'toggleStatus'])->name('toggle-status');
+    Route::put('/{page}/status', [DynamicPageController::class, 'updatePageStatus'])->name('update-status');
+    Route::get('/{page}/status', [DynamicPageController::class, 'getPageStatus'])->name('get-status');
+    Route::put('/{page}/offer-end-date', [DynamicPageController::class, 'updateOfferEndDate'])->name('update-offer-end-date');
     
     // Toggle Section Status - Fixed route
     Route::patch('/{page}/sections/{section}', [DynamicPageController::class, 'toggleSection'])->name('toggle-section');
@@ -526,6 +532,12 @@ Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
     Route::post('/{page}/products', [DynamicPageController::class, 'productsStore'])->name('products.store');
     Route::put('/{page}/products/{productId}', [DynamicPageController::class, 'productsUpdate'])->name('products.update');
     Route::delete('/products/{id}', [DynamicPageController::class, 'productsDestroy'])->name('products.destroy');
+
+    // Shop Products Management
+    Route::get('/{page}/shop-products', [DynamicPageController::class, 'shopProducts'])->name('shop-products.index');
+    Route::post('/{page}/shop-products', [DynamicPageController::class, 'shopProductsStore'])->name('shop-products.store');
+    Route::put('/{page}/shop-products/{shopProductId}', [DynamicPageController::class, 'shopProductsUpdate'])->name('shop-products.update');
+    Route::delete('/shop-products/{id}', [DynamicPageController::class, 'shopProductsDestroy'])->name('shop-products.destroy');
 });
     
     // Additional custom routes for occasions

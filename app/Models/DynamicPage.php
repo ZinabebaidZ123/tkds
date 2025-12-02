@@ -18,6 +18,7 @@ class DynamicPage extends Model
         'page_description',
         'status',
         'sections_order',
+         'is_active',
 
         // Header
         'header_logo_image',
@@ -60,10 +61,15 @@ class DynamicPage extends Model
         'packages_subtitle',
         'packages_status',
 
-        // Products
+        // Products (SaaS)
         'products_title',
         'products_subtitle',
         'products_status',
+
+        // Shop Products
+        'shop_products_title',
+        'shop_products_subtitle',
+        'shop_products_status',
 
         // Video
         'video_title',
@@ -94,7 +100,6 @@ class DynamicPage extends Model
         'contact_phone',
         'contact_status',
 
-        // Footer
         'footer_logo_image',
         'footer_logo_text',
         'footer_logo_subtitle',
@@ -116,6 +121,7 @@ class DynamicPage extends Model
         'reviews_items'         => 'array',
         'footer_social_links'   => 'array',
          'sections_order' => 'array',
+        'is_active' => 'boolean', 
     ];
 
     public function services()
@@ -149,7 +155,21 @@ class DynamicPage extends Model
 
     public function products()
     {
-        return $this->belongsToMany(ShopProduct::class, 'dynamic_page_products', 'dynamic_page_id', 'product_id')
+        return $this->belongsToMany(Product::class, 'dynamic_page_products', 'dynamic_page_id', 'product_id')
+            ->withPivot([
+                'discount_percentage',
+                'order_button_text',
+                'order_button_url',
+                'sort_order',
+                'status',
+            ])
+            ->withTimestamps()
+            ->orderBy('pivot_sort_order');
+    }
+
+    public function shopProducts()
+    {
+        return $this->belongsToMany(ShopProduct::class, 'dynamic_page_shop_products', 'dynamic_page_id', 'shop_product_id')
             ->withPivot([
                 'discount_percentage',
                 'order_button_text',
@@ -170,6 +190,7 @@ class DynamicPage extends Model
             'services'      => $this->services_status,
             'packages'      => $this->packages_status,
             'products'      => $this->products_status,
+            'shop_products' => $this->shop_products_status,
             'video'         => $this->video_status,
             'clients'       => $this->clients_status,
             'reviews'       => $this->reviews_status,
@@ -196,42 +217,82 @@ class DynamicPage extends Model
         return $query->where($field, 'active');
     }
 
-public function getSectionsOrderAttribute($value)
-{
-    if (!$value) {
-        return [
-            'header', 'hero', 'why_choose', 'services', 
-            'packages', 'products', 'video', 'clients', 
-            'reviews', 'contact', 'footer'
-        ];
-    }
-    return is_string($value) ? json_decode($value, true) : $value;
-}
-
-public function isSectionActive($section)
-{
-    $statusField = $section . '_status';
-    return $this->$statusField === 'active';
-}
-
-public function getActiveSectionsAttribute()
-{
-    $sectionsOrder = $this->sections_order;
-    $activeSections = [];
-    
-    foreach ($sectionsOrder as $section) {
-        if ($this->isSectionActive($section)) {
-            $activeSections[] = $section;
+    public function getSectionsOrderAttribute($value)
+    {
+        if (!$value) {
+            return [
+                'header', 'hero', 'why_choose', 'services', 
+                'packages', 'products', 'shop_products', 'video', 'clients', 
+                'reviews', 'contact', 'footer'
+            ];
         }
+        return is_string($value) ? json_decode($value, true) : $value;
     }
-    
-    return $activeSections;
-}
+
+  public function isSectionActive($section)
+    {
+        $statusField = $section . '_status';
+        return $this->$statusField === 'active';
+    }
+
+      public function getActiveSectionsAttribute()
+    {
+        $sectionsOrder = $this->sections_order;
+        $activeSections = [];
+        
+        foreach ($sectionsOrder as $section) {
+            if ($this->isSectionActive($section)) {
+                $activeSections[] = $section;
+            }
+        }
+        
+        return $activeSections;
+    }
+
+    public function hasActiveSection($section)
+    {
+        return $this->isSectionActive($section);
+    }
 
 
+    public function isAvailable()
+    {
+        if (!$this->is_active) {
+            return false;
+        }
+        
+        if ($this->offer_end_date) {
+            return now()->lessThan($this->offer_end_date);
+        }
+        
+        return true;
+    }
 
-public function hasActiveSection($section)
-{
-    return $this->isSectionActive($section);
-}
+
+    public function getTimeRemaining()
+    {
+        if (!$this->offer_end_date || $this->isExpired()) {
+            return null;
+        }
+        
+        return $this->offer_end_date->diffForHumans();
+    }
+
+       public function isExpired()
+    {
+        if (!$this->offer_end_date) {
+            return false;
+        }
+        
+        return now()->greaterThan($this->offer_end_date);
+    }
+        public function scopeAvailable($query)
+    {
+        return $query->where('is_active', true)
+            ->where(function($q) {
+                $q->whereNull('offer_end_date')
+                  ->orWhere('offer_end_date', '>', now());
+            });
+    }
+
 }

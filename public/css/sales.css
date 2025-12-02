@@ -400,21 +400,6 @@
             opacity: 0.25;
         }
 
-        .slide-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255, 64, 96, 0.05), rgba(255, 96, 128, 0.05));
-            opacity: 0;
-            transition: opacity 0.6s ease;
-        }
-
-        .slide-card:hover::after {
-            opacity: 1;
-        }
 
         .slide:nth-child(1) .slide-card::before { background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=600&fit=crop'); }
         .slide:nth-child(2) .slide-card::before { background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=600&fit=crop'); }
@@ -668,15 +653,7 @@
             pointer-events: none;
         }
 
-        .overflow-hidden::before {
-            left: 0;
-            background: linear-gradient(to right, rgba(16, 16, 16, 1), transparent);
-        }
 
-        .overflow-hidden::after {
-            right: 0;
-            background: linear-gradient(to left, rgba(16, 16, 16, 1), transparent);
-        }
           .perspective-2000 {
             perspective: 2000px;
         }
@@ -1177,3 +1154,168 @@
         animation-duration: 30s;
     }
 }
+
+.saas-slider-container {
+    perspective: 1000px;
+    overflow: hidden;
+}
+
+
+.saas-slide {
+    position: absolute;
+    width: 350px;
+    height: 100%;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+}
+
+
+.saas-slide.active {
+    left: 50%;
+    transform: translateX(-50%) scale(1.1);
+    z-index: 10;
+    opacity: 1;
+}
+
+
+.saas-slide.next {
+    left: 65%;
+    transform: translateX(-50%) scale(0.9) rotateY(-15deg);
+    z-index: 5;
+    opacity: 0.8;
+}
+
+
+.saas-slide.prev {
+    left: 35%;
+    transform: translateX(-50%) scale(0.9) rotateY(15deg);
+    z-index: 5;
+    opacity: 0.8;
+}
+
+
+.saas-slide.far-right {
+    left: 80%;
+    transform: translateX(-50%) scale(0.7) rotateY(-30deg);
+    z-index: 1;
+    opacity: 0.4;
+}
+
+
+.saas-slide.far-left {
+    left: 20%;
+    transform: translateX(-50%) scale(0.7) rotateY(30deg);
+    z-index: 1;
+    opacity: 0.4;
+}
+
+
+.saas-slide.hidden {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+    z-index: 0;
+}
+
+
+.saas-card {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(15, 15, 15, 0.95));
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+
+.saas-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(220, 38, 38, 0.2);
+}
+
+
+.saas-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.9), rgba(185, 28, 28, 0.9));
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 20;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+
+.saas-nav-button:hover {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 1), rgba(185, 28, 28, 1));
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.4);
+}
+
+
+.saas-nav-button.prev {
+    left: 20px;
+}
+
+
+.saas-nav-button.next {
+    right: 20px;
+}
+
+
+.saas-dots-indicator {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 12px;
+}
+
+
+.saas-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+
+.saas-dot.active {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+
+.saas-dot:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+}
+
+
+@media (max-width: 768px) {
+    .saas-slide {
+        width: 280px;
+    }
+    
+    .saas-slide.active {
+        transform: translateX(-50%) scale(1);
+    }
+    
+    .saas-slide.next,
+    .saas-slide.prev {
+        transform: translateX(-50%) scale(0.8);
+    }
+}
+

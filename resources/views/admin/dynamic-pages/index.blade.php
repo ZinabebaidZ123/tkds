@@ -135,6 +135,8 @@
             </div>
         </div>
 
+        
+
         <div class="p-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Sections Management -->
@@ -151,6 +153,8 @@
                             'why_choose' => ['name' => 'Why Choose Us', 'icon' => 'fas fa-check-circle', 'color' => 'cyan', 'editable' => true],
                             'services' => ['name' => 'Services', 'icon' => 'fas fa-cogs', 'color' => 'emerald', 'editable' => true],
                             'products' => ['name' => 'Products', 'icon' => 'fas fa-shopping-bag', 'color' => 'indigo', 'editable' => true],
+                            'shop_products' => ['name' => 'Shop Products', 'icon' => 'fas fa-shopping-cart', 'color' => 'orange', 'editable' => true],
+                            'packages' => ['name' => 'Packages', 'icon' => 'fas fa-box', 'color' => 'pink', 'editable' => true],
                             'video' => ['name' => 'Video Section', 'icon' => 'fas fa-play-circle', 'color' => 'red', 'editable' => true],
                             'clients' => ['name' => 'Clients', 'icon' => 'fas fa-users', 'color' => 'teal', 'editable' => true],
                             'reviews' => ['name' => 'Reviews', 'icon' => 'fas fa-star-half-alt', 'color' => 'yellow', 'editable' => true],
@@ -175,7 +179,8 @@
                                     'teal' => 'from-teal-500 to-teal-600',
                                     'yellow' => 'from-yellow-500 to-yellow-600',
                                     'rose' => 'from-rose-500 to-rose-600',
-                                    'gray' => 'from-gray-500 to-gray-600'
+                                    'gray' => 'from-gray-500 to-gray-600',
+                                    'pink' => 'from-pink-500 to-pink-600'
                                 ][$section['color']];
                             @endphp
                             <div class="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all duration-200">
@@ -230,7 +235,17 @@
                         
                         <ul class="sortable-list space-y-2" id="sections-{{ $page->id }}" data-page-id="{{ $page->id }}">
                             @php
-                                $sectionsOrder = $page->sections_order ?? array_keys($allSections);
+                                // Get the current sections order, or default to all sections
+                                $savedOrder = $page->sections_order ?? [];
+                                $allSectionKeys = array_keys($allSections);
+                                
+                                // If saved order exists, merge it with any new sections not in the saved order
+                                if (!empty($savedOrder)) {
+                                    $missingSections = array_diff($allSectionKeys, $savedOrder);
+                                    $sectionsOrder = array_merge($savedOrder, $missingSections);
+                                } else {
+                                    $sectionsOrder = $allSectionKeys;
+                                }
                             @endphp
                             
                             @foreach($sectionsOrder as $sectionKey)
@@ -250,7 +265,8 @@
                                             'teal' => 'border-teal-200',
                                             'yellow' => 'border-yellow-200',
                                             'rose' => 'border-rose-200',
-                                            'gray' => 'border-gray-200'
+                                            'gray' => 'border-gray-200',
+                                            'pink' => 'border-pink-200'
                                         ][$section['color']];
                                     @endphp
                                     <li class="section-item bg-white border {{ $colorClass }} rounded-lg p-3 shadow-sm {{ $isActive ? '' : 'opacity-60' }}" 
@@ -271,7 +287,8 @@
                                                     'teal' => 'from-teal-500 to-teal-600',
                                                     'yellow' => 'from-yellow-500 to-yellow-600',
                                                     'rose' => 'from-rose-500 to-rose-600',
-                                                    'gray' => 'from-gray-500 to-gray-600'
+                                                    'gray' => 'from-gray-500 to-gray-600',
+                                                    'pink' => 'from-pink-500 to-pink-600'
                                                 ][$section['color']] }} rounded-lg flex items-center justify-center shadow-sm">
                                                     <i class="{{ $section['icon'] }} text-white text-xs"></i>
                                                 </div>

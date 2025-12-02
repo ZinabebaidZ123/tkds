@@ -174,7 +174,7 @@
                     </div>
                     
                     <!-- Social Links -->
-                    @foreach(['twitter', 'linkedin', 'youtube', 'instagram', 'facebook'] as $social)
+                    @foreach(['twitter', 'linkedin', 'youtube', 'instagram', 'facebook' , 'tiktok'] as $social)
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fab fa-{{ $social }} mr-2"></i>

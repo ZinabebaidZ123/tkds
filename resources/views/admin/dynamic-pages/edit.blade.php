@@ -78,76 +78,82 @@
     @endphp
 
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div class="border-b border-gray-200 overflow-x-auto">
-            <nav class="-mb-px flex space-x-6 px-4" aria-label="Tabs">
-                <a href="#header"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'header' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="header">
-                    <i class="fas fa-header w-5 h-5 mr-2 {{ $currentTab == 'header' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Header
-                </a>
-                <a href="#hero"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'hero' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="hero">
-                    <i class="fas fa-star w-5 h-5 mr-2 {{ $currentTab == 'hero' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Hero
-                </a>
-                <a href="#why-choose"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'why-choose' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="why-choose">
-                    <i class="fas fa-heart w-5 h-5 mr-2 {{ $currentTab == 'why-choose' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Why Choose Us
-                </a>
-                <a href="#services"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'services' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="services">
-                    <i class="fas fa-cogs w-5 h-5 mr-2 {{ $currentTab == 'services' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Services
-                </a>
-                {{-- <a href="#packages"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'packages' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="packages">
-                    <i class="fas fa-box w-5 h-5 mr-2 {{ $currentTab == 'packages' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Packages
-                </a> --}}
-                <a href="#products"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'products' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="products">
-                    <i class="fas fa-shopping-bag w-5 h-5 mr-2 {{ $currentTab == 'products' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Products
-                </a>
-                <a href="#video"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'video' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="video">
-                    <i class="fas fa-video w-5 h-5 mr-2 {{ $currentTab == 'video' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Video
-                </a>
-                <a href="#clients"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'clients' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="clients">
-                    <i class="fas fa-handshake w-5 h-5 mr-2 {{ $currentTab == 'clients' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Clients
-                </a>
-                <a href="#reviews"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'reviews' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="reviews">
-                    <i class="fas fa-comments w-5 h-5 mr-2 {{ $currentTab == 'reviews' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Reviews
-                </a>
-                <a href="#contact"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'contact' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="contact">
-                    <i class="fas fa-envelope w-5 h-5 mr-2 {{ $currentTab == 'contact' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Contact
-                </a>
-                <a href="#footer"
-                   class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'footer' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
-                   data-tab="footer">
-                    <i class="fas fa-columns w-5 h-5 mr-2 {{ $currentTab == 'footer' ? 'text-primary' : 'text-gray-400' }}"></i>
-                    Footer
-                </a>
-            </nav>
-        </div>
+ <div class="border-b border-gray-200 overflow-x-auto scrollable-nav">
+    <nav class="-mb-px flex space-x-6 px-4 min-w-max" aria-label="Tabs">
+        <a href="#header"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'header' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="header">
+            <i class="fas fa-header w-5 h-5 mr-2 {{ $currentTab == 'header' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Header
+        </a>
+        <a href="#hero"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'hero' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="hero">
+            <i class="fas fa-star w-5 h-5 mr-2 {{ $currentTab == 'hero' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Hero
+        </a>
+        <a href="#why-choose"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'why-choose' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="why-choose">
+            <i class="fas fa-heart w-5 h-5 mr-2 {{ $currentTab == 'why-choose' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Why Choose Us
+        </a>
+        <a href="#services"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'services' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="services">
+            <i class="fas fa-cogs w-5 h-5 mr-2 {{ $currentTab == 'services' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Services
+        </a>
+        <a href="#packages"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'packages' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="packages">
+            <i class="fas fa-box w-5 h-5 mr-2 {{ $currentTab == 'packages' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Packages
+        </a>
+        <a href="#products"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'products' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="products">
+            <i class="fas fa-cube w-5 h-5 mr-2 {{ $currentTab == 'products' ? 'text-primary' : 'text-gray-400' }}"></i>
+            SaaS Products
+        </a>
+        <a href="#shop-products"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'shop-products' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="shop-products">
+            <i class="fas fa-shopping-bag w-5 h-5 mr-2 {{ $currentTab == 'shop-products' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Shop Products
+        </a>
+        <a href="#video"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'video' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="video">
+            <i class="fas fa-video w-5 h-5 mr-2 {{ $currentTab == 'video' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Video
+        </a>
+        <a href="#clients"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'clients' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="clients">
+            <i class="fas fa-handshake w-5 h-5 mr-2 {{ $currentTab == 'clients' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Clients
+        </a>
+        <a href="#reviews"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'reviews' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="reviews">
+            <i class="fas fa-comments w-5 h-5 mr-2 {{ $currentTab == 'reviews' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Reviews
+        </a>
+        <a href="#contact"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'contact' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="contact">
+            <i class="fas fa-envelope w-5 h-5 mr-2 {{ $currentTab == 'contact' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Contact
+        </a>
+        <a href="#footer"
+           class="tab-link inline-flex items-center pt-4 pb-3 border-b-2 text-sm font-medium {{ $currentTab == 'footer' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}"
+           data-tab="footer">
+            <i class="fas fa-columns w-5 h-5 mr-2 {{ $currentTab == 'footer' ? 'text-primary' : 'text-gray-400' }}"></i>
+            Footer
+        </a>
+    </nav>
+</div>
 
         <form action="{{ route('admin.dynamic-pages.update', $page) }}"
               method="POST"
@@ -463,89 +469,764 @@
                 </div>
             </div>
 
-            {{-- SERVICES TAB --}}
-            <div id="services" class="tab-content p-8 {{ $currentTab == 'services' ? '' : 'hidden' }}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Services Title</label>
-                        <input type="text" name="services_title"
-                               value="{{ old('services_title', $page->services_title) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Services Subtitle</label>
-                        <textarea name="services_subtitle" rows="2"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('services_subtitle', $page->services_subtitle) }}</textarea>
-                    </div>
-                    <div>
-                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                            <input type="checkbox" name="services_status" value="active"
-                                   {{ $page->services_status === 'active' ? 'checked' : '' }}
-                                   class="mr-2 w-4 h-4">
-                            Active
-                        </label>
-                    </div>
-                </div>
-                <div class="mt-6 p-4 bg-blue-50 rounded-xl">
-                    <p class="text-sm text-blue-800">
-                        <i class="fas fa-info-circle mr-2"></i>
-                        Manage services items from
-                        <a href="{{ route('admin.services.index') }}" class="text-blue-600 hover:underline">
-                            Services Management
-                        </a>
-                    </p>
-                </div>
-            </div>
+        {{-- SERVICES TAB --}}
+<div id="services" class="tab-content p-8 {{ $currentTab == 'services' ? '' : 'hidden' }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Services Title</label>
+            <input type="text" name="services_title"
+                   value="{{ old('services_title', $page->services_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Services Subtitle</label>
+            <textarea name="services_subtitle" rows="2"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('services_subtitle', $page->services_subtitle) }}</textarea>
+        </div>
+        <div>
+            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                <input type="checkbox" name="services_status" value="active"
+                       {{ $page->services_status === 'active' ? 'checked' : '' }}
+                       class="mr-2 w-4 h-4">
+                Active
+            </label>
+        </div>
+    </div>
 
-            {{-- PACKAGES TAB --}}
-            {{-- <div id="packages" class="tab-content p-8 {{ $currentTab == 'packages' ? '' : 'hidden' }}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Packages Title</label>
-                        <input type="text" name="packages_title"
-                               value="{{ old('packages_title', $page->packages_title) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Packages Subtitle</label>
-                        <textarea name="packages_subtitle" rows="2"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('packages_subtitle', $page->packages_subtitle) }}</textarea>
-                    </div>
-                    <div>
-                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                            <input type="checkbox" name="packages_status" value="active"
-                                   {{ $page->packages_status === 'active' ? 'checked' : '' }}
-                                   class="mr-2 w-4 h-4">
-                            Active
-                        </label>
-                    </div>
-                </div>
-            </div> --}}
+    <!-- Services Selection -->
+    <div class="bg-gray-50 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Services to Display</h3>
+        
+        <!-- Filter -->
+        <div class="mb-4">
+            <input type="text" id="servicesFilter" placeholder="Filter services..." 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
 
-            {{-- PRODUCTS TAB --}}
-            <div id="products" class="tab-content p-8 {{ $currentTab == 'products' ? '' : 'hidden' }}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Products Title</label>
-                        <input type="text" name="products_title"
-                               value="{{ old('products_title', $page->products_title) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        <!-- Services Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="servicesGrid">
+            @foreach($services as $service)
+                @php
+                    $isSelected = $page->services->contains('id', $service->id);
+                @endphp
+                <div class="service-item p-4 border rounded-lg hover:bg-white transition-colors {{ $isSelected ? 'border-primary bg-blue-50' : 'border-gray-200 bg-white' }}"
+                     data-service-id="{{ $service->id }}"
+                     data-service-name="{{ strtolower($service->title) }}">
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <input type="checkbox" name="selected_services[]" value="{{ $service->id }}"
+                                   {{ $isSelected ? 'checked' : '' }}
+                                   class="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900">{{ $service->title }}</h4>
+                            <p class="text-sm text-gray-600 mt-1">{{ Str::limit($service->description, 80) }}</p>
+                            
+                            @if($service->icon)
+                                <div class="mt-2">
+                                    <i class="{{ $service->icon }} text-primary"></i>
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Products Subtitle</label>
-                        <textarea name="products_subtitle" rows="2"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('products_subtitle', $page->products_subtitle) }}</textarea>
+
+                    <!-- Service Customization Options (shown when selected) -->
+                    {{-- <div class="service-options mt-4 {{ $isSelected ? '' : 'hidden' }}">
+                        <div class="border-t pt-4 space-y-3">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Custom Icon</label>
+                                    <input type="text" name="service_custom_icon[{{ $service->id }}]"
+                                           value="{{ $isSelected ? $page->services->find($service->id)?->pivot->custom_icon : '' }}"
+                                           placeholder="fas fa-server"
+                                           class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Discount Badge</label>
+                                    <input type="text" name="service_discount_badge[{{ $service->id }}]"
+                                           value="{{ $isSelected ? $page->services->find($service->id)?->pivot->discount_badge : '' }}"
+                                           placeholder="20% OFF"
+                                           class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Button Text</label>
+                                    <input type="text" name="service_button_text[{{ $service->id }}]"
+                                           value="{{ $isSelected ? $page->services->find($service->id)?->pivot->read_more_button_text : '' }}"
+                                           placeholder="Learn More"
+                                           class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Button URL</label>
+                                    <input type="text" name="service_button_url[{{ $service->id }}]"
+                                           value="{{ $isSelected ? $page->services->find($service->id)?->pivot->read_more_button_url : '' }}"
+                                           placeholder="/services/{{ $service->slug }}"
+                                           class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Custom Background</label>
+                                <input type="text" name="service_background[{{ $service->id }}]"
+                                       value="{{ $isSelected ? $page->services->find($service->id)?->pivot->custom_background : '' }}"
+                                       placeholder="bg-gradient-to-r from-blue-500 to-purple-600"
+                                       class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Sort Order</label>
+                                <input type="number" name="service_sort_order[{{ $service->id }}]"
+                                       value="{{ $isSelected ? $page->services->find($service->id)?->pivot->sort_order : 0 }}"
+                                       min="0"
+                                       class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                            </div>
+                        </div>
+                    </div> --}}
+                </div>
+            @endforeach
+        </div>
+
+        @if($services->isEmpty())
+            <div class="text-center py-8 text-gray-500">
+                <p>No services available. Please create services first.</p>
+                <a href="{{ route('admin.services.create') }}" class="text-primary hover:underline">Create Service</a>
+            </div>
+        @endif
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Services Filter
+    const servicesFilter = document.getElementById('servicesFilter');
+    const serviceItems = document.querySelectorAll('.service-item');
+
+    if (servicesFilter) {
+        servicesFilter.addEventListener('input', function() {
+            const filterValue = this.value.toLowerCase();
+            serviceItems.forEach(item => {
+                const serviceName = item.dataset.serviceName;
+                if (serviceName.includes(filterValue)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Service Selection Handler
+    serviceItems.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        const options = item.querySelector('.service-options');
+        
+        if (checkbox && options) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    item.classList.add('border-primary', 'bg-blue-50');
+                    item.classList.remove('border-gray-200', 'bg-white');
+                    options.classList.remove('hidden');
+                } else {
+                    item.classList.remove('border-primary', 'bg-blue-50');
+                    item.classList.add('border-gray-200', 'bg-white');
+                    options.classList.add('hidden');
+                    // Clear customization fields
+                    options.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                    });
+                }
+            });
+        }
+    });
+
+    // Select All / Deselect All functionality
+    const selectAllBtn = document.createElement('button');
+    selectAllBtn.type = 'button';
+    selectAllBtn.className = 'mb-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark';
+    selectAllBtn.textContent = 'Select All Services';
+    
+    const servicesGrid = document.getElementById('servicesGrid');
+    if (servicesGrid) {
+        servicesGrid.parentNode.insertBefore(selectAllBtn, servicesGrid);
+        
+        selectAllBtn.addEventListener('click', function() {
+            const allCheckboxes = servicesGrid.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+            
+            allCheckboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                checkbox.dispatchEvent(new Event('change'));
+            });
+            
+            this.textContent = allChecked ? 'Select All Services' : 'Deselect All Services';
+        });
+    }
+});
+</script>
+
+         {{-- PACKAGES TAB --}}
+<div id="packages" class="tab-content p-8 {{ $currentTab == 'packages' ? '' : 'hidden' }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Packages Title</label>
+            <input type="text" name="packages_title"
+                   value="{{ old('packages_title', $page->packages_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Packages Subtitle</label>
+            <textarea name="packages_subtitle" rows="2"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('packages_subtitle', $page->packages_subtitle) }}</textarea>
+        </div>
+        <div>
+            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                <input type="checkbox" name="packages_status" value="active"
+                       {{ $page->packages_status === 'active' ? 'checked' : '' }}
+                       class="mr-2 w-4 h-4">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <!-- Packages Selection -->
+    <div class="bg-gray-50 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Pricing Plans to Display</h3>
+        
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-4 mb-4">
+            <div class="flex-1 min-w-64">
+                <input type="text" id="packagesFilter" placeholder="Filter packages..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+            </div>
+            <div>
+                <select id="packagesPricingFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                    <option value="">All Plans</option>
+                    <option value="monthly">Monthly Plans</option>
+                    <option value="yearly">Yearly Plans</option>
+                    <option value="both">Both Monthly & Yearly</option>
+                </select>
+            </div>
+            <div>
+                <select id="packagesPopularFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                    <option value="">All Plans</option>
+                    <option value="popular">Popular Only</option>
+                    <option value="featured">Featured Only</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Packages Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="packagesGrid">
+            @foreach($packages as $package)
+                @php
+                    $isSelected = $page->pricingPlans->contains('id', $package->id);
+                    $hasMonthly = !empty($package->price_monthly) && $package->price_monthly > 0;
+                    $hasYearly = !empty($package->price_yearly) && $package->price_yearly > 0;
+                    $pricingType = $hasMonthly && $hasYearly ? 'both' : ($hasMonthly ? 'monthly' : 'yearly');
+                @endphp
+                <div class="package-item p-4 border rounded-lg hover:bg-white transition-colors {{ $isSelected ? 'border-primary bg-blue-50' : 'border-gray-200 bg-white' }}"
+                     data-package-id="{{ $package->id }}"
+                     data-package-name="{{ strtolower($package->name) }}"
+                     data-pricing-type="{{ $pricingType }}"
+                     data-is-popular="{{ $package->is_popular ? 'true' : 'false' }}"
+                     data-is-featured="{{ $package->is_featured ? 'true' : 'false' }}">
+                    
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            <input type="checkbox" name="selected_packages[]" value="{{ $package->id }}"
+                                   {{ $isSelected ? 'checked' : '' }}
+                                   class="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-900">{{ $package->name }}</h4>
+                                <div class="flex space-x-1">
+                                    @if($package->is_popular)
+                                        <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">Popular</span>
+                                    @endif
+                                    @if($package->is_featured)
+                                        <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">Featured</span>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 mt-1">{{ Str::limit($package->description, 80) }}</p>
+                            
+                            <div class="mt-2 space-y-1">
+                                @if($hasMonthly)
+                                    <div class="text-sm">
+                                        <span class="font-medium text-primary">{{ $package->getFormattedPriceMonthly() }}</span>
+                                    </div>
+                                @endif
+                                @if($hasYearly)
+                                    <div class="text-sm">
+                                        <span class="font-medium text-secondary">{{ $package->getFormattedPriceYearly() }}</span>
+                                        @if($package->getYearlySavingsPercentage() > 0)
+                                            <span class="text-xs text-green-600">(Save {{ $package->getYearlySavingsPercentage() }}%)</span>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+
+                            @if($package->features && count($package->features) > 0)
+                                <div class="mt-2">
+                                    <span class="text-xs text-gray-500">{{ count($package->features) }} features</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div>
-                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                            <input type="checkbox" name="products_status" value="active"
-                                   {{ $page->products_status === 'active' ? 'checked' : '' }}
-                                   class="mr-2 w-4 h-4">
-                            Active
-                        </label>
+
+                    <!-- Package Customization Options -->
+                    {{-- <div class="package-options mt-4 {{ $isSelected ? '' : 'hidden' }}">
+                        <div class="border-t pt-4 space-y-3">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700">Discount %</label>
+                                    <input type="number" name="package_discount[{{ $package->id }}]"
+                                           value="{{ $isSelected ? $page->pricingPlans->find($package->id)?->pivot->discount_percentage : '' }}"
+                                           min="0" max="100"
+                                           class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                                </div>
+                                <div>
+                                    <label class="flex items-center text-xs font-medium text-gray-700">
+                                        <input type="checkbox" name="package_featured[{{ $package->id }}]" value="1"
+                                               {{ $isSelected && $page->pricingPlans->find($package->id)?->pivot->is_featured ? 'checked' : '' }}
+                                               class="mr-1 w-3 h-3">
+                                        Mark as Featured
+                                    </label>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Sort Order</label>
+                                    <input type="number" name="package_sort_order[{{ $package->id }}]"
+                                           value="{{ $isSelected ? $page->pricingPlans->find($package->id)?->pivot->sort_order : 0 }}"
+                                           min="0"
+                                           class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
+                </div>
+            @endforeach
+        </div>
+
+        @if($packages->isEmpty())
+            <div class="text-center py-8 text-gray-500">
+                <p>No pricing plans available. Please create pricing plans first.</p>
+                <a href="{{ route('admin.pricing-plans.create') }}" class="text-primary hover:underline">Create Pricing Plan</a>
+            </div>
+        @endif
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Packages Filters
+    const packagesFilter = document.getElementById('packagesFilter');
+    const packagesPricingFilter = document.getElementById('packagesPricingFilter');
+    const packagesPopularFilter = document.getElementById('packagesPopularFilter');
+    const packageItems = document.querySelectorAll('.package-item');
+
+    function filterPackages() {
+        const nameFilter = packagesFilter?.value.toLowerCase() || '';
+        const pricingFilter = packagesPricingFilter?.value || '';
+        const popularFilter = packagesPopularFilter?.value || '';
+
+        packageItems.forEach(item => {
+            const packageName = item.dataset.packageName;
+            const pricingType = item.dataset.pricingType;
+            const isPopular = item.dataset.isPopular === 'true';
+            const isFeatured = item.dataset.isFeatured === 'true';
+
+            const nameMatch = packageName.includes(nameFilter);
+            const pricingMatch = !pricingFilter || 
+                (pricingFilter === 'both' && pricingType === 'both') ||
+                (pricingFilter === 'monthly' && (pricingType === 'monthly' || pricingType === 'both')) ||
+                (pricingFilter === 'yearly' && (pricingType === 'yearly' || pricingType === 'both'));
+            const popularMatch = !popularFilter ||
+                (popularFilter === 'popular' && isPopular) ||
+                (popularFilter === 'featured' && isFeatured);
+
+            if (nameMatch && pricingMatch && popularMatch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    if (packagesFilter) {
+        packagesFilter.addEventListener('input', filterPackages);
+    }
+    if (packagesPricingFilter) {
+        packagesPricingFilter.addEventListener('change', filterPackages);
+    }
+    if (packagesPopularFilter) {
+        packagesPopularFilter.addEventListener('change', filterPackages);
+    }
+
+    // Package Selection Handler
+    packageItems.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        const options = item.querySelector('.package-options');
+        
+        if (checkbox && options) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    item.classList.add('border-primary', 'bg-blue-50');
+                    item.classList.remove('border-gray-200', 'bg-white');
+                    options.classList.remove('hidden');
+                } else {
+                    item.classList.remove('border-primary', 'bg-blue-50');
+                    item.classList.add('border-gray-200', 'bg-white');
+                    options.classList.add('hidden');
+                    options.querySelectorAll('input').forEach(input => {
+                        if (input.type !== 'checkbox') {
+                            input.value = '';
+                        } else {
+                            input.checked = false;
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+</script>
+
+{{-- PRODUCTS (SaaS) TAB --}}
+<div id="products" class="tab-content p-8 {{ $currentTab == 'products' ? '' : 'hidden' }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">SaaS Products Title</label>
+            <input type="text" name="products_title"
+                   value="{{ old('products_title', $page->products_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">SaaS Products Subtitle</label>
+            <textarea name="products_subtitle" rows="2"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('products_subtitle', $page->products_subtitle) }}</textarea>
+        </div>
+        <div>
+            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                <input type="checkbox" name="products_status" value="active"
+                       {{ $page->products_status === 'active' ? 'checked' : '' }}
+                       class="mr-2 w-4 h-4">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <!-- SaaS Products Selection -->
+    <div class="bg-gray-50 rounded-xl p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Select SaaS Products</h3>
+            <div class="flex space-x-2">
+                <button type="button" id="selectAllProducts" class="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600">
+                    Select All
+                </button>
+                <button type="button" id="clearAllProducts" class="px-4 py-2 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600">
+                    Clear All
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search and Filters -->
+        <div class="flex space-x-4 mb-4">
+            <input type="text" id="productsSearch" placeholder="Search products..." 
+                   class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
+            <select id="productsCategoryFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                <option value="">All Categories</option>
+                @foreach($products->pluck('category')->unique()->filter() as $category)
+                    <option value="{{ strtolower($category) }}">{{ ucfirst($category) }}</option>
+                @endforeach
+            </select>
+            <select id="productsPricingFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                <option value="">All Pricing</option>
+                <option value="free">Free</option>
+                <option value="subscription">Subscription</option>
+                <option value="one_time">One-time</option>
+                <option value="quote">Contact for Quote</option>
+            </select>
+        </div>
+
+        <!-- Products List -->
+        <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+            @foreach($products as $product)
+                <div class="product-item p-4 border-b border-gray-100 hover:bg-gray-50 flex items-center space-x-3"
+                     data-name="{{ strtolower($product->title) }}"
+                     data-category="{{ strtolower($product->category) }}"
+                     data-pricing="{{ $product->pricing_model }}">
+                    <input type="checkbox" 
+                           name="selected_products[]" 
+                           value="{{ $product->id }}"
+                           {{ in_array($product->id, $selectedProducts) ? 'checked' : '' }}
+                           class="w-4 h-4 text-blue-600">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-gray-900">{{ $product->title }}</h4>
+                                <p class="text-sm text-gray-600">{{ Str::limit($product->short_description ?? $product->subtitle, 60) }}</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    @if($product->getFormattedPrice())
+                                        <span class="text-sm text-gray-500">{{ $product->getFormattedPrice() }}</span>
+                                    @endif
+                                    @if($product->category)
+                                        <span class="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded">{{ $product->getCategoryLabel() }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="flex space-x-1">
+                                @if($product->is_featured)
+                                    <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded">Featured</span>
+                                @endif
+                                @if($product->show_in_homepage)
+                                    <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded">Homepage</span>
+                                @endif
+                                @if($product->show_in_navbar)
+                                    <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">Navbar</span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
+            @endforeach
+        </div>
+
+        <div class="mt-4 text-sm text-gray-600">
+            Selected: <span id="productsCount">{{ count($selectedProducts) }}</span> of {{ count($products) }} products
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Products filters
+    const productsSearch = document.getElementById('productsSearch');
+    const productsCategoryFilter = document.getElementById('productsCategoryFilter');
+    const productsPricingFilter = document.getElementById('productsPricingFilter');
+
+    function filterProducts() {
+        const searchTerm = productsSearch?.value.toLowerCase() || '';
+        const categoryFilter = productsCategoryFilter?.value || '';
+        const pricingFilter = productsPricingFilter?.value || '';
+        
+        const items = document.querySelectorAll('.product-item');
+        
+        items.forEach(item => {
+            const name = item.getAttribute('data-name') || '';
+            const category = item.getAttribute('data-category') || '';
+            const pricing = item.getAttribute('data-pricing') || '';
+            
+            const nameMatch = name.includes(searchTerm);
+            const categoryMatch = !categoryFilter || category === categoryFilter;
+            const pricingMatch = !pricingFilter || pricing === pricingFilter;
+            
+            if (nameMatch && categoryMatch && pricingMatch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        updateProductsCount();
+    }
+
+    function updateProductsCount() {
+        const checked = document.querySelectorAll('input[name="selected_products[]"]:checked').length;
+        const total = document.querySelectorAll('.product-item:not([style*="display: none"])').length;
+        const countEl = document.getElementById('productsCount');
+        if (countEl) countEl.textContent = checked;
+    }
+
+    // Attach event listeners
+    if (productsSearch) {
+        productsSearch.addEventListener('input', filterProducts);
+    }
+    if (productsCategoryFilter) {
+        productsCategoryFilter.addEventListener('change', filterProducts);
+    }
+    if (productsPricingFilter) {
+        productsPricingFilter.addEventListener('change', filterProducts);
+    }
+
+    // Select All / Clear All
+    const selectAllProducts = document.getElementById('selectAllProducts');
+    const clearAllProducts = document.getElementById('clearAllProducts');
+    
+    if (selectAllProducts) {
+        selectAllProducts.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('input[name="selected_products[]"]');
+            const visibleCheckboxes = Array.from(checkboxes).filter(cb => 
+                !cb.closest('.product-item').style.display.includes('none')
+            );
+            visibleCheckboxes.forEach(cb => cb.checked = true);
+            updateProductsCount();
+        });
+    }
+    
+    if (clearAllProducts) {
+        clearAllProducts.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('input[name="selected_products[]"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateProductsCount();
+        });
+    }
+
+    // Listen for checkbox changes
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'selected_products[]') {
+            updateProductsCount();
+        }
+    });
+
+    // Initial count update
+    updateProductsCount();
+});
+</script>
+
+{{-- SHOP PRODUCTS TAB --}}
+<div id="shop-products" class="tab-content p-8 {{ $currentTab == 'shop-products' ? '' : 'hidden' }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Shop Products Title</label>
+            <input type="text" name="shop_products_title"
+                   value="{{ old('shop_products_title', $page->shop_products_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Shop Products Subtitle</label>
+            <textarea name="shop_products_subtitle" rows="2"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('shop_products_subtitle', $page->shop_products_subtitle) }}</textarea>
+        </div>
+        <div>
+            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                <input type="checkbox" name="shop_products_status" value="active"
+                       {{ $page->shop_products_status === 'active' ? 'checked' : '' }}
+                       class="mr-2 w-4 h-4">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <!-- Shop Products Selection -->
+    <div class="bg-gray-50 rounded-xl p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Select Shop Products</h3>
+            <div class="flex space-x-2">
+                <button type="button" id="selectAllShopProducts" class="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600">
+                    Select All
+                </button>
+                <button type="button" id="clearAllShopProducts" class="px-4 py-2 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600">
+                    Clear All
+                </button>
             </div>
+        </div>
+        
+        <!-- Search -->
+        <div class="mb-4">
+            <input type="text" id="shopProductsSearch" placeholder="Search shop products..." 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
+
+        <!-- Shop Products List -->
+        <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+            @foreach($shopProducts as $shopProduct)
+                <div class="shop-product-item p-4 border-b border-gray-100 hover:bg-gray-50 flex items-center space-x-3"
+                     data-name="{{ strtolower($shopProduct->name) }}">
+                    <input type="checkbox" 
+                           name="selected_shop_products[]" 
+                           value="{{ $shopProduct->id }}"
+                           {{ in_array($shopProduct->id, $selectedShopProducts) ? 'checked' : '' }}
+                           class="w-4 h-4 text-blue-600">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-gray-900">{{ $shopProduct->name }}</h4>
+                                <p class="text-sm text-gray-600">{{ Str::limit($shopProduct->short_description, 60) }}</p>
+                                <div class="text-sm text-gray-500 mt-1">{{ $shopProduct->getFormattedPrice() }}</div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <span class="text-xs px-2 py-1 rounded {{ $shopProduct->type === 'physical' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
+                                    {{ ucfirst($shopProduct->type) }}
+                                </span>
+                                @if($shopProduct->is_featured)
+                                    <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded">Featured</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-4 text-sm text-gray-600">
+            Selected: <span id="shopProductsCount">{{ count($selectedShopProducts) }}</span> of {{ count($shopProducts) }} shop products
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Shop Products Filters
+    const shopProductsFilter = document.getElementById('shopProductsFilter');
+    const shopProductsTypeFilter = document.getElementById('shopProductsTypeFilter');
+    const shopProductsCategoryFilter = document.getElementById('shopProductsCategoryFilter');
+    const shopProductItems = document.querySelectorAll('.shop-product-item');
+
+    function filterShopProducts() {
+        const nameFilter = shopProductsFilter?.value.toLowerCase() || '';
+        const typeFilter = shopProductsTypeFilter?.value || '';
+        const categoryFilter = shopProductsCategoryFilter?.value || '';
+
+        shopProductItems.forEach(item => {
+            const productName = item.dataset.productName;
+            const productType = item.dataset.productType;
+            const categoryId = item.dataset.categoryId;
+
+            const nameMatch = productName.includes(nameFilter);
+            const typeMatch = !typeFilter || productType === typeFilter;
+            const categoryMatch = !categoryFilter || categoryId === categoryFilter;
+
+            if (nameMatch && typeMatch && categoryMatch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    if (shopProductsFilter) {
+        shopProductsFilter.addEventListener('input', filterShopProducts);
+    }
+    if (shopProductsTypeFilter) {
+        shopProductsTypeFilter.addEventListener('change', filterShopProducts);
+    }
+    if (shopProductsCategoryFilter) {
+        shopProductsCategoryFilter.addEventListener('change', filterShopProducts);
+    }
+
+    // Shop Product Selection Handler
+    shopProductItems.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        const options = item.querySelector('.shop-product-options');
+        
+        if (checkbox && options) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    item.classList.add('border-primary', 'bg-blue-50');
+                    item.classList.remove('border-gray-200', 'bg-white');
+                    options.classList.remove('hidden');
+                } else {
+                    item.classList.remove('border-primary', 'bg-blue-50');
+                    item.classList.add('border-gray-200', 'bg-white');
+                    options.classList.add('hidden');
+                    options.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                    });
+                }
+            });
+        }
+    });
+});
+</script>
 
             {{-- VIDEO TAB --}}
             <div id="video" class="tab-content p-8 {{ $currentTab == 'video' ? '' : 'hidden' }}">
@@ -608,7 +1289,7 @@
                 </div>
             </div>
 
-            {{-- CLIENTS TAB --}}
+          
        {{-- CLIENTS TAB --}}
 <div id="clients" class="tab-content p-8 {{ $currentTab == 'clients' ? '' : 'hidden' }}">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -944,6 +1625,31 @@
 </div>
 @endsection
 
+<style>
+.scrollable-nav {
+    scrollbar-width: thin;
+    scrollbar-color: #3B82F6 #E5E7EB;
+}
+
+.scrollable-nav::-webkit-scrollbar {
+    height: 6px;
+}
+
+.scrollable-nav::-webkit-scrollbar-track {
+    background: #E5E7EB;
+    border-radius: 3px;
+}
+
+.scrollable-nav::-webkit-scrollbar-thumb {
+    background: #3B82F6;
+    border-radius: 3px;
+}
+
+.scrollable-nav::-webkit-scrollbar-thumb:hover {
+    background: #2563EB;
+}
+</style>
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -1210,5 +1916,147 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple search and filter functionality
+    function setupSearch(searchId, itemsSelector, nameAttribute = 'data-name') {
+        const searchInput = document.getElementById(searchId);
+        if (!searchInput) return;
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const items = document.querySelectorAll(itemsSelector);
+            
+            items.forEach(item => {
+                const name = item.getAttribute(nameAttribute) || '';
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            updateCounts();
+        });
+    }
+
+    // Setup filters for packages
+    function setupPackageFilter() {
+        const filter = document.getElementById('packagesFilter');
+        if (!filter) return;
+
+        filter.addEventListener('change', function() {
+            const filterValue = this.value;
+            const items = document.querySelectorAll('.package-item');
+            
+            items.forEach(item => {
+                const pricing = item.getAttribute('data-pricing');
+                
+                if (!filterValue || 
+                    (filterValue === 'monthly' && (pricing === 'monthly' || pricing === 'both')) ||
+                    (filterValue === 'yearly' && (pricing === 'yearly' || pricing === 'both')) ||
+                    (filterValue === 'both' && pricing === 'both')) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            updateCounts();
+        });
+    }
+
+    // Setup select all/clear all functionality
+    function setupSelectButtons(selectAllId, clearAllId, checkboxesSelector, countId) {
+        const selectAllBtn = document.getElementById(selectAllId);
+        const clearAllBtn = document.getElementById(clearAllId);
+        
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll(checkboxesSelector + ':not([style*="display: none"])');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                updateCounts();
+            });
+        }
+        
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll(checkboxesSelector);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateCounts();
+            });
+        }
+    }
+
+    // Update selection counts
+    function updateCounts() {
+        // Services count
+        const servicesChecked = document.querySelectorAll('input[name="selected_services[]"]:checked').length;
+        const servicesTotal = document.querySelectorAll('.service-item:not([style*="display: none"])').length;
+        const servicesCount = document.getElementById('servicesCount');
+        if (servicesCount) servicesCount.textContent = servicesChecked;
+
+        // Packages count
+        const packagesChecked = document.querySelectorAll('input[name="selected_packages[]"]:checked').length;
+        const packagesTotal = document.querySelectorAll('.package-item:not([style*="display: none"])').length;
+        const packagesCount = document.getElementById('packagesCount');
+        if (packagesCount) packagesCount.textContent = packagesChecked;
+
+        // Products count
+        const productsChecked = document.querySelectorAll('input[name="selected_products[]"]:checked').length;
+        const productsTotal = document.querySelectorAll('.product-item:not([style*="display: none"])').length;
+        const productsCount = document.getElementById('productsCount');
+        if (productsCount) productsCount.textContent = productsChecked;
+
+        // Shop Products count
+        const shopProductsChecked = document.querySelectorAll('input[name="selected_shop_products[]"]:checked').length;
+        const shopProductsTotal = document.querySelectorAll('.shop-product-item:not([style*="display: none"])').length;
+        const shopProductsCount = document.getElementById('shopProductsCount');
+        if (shopProductsCount) shopProductsCount.textContent = shopProductsChecked;
+    }
+
+    // Initialize all functionality
+    setupSearch('servicesSearch', '.service-item');
+    setupSearch('packagesSearch', '.package-item');
+    setupSearch('productsSearch', '.product-item');
+    setupSearch('shopProductsSearch', '.shop-product-item');
+
+    setupPackageFilter();
+
+    setupSelectButtons('selectAllServices', 'clearAllServices', 'input[name="selected_services[]"]', 'servicesCount');
+    setupSelectButtons('selectAllPackages', 'clearAllPackages', 'input[name="selected_packages[]"]', 'packagesCount');
+    setupSelectButtons('selectAllProducts', 'clearAllProducts', 'input[name="selected_products[]"]', 'productsCount');
+    setupSelectButtons('selectAllShopProducts', 'clearAllShopProducts', 'input[name="selected_shop_products[]"]', 'shopProductsCount');
+
+    // Listen for checkbox changes
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox' && (
+            e.target.name === 'selected_services[]' || 
+            e.target.name === 'selected_packages[]' || 
+            e.target.name === 'selected_products[]' || 
+            e.target.name === 'selected_shop_products[]'
+        )) {
+            updateCounts();
+        }
+    });
+
+    // Initial count update
+    updateCounts();
+
+    // Log selections for debugging
+    document.querySelector('form').addEventListener('submit', function() {
+        const selections = {
+            services: Array.from(document.querySelectorAll('input[name="selected_services[]"]:checked')).map(cb => cb.value),
+            packages: Array.from(document.querySelectorAll('input[name="selected_packages[]"]:checked')).map(cb => cb.value),
+            products: Array.from(document.querySelectorAll('input[name="selected_products[]"]:checked')).map(cb => cb.value),
+            shopProducts: Array.from(document.querySelectorAll('input[name="selected_shop_products[]"]:checked')).map(cb => cb.value)
+        };
+        
+        console.log('Form submitting with selections:', selections);
+    });
+});
 </script>
+
 @endpush

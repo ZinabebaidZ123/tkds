@@ -119,7 +119,7 @@ class FooterSetting extends Model
             ];
         }
              if ($this->social_tiktok) {
-            $links['فiktok'] = [
+            $links['tiktok'] = [
                 'url' => $this->social_tiktok,
                 'icon' => 'fab fa-tiktok',
                 'name' => 'Tiktok',
