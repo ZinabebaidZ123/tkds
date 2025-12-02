@@ -1,5 +1,7 @@
 {{-- File: resources/views/components/navigation.blade.php --}}
-
+@php
+    $availablePage = \App\Models\DynamicPage::available()->first();
+@endphp
 <!-- Desktop Navbar -->
 <nav id="desktopNavbar" class="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-500">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,14 +89,17 @@
                     <span>Shop</span>
                 </a>
 
-                <a href="{{ route('occasions') }}" class="relative group text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text hover:from-pink-400 hover:via-red-500 hover:to-pink-600 transition-all duration-300 font-bold animate-pulse">
-    <span class="flex items-center space-x-1">
-        <i class="fas fa-fire text-sm text-red-500 group-hover:text-pink-500"></i>
-        <span>Special Offers</span>
-    </span>
-    <!-- Glow effect -->
-    <div class="absolute -inset-1 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-</a>
+@if($availablePage)
+    <a href="{{ route('occasions') }}" class="relative group text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text hover:from-pink-400 hover:via-red-500 hover:to-pink-600 transition-all duration-300 font-bold animate-pulse">
+        <span class="flex items-center space-x-1">
+            <i class="fas fa-fire text-sm text-red-500 group-hover:text-pink-500"></i>
+            <span>Special Offers</span>
+        
+        </span>
+        <!-- Glow effect -->
+        <div class="absolute -inset-1 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+    </a>
+@endif
                 
                 <a href="{{ route('pricing') }}" class="text-gray-300 hover:text-primary transition-colors duration-200 font-medium">
                     Pricing
@@ -430,6 +435,17 @@
                 <a href="{{ route('products') }}" class="block py-3 text-gray-300 hover:text-primary transition-colors duration-200 font-medium">
                     Products
                 </a>
+                @if($availablePage)
+    <a href="{{ route('occasions') }}" class="relative group text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text hover:from-pink-400 hover:via-red-500 hover:to-pink-600 transition-all duration-300 font-bold animate-pulse">
+        <span class="flex items-center space-x-1">
+            <i class="fas fa-fire text-sm text-red-500 group-hover:text-pink-500"></i>
+            <span>Special Offers</span>
+        
+        </span>
+        <!-- Glow effect -->
+        <div class="absolute -inset-1 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+    </a>
+@endif
                 <a href="{{ route('shop.index') }}" class="block py-3 text-gray-300 hover:text-primary transition-colors duration-200 font-medium">
                     <i class="fas fa-shopping-bag mr-2"></i>Shop
                 </a>

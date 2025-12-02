@@ -64,6 +64,8 @@
 @endpush
 
 @section('content')
+
+
 <div class="space-y-6">
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -81,7 +83,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    {{-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-center justify-between">
                 <div>
@@ -111,7 +113,7 @@
                 <i class="fas fa-layer-group text-3xl text-blue-200"></i>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     @forelse($pages as $page)
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
@@ -129,14 +131,137 @@
                         </p>
                     </div>
                 </div>
-                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold {{ $page->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                    {{ ucfirst($page->status) }}
-                </span>
+              
             </div>
+
+                   <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center space-x-3">
+        <span class="text-sm font-medium text-gray-700">Page Status:</span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $page->isAvailable() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            @if($page->isAvailable())
+                <i class="fas fa-check-circle mr-1"></i>
+                Available
+            @else
+                <i class="fas fa-times-circle mr-1"></i>
+                Not Available
+            @endif
+        </span>
+        
+        @if($page->offer_end_date && !$page->isExpired())
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <i class="fas fa-clock mr-1"></i>
+                Expires: {{ $page->offer_end_date->format('M d, Y H:i') }}
+            </span>
+        @endif
+        
+        @if($page->isExpired())
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                <i class="fas fa-calendar-times mr-1"></i>
+                Expired
+            </span>
+        @endif
+    </div>
+    
+    <div class="flex items-center space-x-2">
+        <button onclick="togglePageStatus({{ $page->id }})" 
+                class="inline-flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 {{ $page->is_active ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                title="{{ $page->is_active ? 'Deactivate Page' : 'Activate Page' }}">
+            <i class="fas {{ $page->is_active ? 'fa-toggle-on' : 'fa-toggle-off' }} text-lg"></i>
+        </button>
+        
+        @if($page->isAvailable())
+            <a href="{{ route('occasions') }}" target="_blank" 
+               class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all duration-200"
+               title="Preview Page">
+                <i class="fas fa-external-link-alt text-sm"></i>
+            </a>
+        @else
+            <div class="inline-flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed"
+                 title="Page not available for preview">
+                <i class="fas fa-external-link-alt text-sm"></i>
+            </div>
+        @endif
+    </div>
+</div>
+
+<script>
+function togglePageStatus(pageId) {
+    const button = event.target.closest('button');
+    const icon = button.querySelector('i');
+    const originalClasses = button.className;
+    const originalIconClasses = icon.className;
+    
+    button.disabled = true;
+    icon.className = 'fas fa-spinner fa-spin text-lg';
+    button.className = button.className.replace(/bg-\w+-100|text-\w+-700|hover:bg-\w+-200/g, '') + ' bg-gray-100 text-gray-500';
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    
+    fetch(`/admin/dynamic-pages/${pageId}/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            throw new Error(data.message || 'Unknown error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        button.disabled = false;
+        button.className = originalClasses;
+        icon.className = originalIconClasses;
+        
+        showNotification('Error: ' + error.message, 'error');
+    });
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 transform translate-x-full ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${type === 'success' ? 'fa-check' : 'fa-times'} mr-2"></i>
+            <span>${message}</span>
         </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animation
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+</script>
+        </div>
+ 
 
         
-
         <div class="p-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Sections Management -->

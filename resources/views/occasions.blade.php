@@ -373,85 +373,155 @@
 
 
 
- @case('services')
- @if($page->hasActiveSection('services') )
-        
-<!-- Services Slider Section -->
-<section class="services-section">
-    <div class="container">
-        <div class="section-title">
-            <h2 class="font-orbitron">
+@case('services')
+@if($page->hasActiveSection('services') && $services && $services->count() > 0)
+<!-- Premium Services Section -->
+<section class="py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-red-900/10 to-red-900/10"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
                 {{ $page->services_title ?? 'PREMIUM SERVICES' }}
             </h2>
-            <p>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
                 {{ $page->services_subtitle ?? 'Experience cutting-edge technology with our professional solutions' }}
             </p>
         </div>
 
-        <!-- Services 3D Slider -->
-        <div class="slider-container">
-            <div class="slider-wrapper" id="sliderWrapper">
-            @php
-    $bgUrl = 'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80';
-@endphp
-
-
-                @foreach($services as $index => $service)
-                    <div class="slide {{ $index === 0 ? 'active' : ($index === 1 ? 'next' : ($index === 2 ? 'far-right' : ($index === count($services)-1 ? 'prev' : 'far-left'))) }}"
-                         data-index="{{ $index }}">
-                        <div class="slide-card relative overflow-hidden">
-                            <!-- Background image fills card -->
-                            <div class="absolute inset-0">
-                                <div class="w-full h-full bg-center bg-cover"
-                                     style="background-image: url('{{ $bgUrl }}');"></div>
-                                <div class="absolute inset-0 bg-black/60"></div>
-                            </div>
-
-                            <div class="relative z-10">
-                                <div class="glowing-orb"></div>
-
-                                <div class="service-icon">
-                                    @if(!empty($service->icon))
-                                        <i class="{{ $service->icon }}"></i>
+        <!-- Services Slider Container -->
+        <div class="relative max-w-7xl mx-auto">
+            <div class="services-slider-container relative h-96" id="servicesSlider">
+                <div class="slider-track absolute w-full h-full flex items-center justify-center">
+                    
+                    @foreach($services as $index => $service)
+                        @php
+                            $position = '';
+                            switch($index) {
+                                case 0: $position = 'active'; break;
+                                case 1: $position = 'next'; break;
+                                case count($services)-1: $position = 'prev'; break;
+                                case count($services)-2: $position = 'far-left'; break;
+                                case 2: $position = 'far-right'; break;
+                                default: $position = 'hidden'; break;
+                            }
+                        @endphp
+                        
+                        <div class="services-slide {{ $position }}" data-index="{{ $index }}">
+                            <div class="services-card">
+                                <!-- Card Background -->
+                                <div class="absolute inset-0">
+                                    @if($service->featured_image)
+                                        <img src="{{ asset('storage/' . $service->featured_image) }}" 
+                                             alt="{{ $service->title }}"
+                                             class="w-full h-full object-cover opacity-20">
                                     @else
-                                        <i class="fas fa-server"></i>
+                                        <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50"
+                                             style="background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;">
+                                        </div>
                                     @endif
+                                    <div class="absolute inset-0 bg-gradient-to-br from-dark-card/90 to-gray-900/90"></div>
                                 </div>
 
-                                <h3 class="service-title font-orbitron">
-                                    {{ $service->title }}
-                                </h3>
-                                <p class="service-description">
-                                    {{ $service->short_description ?? \Illuminate\Support\Str::limit($service->description, 180) }}
-                                </p>
+                                <!-- Card Content -->
+                                <div class="relative z-10 p-8 h-full flex flex-col justify-between">
+                                    <!-- Header -->
+                                    <div class="text-center">
+                                        <!-- Service Icon -->
+                                        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-gradient-to-br from-red-600 to-red-800 shadow-lg">
+                                            @if($service->icon)
+                                                <i class="{{ $service->icon }} text-2xl text-white"></i>
+                                            @else
+                                                <i class="fas fa-server text-2xl text-white"></i>
+                                            @endif
+                                        </div>
+
+                                        <!-- Service Title -->
+                                        <h3 class="text-2xl font-bold text-white mb-2 font-orbitron">
+                                            {{ $service->title }}
+                                        </h3>
+
+                                        <!-- Service Category -->
+                                        @if($service->category)
+                                            <span class="inline-block px-3 py-1 bg-red-500/20 text-emerald-400 rounded-full text-xs font-medium mb-4">
+                                                {{ ucfirst($service->category) }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="text-center mb-6">
+                                        <p class="text-gray-300 text-sm leading-relaxed">
+                                            {{ Str::limit($service->short_description ?? $service->description, 120) }}
+                                        </p>
+                                    </div>
+
+
+                                    <!-- Pricing -->
+                                    {{-- <div class="text-center mb-6">
+                                        @if($service->starting_price && $service->starting_price > 0)
+                                            <div class="text-3xl font-black text-white mb-1 font-orbitron">
+                                                ${{ number_format($service->starting_price, 0) }}+
+                                            </div>
+                                            <div class="text-gray-400 text-xs">Starting from</div>
+                                        @else
+                                           
+                                        @endif
+                                    </div> --}}
+
+                                    <!-- Action Button -->
+                                    <div class="text-center">
+                                        <a href="{{ route('services.show', $service->slug) }}" 
+                                           class="inline-block bg-gradient-to-r from-red-600 to-red-800 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-emerald-500/50">
+                                            <i class="fas fa-arrow-right mr-2"></i>Learn More
+                                        </a>
+                                    </div>
+
+                                    <!-- Status Badges -->
+                                    <div class="absolute top-4 right-4 flex flex-col space-y-1">
+                                        @if($service->is_featured)
+                                            <span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                Featured
+                                            </span>
+                                        @endif
+                                        @if($service->is_popular)
+                                            <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                Popular
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Glow Effect -->
+                                <div class="absolute -inset-1 bg-gradient-to-br from-emerald-500/30 to-cyan-600/30 rounded-3xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
+
+                <!-- Navigation Arrows -->
+                <button class="services-nav-button prev" type="button" id="servicesPrevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="services-nav-button next" type="button" id="servicesNextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
 
-            <!-- Navigation Buttons -->
-            <button class="nav-button prev" type="button">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="nav-button next" type="button">
-                <i class="fas fa-chevron-right"></i>
-            </button>
+            <!-- Dots Indicator -->
+            {{-- <div class="services-dots-indicator" id="servicesDotsIndicator">
+                @foreach($services as $index => $service)
+                    <div class="services-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
+                @endforeach
+            </div> --}}
         </div>
 
-        <!-- Dots Indicator -->
-        <div class="dots-indicator" id="dotsIndicator">
-            @foreach($services as $index => $service)
-                <div class="dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
-            @endforeach
-        </div>
-
-        <!-- Global CTA under slider -->
-        <div class="mt-10 flex justify-center">
-            <a href="{{ route('services') }}"
-               class="inline-flex items-center px-8 py-3 rounded-full bg-gradient-to-r from-neon-pink to-purple-600 text-white font-semibold text-sm md:text-base shadow-lg hover:shadow-neon-pink transition-all duration-300 hover:scale-105 border border-neon-pink/60">
-                <i class="fas fa-layer-group mr-2"></i>
-                View More Available Services
+        <!-- Global CTA -->
+        <div class="text-center mt-12">
+            <a href="{{ route('services') }}" 
+               class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-emerald-500/50">
+                <i class="fas fa-layer-group mr-3"></i>
+                Explore All Services
             </a>
         </div>
     </div>
@@ -459,111 +529,119 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const section   = document.querySelector('.services-section');
-    if (!section) return;
+    const servicesSection = document.querySelector('#servicesSlider');
+    if (!servicesSection) return;
 
-    const slides    = section.querySelectorAll('.slide');
-    const dots      = section.querySelectorAll('.dot');
-    const prevBtn   = section.querySelector('.nav-button.prev');
-    const nextBtn   = section.querySelector('.nav-button.next');
-    const totalSlides = slides.length;
+    const servicesSlides = servicesSection.querySelectorAll('.services-slide');
+    const servicesDots = servicesSection.querySelectorAll('.services-dot');
+    const servicesPrevBtn = document.getElementById('servicesPrevBtn');
+    const servicesNextBtn = document.getElementById('servicesNextBtn');
+    const totalServicesSlides = servicesSlides.length;
 
-    if (!totalSlides) return;
+    if (!totalServicesSlides) return;
 
-    let currentSlide = 0;
-    let autoRotateInterval = null;
-    const slideClasses = ['far-left', 'prev', 'active', 'next', 'far-right'];
-    const AUTO_INTERVAL = 5000; // 7 seconds
+    let currentServicesSlide = 0;
+    let servicesAutoRotateInterval = null;
+    const servicesSlideClasses = ['far-left', 'prev', 'active', 'next', 'far-right', 'hidden'];
+    const SERVICES_AUTO_INTERVAL = 5000; // 5 seconds
 
-    function updateSlides() {
-        slides.forEach((slide, index) => {
-            slideClasses.forEach(c => slide.classList.remove(c));
+    function updateServicesSlides() {
+        servicesSlides.forEach((slide, index) => {
+            servicesSlideClasses.forEach(c => slide.classList.remove(c));
 
-            let position = index - currentSlide;
-            if (position < -2) position += totalSlides;
-            if (position >  2) position -= totalSlides;
+            let position = index - currentServicesSlide;
+            if (position < -2) position += totalServicesSlides;
+            if (position > 2) position -= totalServicesSlides;
 
             switch (position) {
-                case -2: slide.classList.add('far-left');  break;
-                case -1: slide.classList.add('prev');      break;
-                case 0:  slide.classList.add('active');    break;
-                case 1:  slide.classList.add('next');      break;
-                case 2:  slide.classList.add('far-right'); break;
+                case -2: slide.classList.add('far-left'); break;
+                case -1: slide.classList.add('prev'); break;
+                case 0: slide.classList.add('active'); break;
+                case 1: slide.classList.add('next'); break;
+                case 2: slide.classList.add('far-right'); break;
+                default: slide.classList.add('hidden'); break;
             }
         });
 
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === currentSlide);
+        servicesDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentServicesSlide);
         });
     }
 
     function slideServices(direction) {
         if (direction === 'next') {
-            currentSlide = (currentSlide + 1) % totalSlides;
+            currentServicesSlide = (currentServicesSlide + 1) % totalServicesSlides;
         } else {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            currentServicesSlide = (currentServicesSlide - 1 + totalServicesSlides) % totalServicesSlides;
         }
-        updateSlides();
-        resetAutoRotate();
+        updateServicesSlides();
+        resetServicesAutoRotate();
     }
 
-    function slideToService(index) {
-        if (index < 0 || index >= totalSlides) return;
-        currentSlide = index;
-        updateSlides();
-        resetAutoRotate();
+    function slideToServices(index) {
+        if (index < 0 || index >= totalServicesSlides) return;
+        currentServicesSlide = index;
+        updateServicesSlides();
+        resetServicesAutoRotate();
     }
 
-    function startAutoRotate() {
-        if (totalSlides <= 1 || autoRotateInterval) return;
-        autoRotateInterval = setInterval(() => {
+    function startServicesAutoRotate() {
+        if (totalServicesSlides <= 1 || servicesAutoRotateInterval) return;
+        servicesAutoRotateInterval = setInterval(() => {
             slideServices('next');
-        }, AUTO_INTERVAL);
+        }, SERVICES_AUTO_INTERVAL);
     }
 
-    function stopAutoRotate() {
-        if (!autoRotateInterval) return;
-        clearInterval(autoRotateInterval);
-        autoRotateInterval = null;
+    function stopServicesAutoRotate() {
+        if (!servicesAutoRotateInterval) return;
+        clearInterval(servicesAutoRotateInterval);
+        servicesAutoRotateInterval = null;
     }
 
-    function resetAutoRotate() {
-        stopAutoRotate();
-        startAutoRotate();
+    function resetServicesAutoRotate() {
+        stopServicesAutoRotate();
+        startServicesAutoRotate();
     }
 
-    if (prevBtn) prevBtn.addEventListener('click', () => slideServices('prev'));
-    if (nextBtn) nextBtn.addEventListener('click', () => slideServices('next'));
+    // Event Listeners
+    if (servicesPrevBtn) servicesPrevBtn.addEventListener('click', () => slideServices('prev'));
+    if (servicesNextBtn) servicesNextBtn.addEventListener('click', () => slideServices('next'));
 
-    dots.forEach(dot => {
+    servicesDots.forEach(dot => {
         dot.addEventListener('click', () => {
             const index = parseInt(dot.dataset.index, 10);
-            slideToService(index);
+            slideToServices(index);
         });
     });
 
-    slides.forEach((slide, index) => {
+    servicesSlides.forEach((slide, index) => {
         slide.addEventListener('click', function () {
             if (!this.classList.contains('active')) {
-                slideToService(index);
+                slideToServices(index);
             }
         });
     });
 
-    const sliderContainer = section.querySelector('.slider-container');
-    if (sliderContainer) {
-        sliderContainer.addEventListener('mouseenter', stopAutoRotate);
-        sliderContainer.addEventListener('mouseleave', startAutoRotate);
+    // Hover events
+    if (servicesSection) {
+        servicesSection.addEventListener('mouseenter', stopServicesAutoRotate);
+        servicesSection.addEventListener('mouseleave', startServicesAutoRotate);
+    }
 
-        let startX = 0;
-        let endX   = 0;
-        sliderContainer.addEventListener('touchstart', function (e) {
-            startX = e.touches[0].clientX;
+    // Touch support
+    let servicesStartX = 0;
+    let servicesEndX = 0;
+
+    if (servicesSection) {
+        servicesSection.addEventListener('touchstart', function (e) {
+            servicesStartX = e.touches[0].clientX;
         });
-        sliderContainer.addEventListener('touchend', function (e) {
-            endX = e.changedTouches[0].clientX;
+
+        servicesSection.addEventListener('touchend', function (e) {
+            servicesEndX = e.changedTouches[0].clientX;
             const threshold = 50;
-            const diff = startX - endX;
+            const diff = servicesStartX - servicesEndX;
+            
             if (Math.abs(diff) > threshold) {
                 if (diff > 0) slideServices('next');
                 else slideServices('prev');
@@ -571,18 +649,689 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Keyboard navigation
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowLeft')  slideServices('prev');
+        if (e.key === 'ArrowLeft') slideServices('prev');
         if (e.key === 'ArrowRight') slideServices('next');
     });
 
-    // init
-    updateSlides();
-    startAutoRotate();
+    // Initialize
+    updateServicesSlides();
+    startServicesAutoRotate();
 });
 </script>
-  @endif
- @break
+@endif
+@break
+
+@case('packages')
+@if($page->hasActiveSection('packages') && $packages && $packages->count() > 0)
+<!-- Pricing Plans Section - Slider Design -->
+<section class="py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-red-900/10 to-red-800/10"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
+                {{ $page->packages_title ?? 'EXPLOSIVE PACKAGES' }}
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                {{ $page->packages_subtitle ?? 'Discover our premium packages with special occasion pricing' }}
+            </p>
+        </div>
+
+        @php
+            $hasMonthlyPlans = $packages->filter(function($plan) {
+                return !empty($plan->price_monthly) && $plan->price_monthly > 0;
+            })->count() > 0;
+            
+            $hasYearlyPlans = $packages->filter(function($plan) {
+                return !empty($plan->price_yearly) && $plan->price_yearly > 0;
+            })->count() > 0;
+            
+            $showBillingToggle = $hasMonthlyPlans && $hasYearlyPlans;
+        @endphp
+
+        <!-- Billing Toggle (Only show if both monthly and yearly plans exist) -->
+        @if($showBillingToggle)
+            <div class="flex justify-center mb-12">
+                <div class="bg-gradient-to-r from-red-900/80 to-red-800/80 backdrop-blur-md rounded-2xl p-2 border border-red-600/50 shadow-xl">
+                    <div class="flex items-center space-x-1">
+                        <button id="monthlyBtn" class="billing-toggle-btn active px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group">
+                            <span class="relative z-10">Monthly</span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        </button>
+                        <button id="yearlyBtn" class="billing-toggle-btn px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group">
+                            <span class="relative z-10">Yearly</span>
+                            <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                            <span class="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">Save up to 30%</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Pricing Plans Slider Container -->
+        <div class="relative max-w-7xl mx-auto">
+            <div class="packages-slider-container relative h-[500px]" id="packagesSlider">
+                <div class="slider-track absolute w-full h-full flex items-center justify-center">
+                    
+                    @foreach($packages as $index => $package)
+                        @php
+                            $position = '';
+                            switch($index) {
+                                case 0: $position = 'active'; break;
+                                case 1: $position = 'next'; break;
+                                case count($packages)-1: $position = 'prev'; break;
+                                case count($packages)-2: $position = 'far-left'; break;
+                                case 2: $position = 'far-right'; break;
+                                default: $position = 'hidden'; break;
+                            }
+                            
+                            // Handle both pivot relationship and direct model access
+                            if (isset($package->pivot)) {
+                                $pivotData = $package->pivot;
+                                $isPackageFeatured = ($pivotData->is_featured ?? false) || $package->is_featured;
+                                $discountPercentage = $pivotData->discount_percentage ?? null;
+                            } else {
+                                $isPackageFeatured = $package->is_featured;
+                                $discountPercentage = null;
+                            }
+                            $originalMonthlyPrice = $package->price_monthly;
+                            $originalYearlyPrice = $package->price_yearly;
+                            $discountedMonthlyPrice = $discountPercentage ? $originalMonthlyPrice * (1 - $discountPercentage / 100) : $originalMonthlyPrice;
+                            $discountedYearlyPrice = $discountPercentage ? $originalYearlyPrice * (1 - $discountPercentage / 100) : $originalYearlyPrice;
+                        @endphp
+                        
+                        <div class="packages-slide {{ $position }}" 
+                             data-index="{{ $index }}"
+                             data-has-monthly="{{ !empty($package->price_monthly) && $package->price_monthly > 0 ? 'true' : 'false' }}"
+                             data-has-yearly="{{ !empty($package->price_yearly) && $package->price_yearly > 0 ? 'true' : 'false' }}"
+                             data-monthly-price="{{ $originalMonthlyPrice }}"
+                             data-yearly-price="{{ $originalYearlyPrice }}"
+                             data-discounted-monthly="{{ $discountedMonthlyPrice }}"
+                             data-discounted-yearly="{{ $discountedYearlyPrice }}"
+                             data-discount="{{ $discountPercentage }}">
+                            
+                            <div class="packages-card group {{ $isPackageFeatured ? 'featured-plan' : '' }}">
+                                <!-- Featured Badge -->
+                                @if($isPackageFeatured)
+                                    <div class=" flex items-center justify-center">
+                                        <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                                            <i class="fas fa-crown mr-1"></i> MOST POPULAR
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Discount Badge -->
+                                @if($discountPercentage)
+                                    <div class="absolute -top-2 -right-2 z-10">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg transform rotate-12 animate-pulse">
+                                            <div class="text-center">
+                                                <div class="text-xs">{{ $discountPercentage }}%</div>
+                                                <div class="text-xs">OFF</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Scrollable Card Content -->
+                                <div class="packages-card-content h-full {{ $isPackageFeatured ? 'border-red-500/50 shadow-red-600/30' : '' }}">
+                                    <!-- Glow Effect for Featured -->
+                                    @if($isPackageFeatured)
+                                        <div class="absolute -inset-1 bg-gradient-to-r from-red-500/30 to-red-600/30 rounded-3xl blur-xl opacity-60 -z-10 animate-pulse"></div>
+                                    @endif
+
+                                    <div class="scrollable-content">
+                                        <!-- Card Header -->
+                                        <div class="p-8 text-center border-b border-gray-700/50">
+                                            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center {{ $isPackageFeatured ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-gray-600 to-gray-700' }} shadow-lg">
+                                                @if($package->icon)
+                                                    <i class="{{ $package->icon }} text-2xl text-white"></i>
+                                                @else
+                                                    <i class="fas fa-server text-2xl text-white"></i>
+                                                @endif
+                                            </div>
+                                            
+                                            <h3 class="text-2xl font-bold text-white mb-2 font-orbitron">{{ $package->name }}</h3>
+                                            <p class="text-gray-400 text-sm leading-relaxed">{{ $package->short_description }}</p>
+                                        </div>
+
+                                        <!-- Pricing -->
+                                        <div class="p-8 text-center border-b border-gray-700/50">
+                                            <div class="pricing-display">
+                                                <!-- Monthly Pricing -->
+                                                @if(!empty($package->price_monthly) && $package->price_monthly > 0)
+                                                    <div class="monthly-price {{ $showBillingToggle ? '' : 'block' }}">
+                                                        @if($discountPercentage)
+                                                            <div class="text-gray-500 text-lg line-through mb-1">
+                                                                ${{ number_format($originalMonthlyPrice, 2) }}
+                                                            </div>
+                                                        @endif
+                                                        <div class="text-5xl font-black text-white mb-2 font-orbitron">
+                                                            ${{ number_format($discountedMonthlyPrice, 0) }}
+                                                        </div>
+                                                        <div class="text-gray-400 text-sm">per month</div>
+                                                    </div>
+                                                @endif
+
+                                                <!-- Yearly Pricing -->
+                                                @if(!empty($package->price_yearly) && $package->price_yearly > 0)
+                                                    <div class="yearly-price {{ $showBillingToggle ? 'hidden' : 'block' }}">
+                                                        @if($discountPercentage)
+                                                            <div class="text-gray-500 text-lg line-through mb-1">
+                                                                ${{ number_format($originalYearlyPrice, 2) }}
+                                                            </div>
+                                                        @endif
+                                                        <div class="text-5xl font-black text-white mb-2 font-orbitron">
+                                                            ${{ number_format($discountedYearlyPrice, 0) }}
+                                                        </div>
+                                                        <div class="text-gray-400 text-sm">per year</div>
+                                                        @if($package->getYearlySavingsPercentage() > 0)
+                                                            <div class="text-green-400 text-sm font-medium mt-1">
+                                                                Save {{ $package->getYearlySavingsPercentage() }}% annually
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+
+                                                <!-- Free Plan -->
+                                                @if(empty($package->price_monthly) && empty($package->price_yearly))
+                                                    <div class="text-5xl font-black text-white mb-2 font-orbitron">FREE</div>
+                                                    <div class="text-gray-400 text-sm">forever</div>
+                                                @endif
+                                            </div>
+
+                                            <!-- Setup Fee -->
+                                            @if($package->hasSetupFee())
+                                                <div class="mt-4 text-sm text-yellow-400">
+                                                    + {{ $package->getFormattedSetupFee() }}
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <!-- Features -->
+                                        <div class="p-8 flex-1">
+                                            <h4 class="text-white font-bold mb-4 text-center">What's Included:</h4>
+                                            <ul class="space-y-3">
+                                                @if($package->features && count($package->features) > 0)
+                                                    @foreach($package->features as $feature)
+                                                        <li class="flex items-center text-gray-300 text-sm">
+                                                            <i class="fas fa-check text-green-400 mr-3 flex-shrink-0"></i>
+                                                            <span>{{ $feature }}</span>
+                                                        </li>
+                                                    @endforeach
+                                                @else
+                                                    <li class="flex items-center text-gray-300 text-sm">
+                                                        <i class="fas fa-check text-green-400 mr-3"></i>
+                                                        <span>Full access to platform</span>
+                                                    </li>
+                                                    <li class="flex items-center text-gray-300 text-sm">
+                                                        <i class="fas fa-check text-green-400 mr-3"></i>
+                                                        <span>24/7 customer support</span>
+                                                    </li>
+                                                    <li class="flex items-center text-gray-300 text-sm">
+                                                        <i class="fas fa-check text-green-400 mr-3"></i>
+                                                        <span>Premium features included</span>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
+
+                                        <!-- CTA Button -->
+                                        <div class="p-8 pt-0 mt-auto">
+                                            <a href="{{ route('subscription.create', $package->slug) }}" 
+                                               class="block w-full text-center py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 {{ $isPackageFeatured ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg hover:shadow-red-500/50' : 'bg-gradient-to-r from-gray-700 to-gray-600 text-white hover:from-gray-600 hover:to-gray-500' }}">
+                                                @if(empty($package->price_monthly) && empty($package->price_yearly))
+                                                    Get Started Free
+                                                @else
+                                                    Start {{ $package->trial_days ? $package->trial_days . '-Day' : '' }} Trial
+                                                @endif
+                                            </a>
+
+                                            @if($package->trial_days)
+                                                <p class="text-center text-gray-500 text-xs mt-2">
+                                                    {{ $package->trial_days }}-day free trial • No credit card required
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Glow Effect -->
+                                <div class="absolute -inset-1 bg-gradient-to-br from-red-500/30 to-red-600/30 rounded-3xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Navigation Arrows -->
+                <button class="packages-nav-button prev" type="button" id="packagesPrevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="packages-nav-button next" type="button" id="packagesNextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Dots Indicator -->
+            {{-- <div class="packages-dots-indicator" id="packagesDotsIndicator">
+                @foreach($packages as $index => $package)
+                    <div class="packages-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
+                @endforeach
+            </div> --}}
+        </div>
+
+        <!-- Additional Info -->
+        <div class="text-center mt-16">
+            <div class="flex justify-center space-x-8 text-sm text-gray-500">
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt text-green-400 mr-2"></i>
+                    SSL Security
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-headset text-red-400 mr-2"></i>
+                    24/7 Support
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-sync-alt text-red-400 mr-2"></i>
+                    Easy Migration
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Packages Slider Styles */
+.packages-slider-container {
+    perspective: 2000px;
+    overflow: visible;
+}
+
+.packages-slide {
+    position: absolute;
+    width: 350px;
+    height: 100%;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+/* Slide Positions */
+.packages-slide.active {
+    transform: translateX(-50%) translateZ(0) scale(1);
+    left: 50%;
+    opacity: 1;
+    z-index: 20;
+}
+
+.packages-slide.next {
+    transform: translateX(0) translateZ(-200px) scale(0.85);
+    left: 60%;
+    opacity: 0.7;
+    z-index: 15;
+}
+
+.packages-slide.prev {
+    transform: translateX(-100%) translateZ(-200px) scale(0.85);
+    left: 40%;
+    opacity: 0.7;
+    z-index: 15;
+}
+
+.packages-slide.far-right {
+    transform: translateX(50%) translateZ(-400px) scale(0.7);
+    left: 75%;
+    opacity: 0.4;
+    z-index: 10;
+}
+
+.packages-slide.far-left {
+    transform: translateX(-150%) translateZ(-400px) scale(0.7);
+    left: 25%;
+    opacity: 0.4;
+    z-index: 10;
+}
+
+.packages-slide.hidden {
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Card Styles */
+.packages-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.packages-card-content {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(50, 50, 50, 0.9) 100%);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(107, 114, 128, 0.5);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.scrollable-content {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(220, 38, 38, 0.5) rgba(26, 26, 26, 0.3);
+}
+
+/* Custom Scrollbar for Webkit Browsers */
+.scrollable-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background: rgba(26, 26, 26, 0.3);
+    border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Navigation Buttons */
+.packages-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+}
+
+.packages-nav-button:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 15px 35px -5px rgba(220, 38, 38, 0.6);
+}
+
+
+
+.packages-nav-button.next {
+    right: 0px;
+}
+
+/* Dots Indicator */
+.packages-dots-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+}
+
+.packages-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(107, 114, 128, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.packages-dot.active {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+}
+
+.packages-dot:hover {
+    background: rgba(220, 38, 38, 0.7);
+    transform: scale(1.2);
+}
+
+/* Billing Toggle Active State */
+.billing-toggle-btn.active {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+}
+
+/* Featured Plan Enhancements */
+.featured-plan .packages-card-content {
+    border: 2px solid rgba(220, 38, 38, 0.6);
+    box-shadow: 0 0 40px rgba(220, 38, 38, 0.3);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .packages-slide {
+        width: 300px;
+    }
+    
+    .packages-nav-button {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .packages-nav-button.prev {
+        left: -20px;
+    }
+    
+    .packages-nav-button.next {
+        right: -20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .packages-slide {
+        width: 280px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const packagesSection = document.querySelector('#packagesSlider');
+    if (!packagesSection) return;
+
+    const packagesSlides = packagesSection.querySelectorAll('.packages-slide');
+    const packagesDots = packagesSection.querySelectorAll('.packages-dot');
+    const packagesPrevBtn = document.getElementById('packagesPrevBtn');
+    const packagesNextBtn = document.getElementById('packagesNextBtn');
+    const totalPackagesSlides = packagesSlides.length;
+
+    if (!totalPackagesSlides) return;
+
+    let currentPackagesSlide = 0;
+    let packagesAutoRotateInterval = null;
+    const packagesSlideClasses = ['far-left', 'prev', 'active', 'next', 'far-right', 'hidden'];
+    const PACKAGES_AUTO_INTERVAL = 5000; // 5 seconds
+
+    // Billing Toggle Elements
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const yearlyBtn = document.getElementById('yearlyBtn');
+
+    function updatePackagesSlides() {
+        packagesSlides.forEach((slide, index) => {
+            packagesSlideClasses.forEach(c => slide.classList.remove(c));
+
+            let position = index - currentPackagesSlide;
+            if (position < -2) position += totalPackagesSlides;
+            if (position > 2) position -= totalPackagesSlides;
+
+            switch (position) {
+                case -2: slide.classList.add('far-left'); break;
+                case -1: slide.classList.add('prev'); break;
+                case 0: slide.classList.add('active'); break;
+                case 1: slide.classList.add('next'); break;
+                case 2: slide.classList.add('far-right'); break;
+                default: slide.classList.add('hidden'); break;
+            }
+        });
+
+        packagesDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentPackagesSlide);
+        });
+    }
+
+    function slidePackages(direction) {
+        if (direction === 'next') {
+            currentPackagesSlide = (currentPackagesSlide + 1) % totalPackagesSlides;
+        } else {
+            currentPackagesSlide = (currentPackagesSlide - 1 + totalPackagesSlides) % totalPackagesSlides;
+        }
+        updatePackagesSlides();
+        resetPackagesAutoRotate();
+    }
+
+    function slideToPackage(index) {
+        if (index < 0 || index >= totalPackagesSlides) return;
+        currentPackagesSlide = index;
+        updatePackagesSlides();
+        resetPackagesAutoRotate();
+    }
+
+    function startPackagesAutoRotate() {
+        if (totalPackagesSlides <= 1 || packagesAutoRotateInterval) return;
+        packagesAutoRotateInterval = setInterval(() => {
+            slidePackages('next');
+        }, PACKAGES_AUTO_INTERVAL);
+    }
+
+    function stopPackagesAutoRotate() {
+        if (!packagesAutoRotateInterval) return;
+        clearInterval(packagesAutoRotateInterval);
+        packagesAutoRotateInterval = null;
+    }
+
+    function resetPackagesAutoRotate() {
+        stopPackagesAutoRotate();
+        startPackagesAutoRotate();
+    }
+
+    // Billing Toggle Functionality
+    function switchBilling(isYearly) {
+        // Toggle button states
+        if (isYearly) {
+            monthlyBtn?.classList.remove('active');
+            yearlyBtn?.classList.add('active');
+        } else {
+            yearlyBtn?.classList.remove('active');
+            monthlyBtn?.classList.add('active');
+        }
+        
+        // Show/hide pricing
+        packagesSlides.forEach(slide => {
+            const monthlyPrice = slide.querySelector('.monthly-price');
+            const yearlyPrice = slide.querySelector('.yearly-price');
+            const hasMonthly = slide.dataset.hasMonthly === 'true';
+            const hasYearly = slide.dataset.hasYearly === 'true';
+            
+            if (isYearly && hasYearly) {
+                if (monthlyPrice) monthlyPrice.classList.add('hidden');
+                if (yearlyPrice) yearlyPrice.classList.remove('hidden');
+            } else if (!isYearly && hasMonthly) {
+                if (yearlyPrice) yearlyPrice.classList.add('hidden');
+                if (monthlyPrice) monthlyPrice.classList.remove('hidden');
+            }
+            
+            // Hide cards that don't have the selected billing option
+            if ((isYearly && !hasYearly) || (!isYearly && !hasMonthly)) {
+                slide.style.opacity = '0.5';
+                slide.style.pointerEvents = 'none';
+            } else {
+                slide.style.opacity = '1';
+                slide.style.pointerEvents = 'auto';
+            }
+        });
+    }
+
+    // Event Listeners
+    if (packagesPrevBtn) packagesPrevBtn.addEventListener('click', () => slidePackages('prev'));
+    if (packagesNextBtn) packagesNextBtn.addEventListener('click', () => slidePackages('next'));
+
+    // Billing toggle events
+    if (monthlyBtn) monthlyBtn.addEventListener('click', () => switchBilling(false));
+    if (yearlyBtn) yearlyBtn.addEventListener('click', () => switchBilling(true));
+
+    packagesDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.dataset.index, 10);
+            slideToPackage(index);
+        });
+    });
+
+    packagesSlides.forEach((slide, index) => {
+        slide.addEventListener('click', function () {
+            if (!this.classList.contains('active')) {
+                slideToPackage(index);
+            }
+        });
+    });
+
+    // Hover events
+    if (packagesSection) {
+        packagesSection.addEventListener('mouseenter', stopPackagesAutoRotate);
+        packagesSection.addEventListener('mouseleave', startPackagesAutoRotate);
+    }
+
+    // Touch support
+    let packagesStartX = 0;
+    let packagesEndX = 0;
+
+    if (packagesSection) {
+        packagesSection.addEventListener('touchstart', function (e) {
+            packagesStartX = e.touches[0].clientX;
+        });
+
+        packagesSection.addEventListener('touchend', function (e) {
+            packagesEndX = e.changedTouches[0].clientX;
+            const threshold = 50;
+            const diff = packagesStartX - packagesEndX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) slidePackages('next');
+                else slidePackages('prev');
+            }
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') slidePackages('prev');
+        if (e.key === 'ArrowRight') slidePackages('next');
+    });
+
+    // Initialize
+    updatePackagesSlides();
+    startPackagesAutoRotate();
+});
+</script>
+@endif
+@break
 
 @case('products')
 @if($page->hasActiveSection('products') && $products && $products->count() > 0)
@@ -672,22 +1421,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </p>
                                     </div>
 
-                                    <!-- Features -->
-                                    @php
-                                        $keyFeatures = $product->getKeyFeatures(); 
-                                    @endphp
-                                    @if($keyFeatures && count($keyFeatures) > 0)
-                                        <div class="mb-6">
-                                            <ul class="space-y-2">
-                                                @foreach(array_slice($keyFeatures, 0, 3) as $feature)
-                                                    <li class="flex items-center text-gray-300 text-sm">
-                                                        <i class="fas fa-check text-green-400 mr-2 flex-shrink-0"></i>
-                                                        <span>{{ is_string($feature) ? $feature : $feature['name'] ?? 'Feature' }}</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
 
                                     <!-- Pricing -->
                                     <div class="text-center mb-6">
@@ -727,7 +1460,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
 
                                     <!-- Status Badges -->
-                                    <div class="absolute top-4 right-4 flex flex-col space-y-1">
+                                    <div class="absolute top-4 right-4 flex flex-col space-y-1 ">
                                         @if($product->is_featured)
                                             <span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full font-medium">
                                                 Featured
@@ -758,15 +1491,15 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
 
             <!-- Dots Indicator -->
-            <div class="saas-dots-indicator" id="saasDotsIndicator">
+            {{-- <div class="saas-dots-indicator" id="saasDotsIndicator">
                 @foreach($products as $index => $product)
                     <div class="saas-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
                 @endforeach
-            </div>
+            </div> --}}
         </div>
 
         <!-- Global CTA -->
-        <div class="text-center mt-12">
+        <div class="text-center mt-32">
             <a href="{{ route('products') }}" 
                class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-blue-500/50">
                 <i class="fas fa-rocket mr-3"></i>
@@ -775,9 +1508,6 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </section>
-
-
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const saasSection = document.querySelector('#saasProductsSlider');
@@ -913,471 +1643,363 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 @endif
 @break
-@case('packages')
-@if($page->hasActiveSection('packages') && $packages && $packages->count() > 0)
-<!-- Pricing Plans Section -->
-<section class="py-20 relative">
-    <div class="absolute inset-0 bg-gradient-to-br from-purple-900/10 to-pink-900/10"></div>
-    
-    <div class="container mx-auto px-6 relative z-10">
-        <div class="text-center mb-16">
-            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
-                {{ $page->packages_title ?? 'EXPLOSIVE PACKAGES' }}
-            </h2>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-                {{ $page->packages_subtitle ?? 'Discover our premium packages with special occasion pricing' }}
-            </p>
-        </div>
-
-        @php
-            $hasMonthlyPlans = $packages->filter(function($plan) {
-                return !empty($plan->price_monthly) && $plan->price_monthly > 0;
-            })->count() > 0;
-            
-            $hasYearlyPlans = $packages->filter(function($plan) {
-                return !empty($plan->price_yearly) && $plan->price_yearly > 0;
-            })->count() > 0;
-            
-            $showBillingToggle = $hasMonthlyPlans && $hasYearlyPlans;
-        @endphp
-
-        <!-- Billing Toggle (Only show if both monthly and yearly plans exist) -->
-        @if($showBillingToggle)
-            <div class="flex justify-center mb-12">
-                <div class="bg-dark-card/80 backdrop-blur-md rounded-2xl p-2 border border-gray-700/50 shadow-xl">
-                    <div class="flex items-center space-x-1">
-                        <button id="monthlyBtn" class="billing-toggle-btn active px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group">
-                            <span class="relative z-10">Monthly</span>
-                            <div class="absolute inset-0 bg-gradient-to-r from-neon-pink to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                        </button>
-                        <button id="yearlyBtn" class="billing-toggle-btn px-8 py-3 rounded-xl font-bold text-sm transition-all duration-300 relative overflow-hidden group">
-                            <span class="relative z-10">Yearly</span>
-                            <div class="absolute inset-0 bg-gradient-to-r from-neon-pink to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                            <span class="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">Save up to 30%</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <!-- Pricing Plans Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto" id="pricingGrid">
-            @foreach($packages as $index => $package)
-                @php
-                    // Handle both pivot relationship and direct model access
-                    if (isset($package->pivot)) {
-                        $pivotData = $package->pivot;
-                        $isPackageFeatured = ($pivotData->is_featured ?? false) || $package->is_featured;
-                        $discountPercentage = $pivotData->discount_percentage ?? null;
-                    } else {
-                        $isPackageFeatured = $package->is_featured;
-                        $discountPercentage = null;
-                    }
-                    $originalMonthlyPrice = $package->price_monthly;
-                    $originalYearlyPrice = $package->price_yearly;
-                    $discountedMonthlyPrice = $discountPercentage ? $originalMonthlyPrice * (1 - $discountPercentage / 100) : $originalMonthlyPrice;
-                    $discountedYearlyPrice = $discountPercentage ? $originalYearlyPrice * (1 - $discountPercentage / 100) : $originalYearlyPrice;
-                @endphp
-
-                <div class="pricing-card group relative {{ $isPackageFeatured ? 'featured-plan' : '' }}" 
-                     data-has-monthly="{{ !empty($package->price_monthly) && $package->price_monthly > 0 ? 'true' : 'false' }}"
-                     data-has-yearly="{{ !empty($package->price_yearly) && $package->price_yearly > 0 ? 'true' : 'false' }}"
-                     data-monthly-price="{{ $originalMonthlyPrice }}"
-                     data-yearly-price="{{ $originalYearlyPrice }}"
-                     data-discounted-monthly="{{ $discountedMonthlyPrice }}"
-                     data-discounted-yearly="{{ $discountedYearlyPrice }}"
-                     data-discount="{{ $discountPercentage }}">
-                    
-                    <!-- Featured Badge -->
-                    @if($isPackageFeatured)
-                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                                <i class="fas fa-crown mr-1"></i> MOST POPULAR
-                            </div>
-                        </div>
-                    @endif
-
-                    <!-- Discount Badge -->
-                    @if($discountPercentage)
-                        <div class="absolute -top-2 -right-2 z-10">
-                            <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg transform rotate-12 pulse-animation">
-                                <div class="text-center">
-                                    <div class="text-xs">{{ $discountPercentage }}%</div>
-                                    <div class="text-xs">OFF</div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="relative h-full bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md rounded-3xl border border-gray-700/50 shadow-2xl hover:shadow-neon-pink/20 transition-all duration-500 overflow-hidden group-hover:scale-105 {{ $isPackageFeatured ? 'border-neon-pink/50 shadow-neon-pink/30' : '' }}">
-                        
-                        <!-- Glow Effect -->
-                        @if($isPackageFeatured)
-                            <div class="absolute -inset-1 bg-gradient-to-r from-neon-pink/30 to-purple-600/30 rounded-3xl blur-xl opacity-60 -z-10 animate-pulse"></div>
-                        @endif
-
-                        <!-- Card Header -->
-                        <div class="p-8 text-center border-b border-gray-700/50">
-                            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center {{ $isPackageFeatured ? 'bg-gradient-to-br from-neon-pink to-purple-600' : 'bg-gradient-to-br from-gray-600 to-gray-700' }}">
-                                @if($package->icon)
-                                    <i class="{{ $package->icon }} text-2xl text-white"></i>
-                                @else
-                                    <i class="fas fa-server text-2xl text-white"></i>
-                                @endif
-                            </div>
-                            
-                            <h3 class="text-2xl font-bold text-white mb-2 font-orbitron">{{ $package->name }}</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed">{{ $package->short_description }}</p>
-                        </div>
-
-                        <!-- Pricing -->
-                        <div class="p-8 text-center border-b border-gray-700/50">
-                            <div class="pricing-display">
-                                <!-- Monthly Pricing -->
-                                @if(!empty($package->price_monthly) && $package->price_monthly > 0)
-                                    <div class="monthly-price {{ $showBillingToggle ? '' : 'block' }}">
-                                        @if($discountPercentage)
-                                            <div class="text-gray-500 text-lg line-through mb-1">
-                                                ${{ number_format($originalMonthlyPrice, 2) }}
-                                            </div>
-                                        @endif
-                                        <div class="text-5xl font-black text-white mb-2 font-orbitron">
-                                            ${{ number_format($discountedMonthlyPrice, 0) }}
-                                        </div>
-                                        <div class="text-gray-400 text-sm">per month</div>
-                                    </div>
-                                @endif
-
-                                <!-- Yearly Pricing -->
-                                @if(!empty($package->price_yearly) && $package->price_yearly > 0)
-                                    <div class="yearly-price {{ $showBillingToggle ? 'hidden' : 'block' }}">
-                                        @if($discountPercentage)
-                                            <div class="text-gray-500 text-lg line-through mb-1">
-                                                ${{ number_format($originalYearlyPrice, 2) }}
-                                            </div>
-                                        @endif
-                                        <div class="text-5xl font-black text-white mb-2 font-orbitron">
-                                            ${{ number_format($discountedYearlyPrice, 0) }}
-                                        </div>
-                                        <div class="text-gray-400 text-sm">per year</div>
-                                        @if($package->getYearlySavingsPercentage() > 0)
-                                            <div class="text-green-400 text-sm font-medium mt-1">
-                                                Save {{ $package->getYearlySavingsPercentage() }}% annually
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                <!-- Free Plan -->
-                                @if(empty($package->price_monthly) && empty($package->price_yearly))
-                                    <div class="text-5xl font-black text-white mb-2 font-orbitron">FREE</div>
-                                    <div class="text-gray-400 text-sm">forever</div>
-                                @endif
-                            </div>
-
-                            <!-- Setup Fee -->
-                            @if($package->hasSetupFee())
-                                <div class="mt-4 text-sm text-yellow-400">
-                                    + {{ $package->getFormattedSetupFee() }}
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Features -->
-                        <div class="p-8 flex-1">
-                            <h4 class="text-white font-bold mb-4 text-center">What's Included:</h4>
-                            <ul class="space-y-3">
-                                @if($package->features && count($package->features) > 0)
-                                    @foreach(array_slice($package->features, 0, 8) as $feature)
-                                        <li class="flex items-center text-gray-300 text-sm">
-                                            <i class="fas fa-check text-green-400 mr-3 flex-shrink-0"></i>
-                                            <span>{{ $feature }}</span>
-                                        </li>
-                                    @endforeach
-                                    
-                                    @if(count($package->features) > 8)
-                                        <li class="text-center">
-                                            <button class="text-primary hover:text-secondary text-sm font-medium" onclick="toggleFeatures(this)">
-                                                <span class="show-more">+ {{ count($package->features) - 8 }} more features</span>
-                                                <span class="show-less hidden">- Show less</span>
-                                            </button>
-                                            <div class="extra-features hidden mt-3 space-y-3">
-                                                @foreach(array_slice($package->features, 8) as $feature)
-                                                    <div class="flex items-center text-gray-300 text-sm">
-                                                        <i class="fas fa-check text-green-400 mr-3 flex-shrink-0"></i>
-                                                        <span>{{ $feature }}</span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </li>
-                                    @endif
-                                @else
-                                    <li class="flex items-center text-gray-300 text-sm">
-                                        <i class="fas fa-check text-green-400 mr-3"></i>
-                                        <span>Full access to platform</span>
-                                    </li>
-                                    <li class="flex items-center text-gray-300 text-sm">
-                                        <i class="fas fa-check text-green-400 mr-3"></i>
-                                        <span>24/7 customer support</span>
-                                    </li>
-                                    <li class="flex items-center text-gray-300 text-sm">
-                                        <i class="fas fa-check text-green-400 mr-3"></i>
-                                        <span>Premium features included</span>
-                                    </li>
-                                @endif
-                            </ul>
-                        </div>
-
-                        <!-- CTA Button -->
-                        <div class="p-8 pt-0">
-                            <a href="{{ route('subscription.create', $package->slug) }}" 
-                               class="block w-full text-center py-4 rounded-2xl font-bold text-lg transition-all duration-300 transform hover:scale-105 {{ $isPackageFeatured ? 'bg-gradient-to-r from-neon-pink to-purple-600 text-white shadow-lg hover:shadow-neon-pink/50' : 'bg-gradient-to-r from-gray-700 to-gray-600 text-white hover:from-gray-600 hover:to-gray-500' }}">
-                                @if(empty($package->price_monthly) && empty($package->price_yearly))
-                                    Get Started Free
-                                @else
-                                    Start {{ $package->trial_days ? $package->trial_days . '-Day' : '' }} Trial
-                                @endif
-                            </a>
-
-                            @if($package->trial_days)
-                                <p class="text-center text-gray-500 text-xs mt-2">
-                                    {{ $package->trial_days }}-day free trial • No credit card required
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <!-- Additional Info -->
-        <div class="text-center mt-16">
-        
-            <div class="flex justify-center space-x-8 text-sm text-gray-500">
-                <div class="flex items-center">
-                    <i class="fas fa-shield-alt text-green-400 mr-2"></i>
-                    SSL Security
-                </div>
-                <div class="flex items-center">
-                    <i class="fas fa-headset text-blue-400 mr-2"></i>
-                    24/7 Support
-                </div>
-                <div class="flex items-center">
-                    <i class="fas fa-sync-alt text-purple-400 mr-2"></i>
-                    Easy Migration
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Billing Toggle Functionality
-    const monthlyBtn = document.getElementById('monthlyBtn');
-    const yearlyBtn = document.getElementById('yearlyBtn');
-    const pricingCards = document.querySelectorAll('.pricing-card');
-    
-    if (monthlyBtn && yearlyBtn) {
-        function switchBilling(isYearly) {
-            // Toggle button states
-            if (isYearly) {
-                monthlyBtn.classList.remove('active');
-                yearlyBtn.classList.add('active');
-            } else {
-                yearlyBtn.classList.remove('active');
-                monthlyBtn.classList.add('active');
-            }
-            
-            // Show/hide pricing
-            pricingCards.forEach(card => {
-                const monthlyPrice = card.querySelector('.monthly-price');
-                const yearlyPrice = card.querySelector('.yearly-price');
-                const hasMonthly = card.dataset.hasMonthly === 'true';
-                const hasYearly = card.dataset.hasYearly === 'true';
-                
-                if (isYearly && hasYearly) {
-                    if (monthlyPrice) monthlyPrice.classList.add('hidden');
-                    if (yearlyPrice) yearlyPrice.classList.remove('hidden');
-                } else if (!isYearly && hasMonthly) {
-                    if (yearlyPrice) yearlyPrice.classList.add('hidden');
-                    if (monthlyPrice) monthlyPrice.classList.remove('hidden');
-                }
-                
-                // Hide cards that don't have the selected billing option
-                if ((isYearly && !hasYearly) || (!isYearly && !hasMonthly)) {
-                    card.style.opacity = '0.5';
-                    card.style.pointerEvents = 'none';
-                } else {
-                    card.style.opacity = '1';
-                    card.style.pointerEvents = 'auto';
-                }
-            });
-        }
-        
-        monthlyBtn.addEventListener('click', () => switchBilling(false));
-        yearlyBtn.addEventListener('click', () => switchBilling(true));
-    }
-});
-
-// Toggle extra features
-function toggleFeatures(button) {
-    const showMore = button.querySelector('.show-more');
-    const showLess = button.querySelector('.show-less');
-    const extraFeatures = button.parentElement.querySelector('.extra-features');
-    
-    if (extraFeatures.classList.contains('hidden')) {
-        extraFeatures.classList.remove('hidden');
-        showMore.classList.add('hidden');
-        showLess.classList.remove('hidden');
-    } else {
-        extraFeatures.classList.add('hidden');
-        showLess.classList.add('hidden');
-        showMore.classList.remove('hidden');
-    }
-}
-</script>
-
-<style>
-.billing-toggle-btn {
-    background: transparent;
-    color: #9ca3af;
-    position: relative;
-}
-
-.billing-toggle-btn.active {
-    background: linear-gradient(90deg, #ff0040, #8b5cf6);
-    color: white;
-    box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
-}
-
-.pricing-card.featured-plan {
-    transform: scale(1.05);
-}
-
-.pulse-animation {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1) rotate(12deg); }
-    50% { transform: scale(1.1) rotate(12deg); }
-}
-
-.pricing-display .monthly-price,
-.pricing-display .yearly-price {
-    transition: all 0.3s ease;
-}
-</style>
-@endif
-@break
 
 
 
-  <!-- Packages Section -->
-{{-- <section class="py-20 relative">
-    <div class="absolute inset-0 bg-gradient-to-br from-purple-900/10 to-pink-900/10"></div>
-    
-    <div class="container mx-auto px-6 relative z-10">
-        <div class="text-center mb-16">
-            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
-                {{ $page->packages_title ?? 'EXPLOSIVE PACKAGES' }}
-            </h2>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-                {{ $page->packages_subtitle ?? 'Discover our premium packages with special occasion pricing' }}
-            </p>
-        </div>
-  @include('components.pricing-section')
-    </div>
-</section> --}}
+
 
 
 
 @case('shop_products')
-    @if($page->shop_products_status === 'active' && isset($shopProducts) && $shopProducts->count() > 0)
-        <!-- Shop Products Showcase -->
-        <section class="py-20">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
-                        {{ $page->shop_products_title ?? 'SHOP PRODUCTS' }}
-                    </h2>
-                    <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-                        {{ $page->shop_products_subtitle ?? 'Discover our premium shop products with exclusive special occasion pricing' }}
-                    </p>
-                </div>
+@if($page->hasActiveSection('shop_products') && isset($shopProducts) && $shopProducts->count() > 0)
+<!-- Shop Products Section -->
+<section class="py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-orange-900/10 to-pink-900/10"></div>
+    
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl md:text-6xl font-black font-orbitron mb-4">
+                {{ $page->shop_products_title ?? 'PREMIUM SHOP PRODUCTS' }}
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                {{ $page->shop_products_subtitle ?? 'Discover our premium shop products with exclusive special occasion pricing' }}
+            </p>
+        </div>
 
-                <!-- Shop Products Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto" id="shopProductsGrid">
+        <!-- Shop Products Slider Container -->
+        <div class="relative max-w-7xl mx-auto">
+            <div class="shop-products-slider-container relative h-96" id="shopProductsSlider">
+                <div class="slider-track absolute w-full h-full flex items-center justify-center">
+                    
                     @foreach($shopProducts as $index => $shopProduct)
-                        <div class="group">
-                            <div class="relative bg-gradient-to-br from-dark-card to-gray-900 rounded-2xl overflow-hidden glass-effect border border-gray-700 hover:border-neon-pink transition-all duration-300 hover:scale-105">
-                                <!-- Product Image/Icon -->
-                                <div class="h-32 bg-gradient-to-br from-neon-pink/10 to-purple-600/10 flex items-center justify-center">
-                                    @if(!empty($shopProduct->image))
-                                        <img src="{{ asset('storage/'.$shopProduct->image) }}"
+                        @php
+                            $position = '';
+                            switch($index) {
+                                case 0: $position = 'active'; break;
+                                case 1: $position = 'next'; break;
+                                case count($shopProducts)-1: $position = 'prev'; break;
+                                case count($shopProducts)-2: $position = 'far-left'; break;
+                                case 2: $position = 'far-right'; break;
+                                default: $position = 'hidden'; break;
+                            }
+                        @endphp
+                        
+                        <div class="shop-products-slide {{ $position }}" data-index="{{ $index }}">
+                            <div class="shop-products-card">
+                                <!-- Card Background -->
+                                <div class="absolute inset-0">
+                                    @if($shopProduct->image)
+                                        <img src="{{ asset('storage/' . $shopProduct->image) }}" 
                                              alt="{{ $shopProduct->title ?? $shopProduct->name }}"
-                                             class="w-full h-full object-cover">
+                                             class="w-full h-full object-cover opacity-20">
                                     @else
-                                        <div class="text-4xl text-neon-pink">
-                                            <i class="fas fa-{{ ['shopping-cart', 'store', 'gift', 'tag', 'percent', 'star'][$index % 6] }}"></i>
+                                        <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50"
+                                             style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;">
                                         </div>
                                     @endif
+                                    <div class="absolute inset-0 bg-gradient-to-br from-dark-card/90 to-gray-900/90"></div>
                                 </div>
-                                
-                                <!-- Content -->
-                                <div class="p-4">
-                                    <h3 class="text-lg font-bold font-orbitron mb-2">
-                                        {{ $shopProduct->title ?? $shopProduct->name }}
-                                    </h3>
-                                    <p class="text-gray-400 text-sm mb-3">
-                                        {{ $shopProduct->short_description ?? 'Premium shop product for your needs' }}
-                                    </p>
-                                    
-                                    <!-- Price + Order -->
-                                    <div class="flex justify-between items-center">
-                                        @if($shopProduct->price)
-                                            <span class="text-xl font-bold text-neon-pink font-orbitron">
-                                                ${{ number_format($shopProduct->price, 2) }}
-                                            </span>
-                                        @else
-                                            <span></span>
-                                        @endif
 
-                                        <a href="{{ route('shop.product', $shopProduct->slug ?? $shopProduct->id) }}"
-                                           class="bg-gradient-to-r from-neon-pink to-purple-600 text-white px-3 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-all duration-300">
-                                            Buy Now
+                                <!-- Card Content -->
+                                <div class="relative z-10 p-8 h-full flex flex-col justify-between">
+                                    <!-- Header -->
+                                    <div class="text-center">
+                                        <!-- Product Icon -->
+                                        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-gradient-to-br from-orange-500 to-pink-600 shadow-lg">
+                                            @if($shopProduct->icon)
+                                                <i class="{{ $shopProduct->icon }} text-2xl text-white"></i>
+                                            @else
+                                                <i class="fas fa-shopping-bag text-2xl text-white"></i>
+                                            @endif
+                                        </div>
+
+                                        <!-- Product Title -->
+                                        <h3 class="text-2xl font-bold text-white mb-2 font-orbitron">
+                                     
+
+                                             {{ Str::limit($shopProduct->title ?? $shopProduct->name, 30) }}
+                                        </h3>
+
+                                        <!-- Product Category -->
+                                        @if($shopProduct->category)
+                                        <span class="inline-block px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium mb-4">
+                                                {{ $shopProduct->category->name ?? ucfirst($shopProduct->category) }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="text-center mb-6">
+                                        <p class="text-gray-300 text-sm leading-relaxed">
+                                            {{ Str::limit($shopProduct->short_description ?? $shopProduct->description, 60) }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Features -->
+                                    @php
+                                        $features = $shopProduct->key_features ?? [];
+                                        if (is_string($features)) {
+                                            $features = json_decode($features, true) ?? [];
+                                        }
+                                        // If no key_features, create some based on product attributes
+                                        if (empty($features)) {
+                                            $features = [];
+                                            if ($shopProduct->digital_download) $features[] = 'Digital Download';
+                                            if ($shopProduct->instant_delivery) $features[] = 'Instant Delivery';
+                                            if ($shopProduct->money_back_guarantee) $features[] = 'Money Back Guarantee';
+                                            if (empty($features)) $features = ['Premium Quality', 'Customer Support', 'Easy Installation'];
+                                        }
+                                    @endphp
+                                    @if($features && count($features) > 0)
+                                        <div class="mb-6">
+                                            <ul class="space-y-2">
+                                                @foreach(array_slice($features, 0, 3) as $feature)
+                                                    <li class="flex items-center text-gray-300 text-sm">
+                                                        <i class="fas fa-check text-green-400 mr-2 flex-shrink-0"></i>
+                                                        <span>{{ is_string($feature) ? $feature : $feature['name'] ?? 'Feature' }}</span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
+                                    <!-- Pricing -->
+                                    {{-- <div class="text-center mb-6">
+                                        @if($shopProduct->price && $shopProduct->price > 0)
+                                            <div class="flex items-center justify-center space-x-2">
+                                                @if($shopProduct->compare_price && $shopProduct->compare_price > $shopProduct->price)
+                                                    <div class="text-gray-500 text-lg line-through">
+                                                        ${{ number_format($shopProduct->compare_price, 2) }}
+                                                    </div>
+                                                @endif
+                                                <div class="text-3xl font-black text-white mb-1 font-orbitron">
+                                                    ${{ number_format($shopProduct->price, 2) }}
+                                                </div>
+                                            </div>
+                                            @if($shopProduct->compare_price && $shopProduct->compare_price > $shopProduct->price)
+                                                @php
+                                                    $discount = round((($shopProduct->compare_price - $shopProduct->price) / $shopProduct->compare_price) * 100);
+                                                @endphp
+                                                <div class="text-yellow-400 text-sm font-medium">
+                                                    Save {{ $discount }}%
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="text-lg font-bold text-yellow-400 mb-1 font-orbitron">
+                                                Contact for Price
+                                            </div>
+                                        @endif
+                                    </div> --}}
+
+                                    <!-- Action Button -->
+                                    <div class="text-center">
+                                        <a href="{{ route('shop.product', $shopProduct->slug) }}" 
+                                           class="inline-block bg-gradient-to-r from-red-600 to-red-800 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-red-500/50">
+                                            <i class="fas fa-shopping-cart mr-2"></i>
+                                            @if($shopProduct->price > 0)
+                                                Add to Cart
+                                            @else
+                                                View Details
+                                            @endif
                                         </a>
                                     </div>
+
+                                    <!-- Status Badges -->
+                                    <div class="absolute top-4 right-4 flex flex-col space-y-1">
+                                        @if($shopProduct->is_featured)
+                                            <span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                Featured
+                                            </span>
+                                        @endif
+                                        @if($shopProduct->on_sale)
+                                            <span class="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                On Sale
+                                            </span>
+                                        @endif
+                                        @if($shopProduct->digital_download)
+                                            <span class="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full font-medium">
+                                                Digital
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
 
-                                <!-- Special Badge (Optional) -->
-                                @if($shopProduct->is_featured ?? false)
-                                    <div class="absolute top-2 right-2">
-                                        <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-full text-xs font-bold">
-                                            Featured
-                                        </span>
-                                    </div>
-                                @endif
+                                <!-- Glow Effect -->
+                                <div class="absolute -inset-1 bg-gradient-to-br from-red-500/30 to-red-600/30 rounded-3xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <!-- View All Shop Products Button -->
-                <div class="text-center mt-12">
-                    <a href="{{ route('products') }}" 
-                       class="inline-flex items-center bg-gradient-to-r from-neon-pink to-purple-600 text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-all duration-300">
-                        <i class="fas fa-shopping-bag mr-2"></i>
-                        View All Shop Products
-                    </a>
-                </div>
+                <!-- Navigation Arrows -->
+                <button class="shop-products-nav-button prev" type="button" id="shopProductsPrevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="shop-products-nav-button next" type="button" id="shopProductsNextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                
+              
             </div>
-        </section>
-    @endif
+
+            <!-- Dots Indicator -->
+            {{-- <div class="shop-products-dots-indicator" id="shopProductsDotsIndicator">
+                @foreach($shopProducts as $index => $shopProduct)
+                    <div class="shop-products-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
+                @endforeach
+            </div> --}}
+        </div>
+
+        <!-- Global CTA -->
+        <div class="text-center mt-12">
+            <a href="{{ route('shop.index') }}" 
+               class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-red-500/50">
+                <i class="fas fa-shopping-bag mr-3"></i>
+                View All Shop Products
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const shopProductsSection = document.querySelector('#shopProductsSlider');
+    if (!shopProductsSection) return;
+
+    const shopProductsSlides = shopProductsSection.querySelectorAll('.shop-products-slide');
+    const shopProductsDots = shopProductsSection.querySelectorAll('.shop-products-dot');
+    const shopProductsPrevBtn = document.getElementById('shopProductsPrevBtn');
+    const shopProductsNextBtn = document.getElementById('shopProductsNextBtn');
+    const totalShopProductsSlides = shopProductsSlides.length;
+
+    if (!totalShopProductsSlides) return;
+
+    let currentShopProductsSlide = 0;
+    let shopProductsAutoRotateInterval = null;
+    const shopProductsSlideClasses = ['far-left', 'prev', 'active', 'next', 'far-right', 'hidden'];
+    const SHOP_PRODUCTS_AUTO_INTERVAL = 6000; // 6 seconds
+
+    function updateShopProductsSlides() {
+        shopProductsSlides.forEach((slide, index) => {
+            shopProductsSlideClasses.forEach(c => slide.classList.remove(c));
+
+            let position = index - currentShopProductsSlide;
+            if (position < -2) position += totalShopProductsSlides;
+            if (position > 2) position -= totalShopProductsSlides;
+
+            switch (position) {
+                case -2: slide.classList.add('far-left'); break;
+                case -1: slide.classList.add('prev'); break;
+                case 0: slide.classList.add('active'); break;
+                case 1: slide.classList.add('next'); break;
+                case 2: slide.classList.add('far-right'); break;
+                default: slide.classList.add('hidden'); break;
+            }
+        });
+
+        shopProductsDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentShopProductsSlide);
+        });
+    }
+
+    function slideShopProducts(direction) {
+        if (direction === 'next') {
+            currentShopProductsSlide = (currentShopProductsSlide + 1) % totalShopProductsSlides;
+        } else {
+            currentShopProductsSlide = (currentShopProductsSlide - 1 + totalShopProductsSlides) % totalShopProductsSlides;
+        }
+        updateShopProductsSlides();
+        resetShopProductsAutoRotate();
+    }
+
+    function slideToShopProducts(index) {
+        if (index < 0 || index >= totalShopProductsSlides) return;
+        currentShopProductsSlide = index;
+        updateShopProductsSlides();
+        resetShopProductsAutoRotate();
+    }
+
+    function startShopProductsAutoRotate() {
+        if (totalShopProductsSlides <= 1 || shopProductsAutoRotateInterval) return;
+        shopProductsAutoRotateInterval = setInterval(() => {
+            slideShopProducts('next');
+        }, SHOP_PRODUCTS_AUTO_INTERVAL);
+    }
+
+    function stopShopProductsAutoRotate() {
+        if (!shopProductsAutoRotateInterval) return;
+        clearInterval(shopProductsAutoRotateInterval);
+        shopProductsAutoRotateInterval = null;
+    }
+
+    function resetShopProductsAutoRotate() {
+        stopShopProductsAutoRotate();
+        startShopProductsAutoRotate();
+    }
+
+    // Event Listeners
+    if (shopProductsPrevBtn) shopProductsPrevBtn.addEventListener('click', () => slideShopProducts('prev'));
+    if (shopProductsNextBtn) shopProductsNextBtn.addEventListener('click', () => slideShopProducts('next'));
+
+    shopProductsDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.dataset.index, 10);
+            slideToShopProducts(index);
+        });
+    });
+
+    shopProductsSlides.forEach((slide, index) => {
+        slide.addEventListener('click', function () {
+            if (!this.classList.contains('active')) {
+                slideToShopProducts(index);
+            }
+        });
+    });
+
+    // Hover events
+    if (shopProductsSection) {
+        shopProductsSection.addEventListener('mouseenter', stopShopProductsAutoRotate);
+        shopProductsSection.addEventListener('mouseleave', startShopProductsAutoRotate);
+    }
+
+    // Touch support
+    let shopProductsStartX = 0;
+    let shopProductsEndX = 0;
+
+    if (shopProductsSection) {
+        shopProductsSection.addEventListener('touchstart', function (e) {
+            shopProductsStartX = e.touches[0].clientX;
+        });
+
+        shopProductsSection.addEventListener('touchend', function (e) {
+            shopProductsEndX = e.changedTouches[0].clientX;
+            const threshold = 50;
+            const diff = shopProductsStartX - shopProductsEndX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) slideShopProducts('next');
+                else slideShopProducts('prev');
+            }
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') slideShopProducts('prev');
+        if (e.key === 'ArrowRight') slideShopProducts('next');
+    });
+
+    // Initialize
+    updateShopProductsSlides();
+    startShopProductsAutoRotate();
+});
+</script>
+@endif
 @break
 
-  @case('video')
+
+ @case('video')
 @if($page->hasActiveSection('video'))
 <!-- Video Section -->
 <section class="py-20 relative overflow-hidden" 
@@ -1640,8 +2262,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
   @endif
  @break
-
-
 
 
 
