@@ -29,6 +29,7 @@ class FooterSetting extends Model
         'social_youtube',
         'social_instagram',
         'social_facebook',
+        'social_tiktok',
         'show_services_section',
         'show_company_section',
         'show_legal_section',
@@ -115,6 +116,14 @@ class FooterSetting extends Model
                 'icon' => 'fab fa-facebook',
                 'name' => 'Facebook',
                 'color' => '#1877F2'
+            ];
+        }
+             if ($this->social_tiktok) {
+            $links['فiktok'] = [
+                'url' => $this->social_tiktok,
+                'icon' => 'fab fa-tiktok',
+                'name' => 'Tiktok',
+                'color' => '#EE1D52'
             ];
         }
         

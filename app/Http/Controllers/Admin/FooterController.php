@@ -41,6 +41,7 @@ class FooterController extends Controller
             'social_youtube' => 'nullable|url|max:500',
             'social_instagram' => 'nullable|url|max:500',
             'social_facebook' => 'nullable|url|max:500',
+            'social_tiktok' => 'nullable|url|max:500',
             
             // Display Control
             'show_services_section' => 'boolean',

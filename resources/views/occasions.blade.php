@@ -79,6 +79,9 @@
  @php
     use App\Models\Client;
     $clientsByCategory = Client::getGroupedByCategory();
+@endphp 
+@php
+    $footerSettings = \App\Models\FooterSetting::getSettings();
 @endphp
 {{-- Loop through active sections in order --}}
 @foreach($activeSections as $sectionKey)
@@ -1750,7 +1753,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <!-- CTA & Discount -->
-            <div class="text-center">
+            <div class="text-center ">
                 <div class="relative">
                     <!-- Discount Badge -->
                     <div class="inline-block p-8 bg-gradient-to-br from-red-600/90 to-red-500/90 backdrop-blur-md rounded-3xl border-2 border-red-500/50 shadow-2xl hover:shadow-red-600/50 hover:scale-105 transition-all duration-300 mb-6 relative overflow-hidden group">
@@ -1776,35 +1779,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         </div>
+  
 
         <!-- Bottom Bar -->
-        <div class="border-t border-gray-800/50 pt-12">
+        <div class="border-t border-gray-800/50 pt-12 ">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                 <!-- Social Links -->
                 <div class="flex space-x-6">
-                    @if($page->footer_social_links && is_array($page->footer_social_links))
-                        @foreach($page->footer_social_links as $social)
-                            @if(isset($social['icon']) && isset($social['url']))
-                                <a href="{{ $social['url'] }}" target="_blank" class="w-12 h-12 bg-dark-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-neon hover:shadow-neon-pink transition-all duration-300 border border-gray-700/50 hover:border-neon-pink/50">
-                                    <i class="{{ $social['icon'] }} text-xl"></i>
-                                </a>
-                            @endif
+                  <!-- Social Media -->
+                @if($footerSettings->show_social_media && count($footerSettings->getSocialLinks()) > 0)
+                <div class="space-y-3">
+                    <h4 class="text-white font-bold">Follow Us</h4>
+                    <div class="flex space-x-3">
+                        @foreach($footerSettings->getSocialLinks() as $platform => $social)
+                            <a href="{{ $social['url'] }}" 
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="group relative w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
+                                <i class="{{ $social['icon'] }} text-gray-400 group-hover:text-white transition-colors duration-300"></i>
+                                <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-dark-light text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    {{ $social['name'] }}
+                                </div>
+                            </a>
                         @endforeach
-                    @else
-                        <!-- Default Social Links -->
-                        <a href="#" class="w-12 h-12 bg-dark-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-neon hover:shadow-neon-pink transition-all duration-300 border border-gray-700/50 hover:border-neon-pink/50">
-                            <i class="fab fa-linkedin text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 bg-dark-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-neon hover:shadow-neon-pink transition-all duration-300 border border-gray-700/50 hover:border-neon-pink/50">
-                            <i class="fab fa-twitter text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 bg-dark-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-neon hover:shadow-neon-pink transition-all duration-300 border border-gray-700/50 hover:border-neon-pink/50">
-                            <i class="fab fa-youtube text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 bg-dark-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-neon hover:shadow-neon-pink transition-all duration-300 border border-gray-700/50 hover:border-neon-pink/50">
-                            <i class="fas fa-phone text-xl"></i>
-                        </a>
-                    @endif
+                    </div>
+                </div>
+                @endif
+
                 </div>
 
                 <!-- Copyright -->
