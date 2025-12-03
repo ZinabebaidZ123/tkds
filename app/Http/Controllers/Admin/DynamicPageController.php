@@ -11,6 +11,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Storage;
+
 
 class DynamicPageController extends Controller
 {
@@ -89,232 +91,307 @@ class DynamicPageController extends Controller
         ));
     }
 
-    public function update(Request $request, DynamicPage $page)
-    {
-        $data = $request->validate([
-            'page_title'        => 'nullable|max:255',
-            'page_description'  => 'nullable',
-            'is_active'         => 'nullable|boolean',
-            'offer_end_date'    => 'nullable|date|after:now',
+public function update(Request $request, DynamicPage $page)
+{
+    $data = $request->validate([
+        'page_title'        => 'nullable|max:255',
+        'page_description'  => 'nullable',
+        'is_active'         => 'nullable|boolean',
+        'offer_end_date'    => 'nullable|date|after:now',
 
-            'header_logo_text'      => 'nullable|max:100',
-            'header_logo_subtitle'  => 'nullable|max:255',
-            'header_button_text'    => 'nullable|max:100',
-            'header_phone'          => 'nullable|max:50',
+        'header_logo_text'      => 'nullable|max:100',
+        'header_logo_subtitle'  => 'nullable|max:255',
+        'header_button_text'    => 'nullable|max:100',
+        'header_phone'          => 'nullable|max:50',
 
-            'hero_title_part1'      => 'nullable|max:255',
-            'hero_title_part2'      => 'nullable|max:255',
-            'hero_title_part3'      => 'nullable|max:255',
-            'hero_subtitle'         => 'nullable|max:255',
-            'hero_description'      => 'nullable',
-            'hero_button_text'      => 'nullable|max:100',
-            'hero_button_url'       => 'nullable|max:255',
-            'discount_percentage'   => 'nullable|integer|min:0|max:100',
+        'hero_title_part1'      => 'nullable|max:255',
+        'hero_title_part2'      => 'nullable|max:255',
+        'hero_title_part3'      => 'nullable|max:255',
+        'hero_subtitle'         => 'nullable|max:255',
+        'hero_description'      => 'nullable',
+        'hero_button_text'      => 'nullable|max:100',
+        'hero_button_url'       => 'nullable|max:255',
+        'discount_percentage'   => 'nullable|integer|min:0|max:100',
 
-            'why_choose_title'          => 'nullable|max:255',
-            'why_choose_subtitle'       => 'nullable|max:255',
-            'why_choose_description'    => 'nullable|max:255',
-            'why_choose_button_text'    => 'nullable|max:100',
-            'why_choose_button_url'     => 'nullable|max:255',
+        'why_choose_title'          => 'nullable|max:255',
+        'why_choose_subtitle'       => 'nullable|max:255',
+        'why_choose_description'    => 'nullable|max:255',
+        'why_choose_button_text'    => 'nullable|max:100',
+        'why_choose_button_url'     => 'nullable|max:255',
 
-            'services_title'           => 'nullable|max:255',
-            'services_subtitle'        => 'nullable',
+        'services_title'           => 'nullable|max:255',
+        'services_subtitle'        => 'nullable',
 
-            'packages_title'           => 'nullable|max:255',
-            'packages_subtitle'        => 'nullable',
+        'packages_title'           => 'nullable|max:255',
+        'packages_subtitle'        => 'nullable',
 
-            'products_title'           => 'nullable|max:255',
-            'products_subtitle'        => 'nullable',
+        'products_title'           => 'nullable|max:255',
+        'products_subtitle'        => 'nullable',
 
-            'shop_products_title'      => 'nullable|max:255',
-            'shop_products_subtitle'   => 'nullable',
+        'shop_products_title'      => 'nullable|max:255',
+        'shop_products_subtitle'   => 'nullable',
 
-            'video_title'              => 'nullable|max:255',
-            'video_subtitle'           => 'nullable',
-            'video_url'                => 'nullable|max:255',
-            'video_thumbnail'          => 'nullable|max:255',
-            'video_info_title'         => 'nullable|max:255',
-            'video_info_description'   => 'nullable|max:255',
+        'video_title'              => 'nullable|max:255',
+        'video_subtitle'           => 'nullable',
+        'video_url'                => 'nullable|max:255',
+        'video_info_title'         => 'nullable|max:255',
+        'video_info_description'   => 'nullable|max:255',
+        'video_source'             => 'nullable|in:url,upload',
 
-            'clients_title'            => 'nullable|max:255',
-            'clients_subtitle'         => 'nullable',
+        'clients_title'            => 'nullable|max:255',
+        'clients_subtitle'         => 'nullable',
 
-            'reviews_title'            => 'nullable|max:255',
-            'reviews_subtitle'         => 'nullable',
+        'reviews_title'            => 'nullable|max:255',
+        'reviews_subtitle'         => 'nullable',
 
-            'contact_title'            => 'nullable|max:255',
-            'contact_subtitle'         => 'nullable',
-            'contact_whatsapp'         => 'nullable|max:50',
-            'contact_email'            => 'nullable|max:255',
-            'contact_phone'            => 'nullable|max:50',
+        'contact_title'            => 'nullable|max:255',
+        'contact_subtitle'         => 'nullable',
+        'contact_whatsapp'         => 'nullable|max:50',
+        'contact_email'            => 'nullable|max:255',
+        'contact_phone'            => 'nullable|max:50',
 
-            'footer_logo_text'        => 'nullable|max:100',
-            'footer_logo_subtitle'    => 'nullable|max:255',
-            'footer_title_line1'      => 'nullable|max:255',
-            'footer_title_line2'      => 'nullable|max:255',
-            'footer_description'      => 'nullable',
-            'footer_discount_badge_text'    => 'nullable|max:50',
-            'footer_discount_badge_subtext' => 'nullable|max:50',
-            'footer_copyright'        => 'nullable|max:255',
-            'footer_powered_by'       => 'nullable|max:255',
+        'footer_logo_text'        => 'nullable|max:100',
+        'footer_logo_subtitle'    => 'nullable|max:255',
+        'footer_title_line1'      => 'nullable|max:255',
+        'footer_title_line2'      => 'nullable|max:255',
+        'footer_description'      => 'nullable',
+        'footer_discount_badge_text'    => 'nullable|max:50',
+        'footer_discount_badge_subtext' => 'nullable|max:50',
+        'footer_copyright'        => 'nullable|max:255',
+        'footer_powered_by'       => 'nullable|max:255',
 
-            'selected_services'       => 'nullable|array',
-            'selected_packages'       => 'nullable|array',
-            'selected_products'       => 'nullable|array',
-            'selected_shop_products'  => 'nullable|array',
-        ]);
+        'selected_services'       => 'nullable|array',
+        'selected_packages'       => 'nullable|array',
+        'selected_products'       => 'nullable|array',
+        'selected_shop_products'  => 'nullable|array',
 
-        $data['is_active'] = $request->has('is_active');
+        'remove_current_video'    => 'nullable|boolean',
+        'video_file'              => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/quicktime,video/x-msvideo|max:204800', // 200MB
+    ]);
 
-        $data['header_status']      = $request->has('header_status') ? 'active' : 'inactive';
-        $data['hero_status']        = $request->has('hero_status') ? 'active' : 'inactive';
-        $data['why_choose_status']  = $request->has('why_choose_status') ? 'active' : 'inactive';
-        $data['services_status']    = $request->has('services_status') ? 'active' : 'inactive';
-        $data['packages_status']    = $request->has('packages_status') ? 'active' : 'inactive';
-        $data['products_status']    = $request->has('products_status') ? 'active' : 'inactive';
-        $data['shop_products_status'] = $request->has('shop_products_status') ? 'active' : 'inactive';
-        $data['video_status']       = $request->has('video_status') ? 'active' : 'inactive';
-        $data['clients_status']     = $request->has('clients_status') ? 'active' : 'inactive';
-        $data['reviews_status']     = $request->has('reviews_status') ? 'active' : 'inactive';
-        $data['contact_status']     = $request->has('contact_status') ? 'active' : 'inactive';
-        $data['footer_status']      = $request->has('footer_status') ? 'active' : 'inactive';
-
-        try {
-            if ($request->has('selected_services')) {
-                $serviceIds = $request->input('selected_services', []);
-                $page->services()->sync($serviceIds);
-            }
-
-            if ($request->has('selected_packages')) {
-                $packageIds = $request->input('selected_packages', []);
-                $page->pricingPlans()->sync($packageIds);
-            }
-
-            if ($request->has('selected_products')) {
-                $productIds = $request->input('selected_products', []);
-                $page->products()->sync($productIds);
-            }
-
-            if ($request->has('selected_shop_products')) {
-                $shopProductIds = $request->input('selected_shop_products', []);
-                $page->shopProducts()->sync($shopProductIds);
-            }
-        } catch (\Exception $e) {
-            Log::error('Error updating selections: ' . $e->getMessage());
-        }
-
-        if ($request->hasFile('header_logo_image')) {
-            $data['header_logo_image'] = $request->file('header_logo_image')
-                ->store('dynamic-pages/header', 'public');
-        }
-
-        if ($request->hasFile('why_choose_left_image')) {
-            $data['why_choose_left_image'] = $request->file('why_choose_left_image')
-                ->store('dynamic-pages/why-choose', 'public');
-        }
-
-        if ($request->hasFile('why_choose_background_image')) {
-            $data['why_choose_background_image'] = $request->file('why_choose_background_image')
-                ->store('dynamic-pages/why-choose', 'public');
-        }
-
-        if ($request->hasFile('video_thumbnail')) {
-            $data['video_thumbnail'] = $request->file('video_thumbnail')
-                ->store('dynamic-pages/video', 'public');
-        }
-
-        if ($request->hasFile('footer_logo_image')) {
-            $data['footer_logo_image'] = $request->file('footer_logo_image')
-                ->store('dynamic-pages/footer', 'public');
-        }
-
-        $featureTitles       = $request->input('why_cards_title', []);
-        $featureDescriptions = $request->input('why_cards_description', []);
-        $featureIcons        = $request->input('why_cards_icon', []);
-        $featureColorFrom    = $request->input('why_cards_color_from', []);
-        $featureColorTo      = $request->input('why_cards_color_to', []);
-
-        $cards = [];
-        foreach ($featureTitles as $index => $title) {
-            if (!$title && !($featureDescriptions[$index] ?? null)) {
-                continue;
-            }
-
-            $cards[] = [
-                'title'        => $title,
-                'description'  => $featureDescriptions[$index] ?? '',
-                'icon'         => $featureIcons[$index] ?? '',
-                'color_from'   => $featureColorFrom[$index] ?? '#000000',
-                'color_to'     => $featureColorTo[$index] ?? '#000000',
-            ];
-        }
-        $data['why_choose_cards'] = $cards;
-
-        $clientLogos = $page->clients_logos ?? [];
-
-        if ($request->hasFile('clients_logos')) {
-            foreach ($request->file('clients_logos') as $file) {
-                if (!$file) {
-                    continue;
-                }
-                $clientLogos[] = $file->store('dynamic-pages/clients', 'public');
-            }
-        }
-
-        if ($request->filled('remove_client_indexes')) {
-            $indexesToRemove = explode(',', $request->input('remove_client_indexes'));
-            foreach ($indexesToRemove as $idx) {
-                $i = (int) $idx;
-                if (isset($clientLogos[$i])) {
-                    unset($clientLogos[$i]);
-                }
-            }
-            $clientLogos = array_values($clientLogos);
-        }
-
-        $data['clients_logos'] = $clientLogos;
-
-        $reviewNames    = $request->input('reviews_name', []);
-        $reviewRoles    = $request->input('reviews_role', []);
-        $reviewCompany  = $request->input('reviews_company', []);
-        $reviewRating   = $request->input('reviews_rating', []);
-        $reviewText     = $request->input('reviews_review', []);
-        $existingAvatar = $request->input('reviews_avatar_existing', []);
-
-        $reviews = [];
-        foreach ($reviewNames as $index => $name) {
-            if (!$name && !($reviewText[$index] ?? null)) {
-                continue;
-            }
-
-            $avatarPath = $existingAvatar[$index] ?? null;
-
-            if ($request->hasFile("reviews_avatar.$index")) {
-                $avatarPath = $request->file("reviews_avatar.$index")
-                    ->store('dynamic-pages/reviews', 'public');
-            }
-
-            $reviews[] = [
-                'name'    => $name,
-                'role'    => $reviewRoles[$index] ?? '',
-                'company' => $reviewCompany[$index] ?? '',
-                'rating'  => (int) ($reviewRating[$index] ?? 5),
-                'review'  => $reviewText[$index] ?? '',
-                'avatar'  => $avatarPath,
-            ];
-        }
-        $data['reviews_items'] = $reviews;
-
-        unset($data['selected_services'], $data['selected_packages'], $data['selected_products'], $data['selected_shop_products']);
-
-        $page->update($data);
-
-        $tab = $request->get('tab', 'header');
-
-        return redirect()
-            ->route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => $tab])
-            ->with('success', 'Page section updated successfully.');
+    // Fix: Only set is_active to true if explicitly checked, otherwise keep current value
+    if ($request->has('is_active')) {
+        $data['is_active'] = true;
     }
+    // Don't modify is_active if checkbox is not present (keep current value)
+
+    // Handle section status checkboxes
+    $data['header_status']      = $request->has('header_status') ? 'active' : 'inactive';
+    $data['hero_status']        = $request->has('hero_status') ? 'active' : 'inactive';
+    $data['why_choose_status']  = $request->has('why_choose_status') ? 'active' : 'inactive';
+    $data['services_status']    = $request->has('services_status') ? 'active' : 'inactive';
+    $data['packages_status']    = $request->has('packages_status') ? 'active' : 'inactive';
+    $data['products_status']    = $request->has('products_status') ? 'active' : 'inactive';
+    $data['shop_products_status'] = $request->has('shop_products_status') ? 'active' : 'inactive';
+    $data['video_status']       = $request->has('video_status') ? 'active' : 'inactive';
+    $data['clients_status']     = $request->has('clients_status') ? 'active' : 'inactive';
+    $data['reviews_status']     = $request->has('reviews_status') ? 'active' : 'inactive';
+    $data['contact_status']     = $request->has('contact_status') ? 'active' : 'inactive';
+    $data['footer_status']      = $request->has('footer_status') ? 'active' : 'inactive';
+
+    try {
+        if ($request->has('selected_services')) {
+            $serviceIds = $request->input('selected_services', []);
+            $page->services()->sync($serviceIds);
+        }
+
+        if ($request->has('selected_packages')) {
+            $packageIds = $request->input('selected_packages', []);
+            $page->pricingPlans()->sync($packageIds);
+        }
+
+        if ($request->has('selected_products')) {
+            $productIds = $request->input('selected_products', []);
+            $page->products()->sync($productIds);
+        }
+
+        if ($request->has('selected_shop_products')) {
+            $shopProductIds = $request->input('selected_shop_products', []);
+            $page->shopProducts()->sync($shopProductIds);
+        }
+    } catch (\Exception $e) {
+        Log::error('Error updating selections: ' . $e->getMessage());
+    }
+
+    // Handle file uploads
+    if ($request->hasFile('header_logo_image')) {
+        $data['header_logo_image'] = Storage::disk('public')->putFile('dynamic-pages/header', $request->file('header_logo_image'));
+    }
+
+    if ($request->hasFile('why_choose_left_image')) {
+        $data['why_choose_left_image'] = Storage::disk('public')->putFile('dynamic-pages/why-choose', $request->file('why_choose_left_image'));
+    }
+
+    if ($request->hasFile('why_choose_background_image')) {
+        $data['why_choose_background_image'] = Storage::disk('public')->putFile('dynamic-pages/why-choose', $request->file('why_choose_background_image'));
+    }
+
+    if ($request->hasFile('footer_logo_image')) {
+        $data['footer_logo_image'] = Storage::disk('public')->putFile('dynamic-pages/footer', $request->file('footer_logo_image'));
+    }
+
+    // Handle video source selection
+    $videoSource = $request->input('video_source', 'url');
+    
+    if ($videoSource === 'upload') {
+        // Clear URL when upload is selected
+        $data['video_url'] = null;
+        
+        // Handle video file upload and removal
+        if ($request->filled('remove_current_video') && $request->remove_current_video) {
+            // Remove current video file
+            if ($page->video_file && \Storage::disk('public')->exists($page->video_file)) {
+                \Storage::disk('public')->delete($page->video_file);
+            }
+            $data['video_file'] = null;
+        } elseif ($request->hasFile('video_file')) {
+            try {
+                $file = $request->file('video_file');
+                
+                // Validate file
+                if (!$file->isValid()) {
+                    throw new \Exception('Invalid video file uploaded');
+                }
+                
+                // Check file size (200MB = 209715200 bytes)
+                if ($file->getSize() > 209715200) {
+                    throw new \Exception('Video file is too large. Maximum size is 200MB');
+                }
+                
+                // Check file type
+                $allowedMimeTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
+                if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+                    throw new \Exception('Invalid video format. Allowed: MP4, AVI, MOV');
+                }
+                
+                // Remove old video file if exists
+                if ($page->video_file && \Storage::disk('public')->exists($page->video_file)) {
+                    \Storage::disk('public')->delete($page->video_file);
+                }
+                
+                // Store new video with original name
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('dynamic-pages/video', $fileName, 'public');
+                
+                if (!$path) {
+                    throw new \Exception('Failed to store video file');
+                }
+                
+                $data['video_file'] = $path;
+                Log::info('Video uploaded successfully: ' . $path);
+                
+            } catch (\Exception $e) {
+                Log::error('Video upload failed: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withErrors(['video_file' => 'Video upload failed: ' . $e->getMessage()])
+                    ->withInput();
+            }
+        }
+    } else {
+        // URL is selected, keep video_url from validation and clear video file only if URL is provided
+        if ($request->filled('video_url')) {
+            // Remove video file if URL is provided
+            if ($page->video_file && \Storage::disk('public')->exists($page->video_file)) {
+                \Storage::disk('public')->delete($page->video_file);
+            }
+            $data['video_file'] = null;
+        }
+    }
+
+    if ($request->hasFile('video_thumbnail')) {
+        $data['video_thumbnail'] = Storage::disk('public')->putFile('dynamic-pages/video', $request->file('video_thumbnail'));
+    }
+
+    // Handle why choose cards
+    $featureTitles       = $request->input('why_cards_title', []);
+    $featureDescriptions = $request->input('why_cards_description', []);
+    $featureIcons        = $request->input('why_cards_icon', []);
+    $featureColorFrom    = $request->input('why_cards_color_from', []);
+    $featureColorTo      = $request->input('why_cards_color_to', []);
+
+    $cards = [];
+    foreach ($featureTitles as $index => $title) {
+        if (!$title && !($featureDescriptions[$index] ?? null)) {
+            continue;
+        }
+
+        $cards[] = [
+            'title'        => $title,
+            'description'  => $featureDescriptions[$index] ?? '',
+            'icon'         => $featureIcons[$index] ?? '',
+            'color_from'   => $featureColorFrom[$index] ?? '#000000',
+            'color_to'     => $featureColorTo[$index] ?? '#000000',
+        ];
+    }
+    $data['why_choose_cards'] = $cards;
+
+    // Handle client logos
+    $clientLogos = $page->clients_logos ?? [];
+
+    if ($request->hasFile('clients_logos')) {
+        foreach ($request->file('clients_logos') as $file) {
+            if (!$file) {
+                continue;
+            }
+            $clientLogos[] = Storage::disk('public')->putFile('dynamic-pages/clients', $file);
+        }
+    }
+
+    if ($request->filled('remove_client_indexes')) {
+        $indexesToRemove = explode(',', $request->input('remove_client_indexes'));
+        foreach ($indexesToRemove as $idx) {
+            $i = (int) $idx;
+            if (isset($clientLogos[$i])) {
+                unset($clientLogos[$i]);
+            }
+        }
+        $clientLogos = array_values($clientLogos);
+    }
+
+    $data['clients_logos'] = $clientLogos;
+
+    // Handle reviews
+    $reviewNames    = $request->input('reviews_name', []);
+    $reviewRoles    = $request->input('reviews_role', []);
+    $reviewCompany  = $request->input('reviews_company', []);
+    $reviewRating   = $request->input('reviews_rating', []);
+    $reviewText     = $request->input('reviews_review', []);
+    $existingAvatar = $request->input('reviews_avatar_existing', []);
+
+    $reviews = [];
+    foreach ($reviewNames as $index => $name) {
+        if (!$name && !($reviewText[$index] ?? null)) {
+            continue;
+        }
+
+        $avatarPath = $existingAvatar[$index] ?? null;
+
+        if ($request->hasFile("reviews_avatar.$index")) {
+            $avatarPath = Storage::disk('public')->putFile('dynamic-pages/reviews', $request->file("reviews_avatar.$index"));
+        }
+
+        $reviews[] = [
+            'name'    => $name,
+            'role'    => $reviewRoles[$index] ?? '',
+            'company' => $reviewCompany[$index] ?? '',
+            'rating'  => (int) ($reviewRating[$index] ?? 5),
+            'review'  => $reviewText[$index] ?? '',
+            'avatar'  => $avatarPath,
+        ];
+    }
+    $data['reviews_items'] = $reviews;
+
+    // Remove form fields that shouldn't be saved to database
+    unset($data['selected_services'], $data['selected_packages'], $data['selected_products'], $data['selected_shop_products'], $data['remove_current_video'], $data['video_source']);
+
+    $page->update($data);
+
+    $tab = $request->get('tab', 'header');
+
+    return redirect()
+        ->route('admin.dynamic-pages.edit', ['page' => $page->id, 'tab' => $tab])
+        ->with('success', 'Page section updated successfully.');
+}
 
     public function toggleStatus(Request $request, DynamicPage $page)
     {

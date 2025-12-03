@@ -1243,7 +1243,7 @@ document.addEventListener('DOMContentLoaded', function() {
                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('video_subtitle', $page->video_subtitle) }}</textarea>
         </div>
         
-        <!-- Video Source Selection -->
+                <!-- Video Source Selection -->
         <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-4">Video Source</label>
             <div class="space-y-4">
@@ -1251,7 +1251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="border border-gray-200 rounded-xl p-4">
                     <div class="flex items-center mb-3">
                         <input type="radio" name="video_source" value="url" id="video_url_option"
-                               {{ (!$page->video_file || $page->video_url) ? 'checked' : '' }}
+                               {{ empty($page->video_file) ? 'checked' : '' }}
                                class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
                         <label for="video_url_option" class="ml-2 text-sm font-medium text-gray-900">
                             <i class="fas fa-link mr-2 text-primary"></i>Video URL (YouTube, Vimeo, Direct Link)
@@ -1269,7 +1269,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="border border-gray-200 rounded-xl p-4">
                     <div class="flex items-center mb-3">
                         <input type="radio" name="video_source" value="upload" id="video_upload_option"
-                               {{ $page->video_file && !$page->video_url ? 'checked' : '' }}
+                               {{ !empty($page->video_file) ? 'checked' : '' }}
                                class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
                         <label for="video_upload_option" class="ml-2 text-sm font-medium text-gray-900">
                             <i class="fas fa-upload mr-2 text-primary"></i>Upload Video File
@@ -1373,7 +1373,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Video upload functionality
     const videoUploadArea = document.getElementById('videoUploadArea');
     const videoFileInput = document.getElementById('videoFileInput');
     const uploadPlaceholder = document.getElementById('uploadPlaceholder');
@@ -1387,7 +1386,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const removeCurrentInput = document.getElementById('removeCurrentInput');
     const videoFileName = document.getElementById('videoFileName');
 
-    // Handle video source selection
     function toggleVideoSource() {
         if (videoUrlOption && videoUrlOption.checked) {
             videoUrlInput.disabled = false;
@@ -1402,14 +1400,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Event listeners for radio buttons
     if (videoUrlOption) videoUrlOption.addEventListener('change', toggleVideoSource);
     if (videoUploadOption) videoUploadOption.addEventListener('change', toggleVideoSource);
     
-    // Initial toggle
     toggleVideoSource();
 
-    // Handle file upload area click
     if (videoUploadArea) {
         videoUploadArea.addEventListener('click', function(e) {
             if (videoUploadOption && videoUploadOption.checked && !videoFileInput.disabled) {
@@ -1418,7 +1413,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle drag and drop
     if (videoUploadArea) {
         videoUploadArea.addEventListener('dragover', function(e) {
             e.preventDefault();
@@ -1441,7 +1435,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle file selection
     if (videoFileInput) {
         videoFileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
@@ -1450,9 +1443,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle video file validation and preview
     function handleVideoFile(file) {
-        const maxSize = 200 * 1024 * 1024; // 200MB
+        const maxSize = 200 * 1024 * 1024;
         const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
 
         if (!allowedTypes.includes(file.type)) {
@@ -1467,7 +1459,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Show preview
         if (videoFileName) videoFileName.textContent = file.name;
         
         if (uploadPlaceholder) uploadPlaceholder.classList.add('hidden');
@@ -1475,7 +1466,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (videoPreview) videoPreview.classList.remove('hidden');
     }
 
-    // Remove new video
     if (removeNewVideo) {
         removeNewVideo.addEventListener('click', function() {
             videoFileInput.value = '';
@@ -1485,7 +1475,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Remove current video
     if (removeCurrentVideo) {
         removeCurrentVideo.addEventListener('click', function() {
             if (confirm('Are you sure you want to remove the current video?')) {

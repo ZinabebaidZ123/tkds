@@ -2029,45 +2029,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     <!-- Video Area -->
                     <div class="aspect-video relative overflow-hidden" id="videoArea">
                         @php
-                            // Determine video source priority: uploaded file takes precedence over URL
-                            $hasUploadedVideo = !empty($page->video_file) && \Storage::disk('public')->exists($page->video_file);
-                            $hasVideoUrl = !empty($page->video_url);
-                            
-                            // Check if URL is YouTube/Vimeo embed
-                            $isYoutube = $hasVideoUrl && (str_contains($page->video_url, 'youtube.com') || str_contains($page->video_url, 'youtu.be'));
-                            $isVimeo = $hasVideoUrl && str_contains($page->video_url, 'vimeo.com');
-                            $isEmbed = $isYoutube || $isVimeo;
+                            // Video upload only - no URL support
+                            $hasUploadedVideo = !empty($page->video_file) && Storage::disk('public')->exists($page->video_file);
                         @endphp
 
                         @if($hasUploadedVideo)
                             {{-- Uploaded MP4 video with custom controls --}}
                             <video id="videoPlayer" 
                                    class="w-full h-full object-cover" 
-                                   poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
+                                   poster="{{ $page->video_thumbnail ? Storage::url($page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
                                    preload="metadata">
-                                <source src="{{ asset('storage/'.$page->video_file) }}" type="video/mp4">
+                                <source src="{{ Storage::url($page->video_file) }}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
-                            
-                        @elseif($hasVideoUrl)
-                            @if($isEmbed)
-                                {{-- YouTube/Vimeo iframe --}}
-                                <iframe id="videoIframe" 
-                                        src="{{ $page->video_url }}?enablejsapi=1&controls=0&rel=0&modestbranding=1&showinfo=0"
-                                        class="w-full h-full"
-                                        frameborder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowfullscreen></iframe>
-                            @else
-                                {{-- Direct URL MP4 video with custom controls --}}
-                                <video id="videoPlayer" 
-                                       class="w-full h-full object-cover" 
-                                       poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
-                                       preload="metadata">
-                                    <source src="{{ $page->video_url }}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>
-                            @endif
                         @else
                             {{-- Placeholder with background --}}
                             <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50 flex items-center justify-center relative overflow-hidden"
@@ -2089,8 +2063,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                         @endif
 
-                        <!-- Video Controls Overlay (Only for MP4 videos, not iframes) -->
-                        @if(($hasUploadedVideo || ($hasVideoUrl && !$isEmbed)) && ($hasUploadedVideo || $hasVideoUrl))
+                        <!-- Video Controls Overlay (Only for uploaded videos) -->
+                        @if($hasUploadedVideo)
                             <div class="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
                                 <!-- Top Controls -->
                                 <div class="flex justify-between items-center p-4 pt-2">
@@ -2167,40 +2141,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressFill = document.getElementById('progressFill');
     const progressThumb = document.getElementById('progressThumb');
     const timeDisplay = document.getElementById('timeDisplay');
+    const videoControls = document.getElementById('videoControls');
 
     let isDragging = false;
-    let isVideoAreaClick = false;
+    let wasPlayingBeforeDrag = false;
 
     // Only work with native video (not iframes)
     if (!videoPlayer) return;
+
+    // Remove native controls
+    videoPlayer.removeAttribute('controls');
 
     // Prevent event bubbling on control buttons
     document.querySelectorAll('.video-control-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            isVideoAreaClick = false;
         });
     });
 
-    // Play/Pause
+    // Play/Pause function
     function togglePlay() {
         if (videoPlayer.paused) {
-            videoPlayer.play();
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            centerPlayBtn.innerHTML = '<i class="fas fa-pause ml-2"></i>';
+            videoPlayer.play().then(() => {
+                // Hide poster once video starts playing
+                videoPlayer.removeAttribute('poster');
+                updatePlayButtons(false);
+            }).catch(function(error) {
+                console.error('Error playing video:', error);
+            });
         } else {
             videoPlayer.pause();
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
+            updatePlayButtons(true);
+        }
+    }
+
+    // Update play button icons
+    function updatePlayButtons(isPaused) {
+        const playIcon = isPaused ? 'fa-play' : 'fa-pause';
+        const playIconCenter = isPaused ? 'fa-play ml-2' : 'fa-pause';
+        
+        if (playPauseBtn) {
+            playPauseBtn.innerHTML = `<i class="fas ${playIcon}"></i>`;
+        }
+        if (centerPlayBtn) {
+            centerPlayBtn.innerHTML = `<i class="fas ${playIconCenter}"></i>`;
         }
     }
 
     // Mute/Unmute
     function toggleMute() {
         videoPlayer.muted = !videoPlayer.muted;
-        muteBtn.innerHTML = videoPlayer.muted ? 
-            '<i class="fas fa-volume-mute"></i>' : 
-            '<i class="fas fa-volume-up"></i>';
+        if (muteBtn) {
+            muteBtn.innerHTML = videoPlayer.muted ? 
+                '<i class="fas fa-volume-mute"></i>' : 
+                '<i class="fas fa-volume-up"></i>';
+        }
     }
 
     // Time formatting
@@ -2213,66 +2208,170 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update time display and progress
     function updateTime() {
+        if (!videoPlayer) return;
+        
         const current = formatTime(videoPlayer.currentTime);
         const duration = formatTime(videoPlayer.duration);
-        timeDisplay.textContent = `${current} / ${duration}`;
         
-        if (!isDragging && !isNaN(videoPlayer.duration)) {
+        if (timeDisplay) {
+            timeDisplay.textContent = `${current} / ${duration}`;
+        }
+        
+        if (!isDragging && !isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
             const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-            progressFill.style.width = `${percent}%`;
-            progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
+            if (progressFill) {
+                progressFill.style.width = `${percent}%`;
+            }
+            if (progressThumb) {
+                progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
+            }
         }
     }
 
     // Progress bar click/drag
     function handleProgress(e) {
+        if (!progressBar || !videoPlayer || isNaN(videoPlayer.duration)) return;
+        
         e.stopPropagation();
         const rect = progressBar.getBoundingClientRect();
         const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
         const time = (percent / 100) * videoPlayer.duration;
+        
         videoPlayer.currentTime = time;
-        progressFill.style.width = `${percent}%`;
-        progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
+        
+        if (progressFill) {
+            progressFill.style.width = `${percent}%`;
+        }
+        if (progressThumb) {
+            progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
+        }
     }
 
-    // Event Listeners
-    videoArea.addEventListener('click', function(e) {
-        if (!isVideoAreaClick) {
-            togglePlay();
-        }
-        isVideoAreaClick = false;
-    });
+    // Video area click to play/pause
+    if (videoArea) {
+        videoArea.addEventListener('click', function(e) {
+            // Only toggle if clicking directly on video area, not on controls
+            if (e.target === videoArea || e.target === videoPlayer) {
+                togglePlay();
+            }
+        });
+    }
 
+    // Control button events
     if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlay);
     if (centerPlayBtn) centerPlayBtn.addEventListener('click', togglePlay);
     if (muteBtn) muteBtn.addEventListener('click', toggleMute);
 
+    // Progress bar events
     if (progressBar) {
         progressBar.addEventListener('click', handleProgress);
-        progressThumb.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            e.stopPropagation();
-        });
+        
+        if (progressThumb) {
+            progressThumb.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                wasPlayingBeforeDrag = !videoPlayer.paused;
+                videoPlayer.pause();
+                e.stopPropagation();
+            });
+        }
+        
         document.addEventListener('mousemove', (e) => {
-            if (isDragging) handleProgress(e);
+            if (isDragging && progressBar) {
+                handleProgress(e);
+            }
         });
+        
         document.addEventListener('mouseup', () => {
-            isDragging = false;
+            if (isDragging) {
+                isDragging = false;
+                if (wasPlayingBeforeDrag) {
+                    videoPlayer.play();
+                }
+            }
         });
     }
 
     // Video events
+    videoPlayer.addEventListener('loadstart', () => {
+        console.log('Video loading started');
+    });
+
+    videoPlayer.addEventListener('loadedmetadata', () => {
+        updateTime();
+        updatePlayButtons(true);
+    });
+
     videoPlayer.addEventListener('timeupdate', updateTime);
-    videoPlayer.addEventListener('loadedmetadata', updateTime);
+
+    videoPlayer.addEventListener('play', () => {
+        videoPlayer.removeAttribute('poster');
+        updatePlayButtons(false);
+    });
+
+    videoPlayer.addEventListener('pause', () => {
+        updatePlayButtons(true);
+    });
+
     videoPlayer.addEventListener('ended', () => {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
-        progressFill.style.width = '100%';
+        updatePlayButtons(true);
+        if (progressFill) progressFill.style.width = '100%';
+        if (progressThumb) progressThumb.style.left = 'calc(100% - 0.5rem)';
+    });
+
+    videoPlayer.addEventListener('error', (e) => {
+        console.error('Video error:', e);
+    });
+
+    // Hide controls when not hovering
+    let hideTimeout;
+    
+    if (videoContainer) {
+        videoContainer.addEventListener('mouseenter', () => {
+            if (hideTimeout) clearTimeout(hideTimeout);
+            if (videoControls) {
+                videoControls.style.opacity = '1';
+                videoControls.style.pointerEvents = 'auto';
+            }
+        });
+
+        videoContainer.addEventListener('mouseleave', () => {
+            if (!videoPlayer.paused) {
+                hideTimeout = setTimeout(() => {
+                    if (videoControls) {
+                        videoControls.style.opacity = '0';
+                        videoControls.style.pointerEvents = 'none';
+                    }
+                }, 2000);
+            }
+        });
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (!videoPlayer) return;
+        
+        switch(e.code) {
+            case 'Space':
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    togglePlay();
+                }
+                break;
+            case 'KeyM':
+                toggleMute();
+                break;
+            case 'ArrowLeft':
+                videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+                break;
+            case 'ArrowRight':
+                videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+                break;
+        }
     });
 
     // Initial state
-    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-    centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
+    updatePlayButtons(true);
+    updateTime();
 });
 </script>
 @endif
