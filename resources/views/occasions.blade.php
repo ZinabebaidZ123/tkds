@@ -1999,12 +1999,11 @@ document.addEventListener('DOMContentLoaded', function () {
 @break
 
 
- @case('video')
+@case('video')
 @if($page->hasActiveSection('video'))
 <!-- Video Section -->
 <section class="py-20 relative overflow-hidden" 
-         style="background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80
-'); background-size: cover; background-position: center;">
+         style="background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80'); background-size: cover; background-position: center;">
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/60 to-gray-900/90"></div>
     
     <!-- Background Pattern -->
@@ -2029,13 +2028,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md border border-gray-700/50 shadow-2xl" id="videoContainer">
                     <!-- Video Area -->
                     <div class="aspect-video relative overflow-hidden" id="videoArea">
-                        @if($page->video_url)
-                            @php
-                                $isYoutube = str_contains($page->video_url, 'youtube.com') || str_contains($page->video_url, 'youtu.be');
-                                $isVimeo = str_contains($page->video_url, 'vimeo.com');
-                                $isEmbed = $isYoutube || $isVimeo;
-                            @endphp
+                        @php
+                            // Determine video source priority: uploaded file takes precedence over URL
+                            $hasUploadedVideo = !empty($page->video_file) && \Storage::disk('public')->exists($page->video_file);
+                            $hasVideoUrl = !empty($page->video_url);
+                            
+                            // Check if URL is YouTube/Vimeo embed
+                            $isYoutube = $hasVideoUrl && (str_contains($page->video_url, 'youtube.com') || str_contains($page->video_url, 'youtu.be'));
+                            $isVimeo = $hasVideoUrl && str_contains($page->video_url, 'vimeo.com');
+                            $isEmbed = $isYoutube || $isVimeo;
+                        @endphp
 
+                        @if($hasUploadedVideo)
+                            {{-- Uploaded MP4 video with custom controls --}}
+                            <video id="videoPlayer" 
+                                   class="w-full h-full object-cover" 
+                                   poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
+                                   preload="metadata">
+                                <source src="{{ asset('storage/'.$page->video_file) }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            
+                        @elseif($hasVideoUrl)
                             @if($isEmbed)
                                 {{-- YouTube/Vimeo iframe --}}
                                 <iframe id="videoIframe" 
@@ -2045,7 +2059,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
                             @else
-                                {{-- Native MP4 video with custom controls --}}
+                                {{-- Direct URL MP4 video with custom controls --}}
                                 <video id="videoPlayer" 
                                        class="w-full h-full object-cover" 
                                        poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
@@ -2075,38 +2089,40 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                         @endif
 
-                        <!-- Video Controls Overlay -->
-                        <div class="absolute inset-0 flex flex-col   opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
-                            <!-- Top Controls -->
-                            <div class="flex justify-between items-center p-4 pt-2">
-                                <div class="flex items-center space-x-2">
-                                    <button id="playPauseBtn" class="video-control-btn w-12 h-12 bg-white/20  rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="playpause">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <button id="muteBtn" class="video-control-btn w-12 h-12 bg-white/20  rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="mute">
-                                        <i class="fas fa-volume-up"></i>
-                                    </button>
+                        <!-- Video Controls Overlay (Only for MP4 videos, not iframes) -->
+                        @if(($hasUploadedVideo || ($hasVideoUrl && !$isEmbed)) && ($hasUploadedVideo || $hasVideoUrl))
+                            <div class="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
+                                <!-- Top Controls -->
+                                <div class="flex justify-between items-center p-4 pt-2">
+                                    <div class="flex items-center space-x-2">
+                                        <button id="playPauseBtn" class="video-control-btn w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="playpause">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button id="muteBtn" class="video-control-btn w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="mute">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span id="timeDisplay" class="text-white text-sm font-mono">0:00 / 0:00</span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <span id="timeDisplay" class="text-white text-sm font-mono">0:00 / 0:00</span>
-                                </div>
-                            </div>
 
-                            <!-- Center Play Button (large) -->
-                            <div class="flex-1 flex items-center justify-center">
-                                <button id="centerPlayBtn" class="video-control-btn w-24 h-24 bg-gradient-to-br from-red-600/90 to-red-500/90 rounded-full flex items-center justify-center text-white text-3xl shadow-2xl hover:scale-110 transition-all duration-300 backdrop-blur-sm border-4 border-white/40" data-action="playpause">
-                                    <i class="fas fa-play ml-2"></i>
-                                </button>
-                            </div>
+                                <!-- Center Play Button (large) -->
+                                <div class="flex-1 flex items-center justify-center">
+                                    <button id="centerPlayBtn" class="video-control-btn w-24 h-24 bg-gradient-to-br from-red-600/90 to-red-500/90 rounded-full flex items-center justify-center text-white text-3xl shadow-2xl hover:scale-110 transition-all duration-300 backdrop-blur-sm border-4 border-white/40" data-action="playpause">
+                                        <i class="fas fa-play ml-2"></i>
+                                    </button>
+                                </div>
 
-                            <!-- Bottom Progress Bar -->
-                            <div class="p-4 pb-2">
-                                <div class="w-full bg-white/20 rounded-full h-2 cursor-pointer relative group-hover:h-3 transition-all duration-200 overflow-hidden" id="progressBar">
-                                    <div class="absolute left-0 top-0 bg-gradient-to-r from-neon-pink to-purple-600 h-full rounded-full transition-all duration-300" id="progressFill" style="width: 0%"></div>
-                                    <div class="absolute left-0 top-0 bg-white/50 w-4 h-4 rounded-full -mt-1 ml-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shadow-md" id="progressThumb"></div>
+                                <!-- Bottom Progress Bar -->
+                                <div class="p-4 pb-2">
+                                    <div class="w-full bg-white/20 rounded-full h-2 cursor-pointer relative group-hover:h-3 transition-all duration-200 overflow-hidden" id="progressBar">
+                                        <div class="absolute left-0 top-0 bg-gradient-to-r from-neon-pink to-purple-600 h-full rounded-full transition-all duration-300" id="progressFill" style="width: 0%"></div>
+                                        <div class="absolute left-0 top-0 bg-white/50 w-4 h-4 rounded-full -mt-1 ml-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shadow-md" id="progressThumb"></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
                         <!-- Corner Decorations -->
                         <div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-neon-pink/50 pointer-events-none"></div>
@@ -2126,7 +2142,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                     {{ $page->video_info_description ?? 'Experience the future of hosting and streaming technology' }}
                                 </p>
                             </div>
-                        
                         </div>
                     </div>
                 </div>
@@ -2156,7 +2171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let isDragging = false;
     let isVideoAreaClick = false;
 
-    // Only work with native video
+    // Only work with native video (not iframes)
     if (!videoPlayer) return;
 
     // Prevent event bubbling on control buttons
@@ -2180,7 +2195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Mute/Unmute - FIXED: no play/pause interference
+    // Mute/Unmute
     function toggleMute() {
         videoPlayer.muted = !videoPlayer.muted;
         muteBtn.innerHTML = videoPlayer.muted ? 
@@ -2220,7 +2235,7 @@ document.addEventListener('DOMContentLoaded', function() {
         progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
     }
 
-    // Event Listeners - FIXED event handling
+    // Event Listeners
     videoArea.addEventListener('click', function(e) {
         if (!isVideoAreaClick) {
             togglePlay();
@@ -2260,8 +2275,8 @@ document.addEventListener('DOMContentLoaded', function() {
     centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
 });
 </script>
-  @endif
- @break
+@endif
+@break
 
 
 
