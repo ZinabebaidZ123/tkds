@@ -75,6 +75,7 @@ class DynamicPage extends Model
         'video_title',
         'video_subtitle',
         'video_url',
+        'video_file',
         'video_thumbnail',
         'video_info_title',
         'video_info_description',

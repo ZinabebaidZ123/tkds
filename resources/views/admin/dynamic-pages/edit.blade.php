@@ -1228,66 +1228,275 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-            {{-- VIDEO TAB --}}
-            <div id="video" class="tab-content p-8 {{ $currentTab == 'video' ? '' : 'hidden' }}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Video Title</label>
-                        <input type="text" name="video_title"
-                               value="{{ old('video_title', $page->video_title) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Video Subtitle</label>
-                        <textarea name="video_subtitle" rows="2"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('video_subtitle', $page->video_subtitle) }}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Video URL</label>
-                        <input type="text" name="video_url"
-                               value="{{ old('video_url', $page->video_url) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Video Thumbnail</label>
-                        <input type="file"
-                               name="video_thumbnail"
-                               accept="image/*"
-                               data-preview="video-thumb-preview"
-                               class="image-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                        <div class="mt-2">
-                            @if($page->video_thumbnail)
-                                <img id="video-thumb-preview"
-                                     src="{{ asset('storage/'.$page->video_thumbnail) }}"
-                                     class="w-40 h-24 object-cover rounded-lg border">
-                            @else
-                                <img id="video-thumb-preview"
-                                     class="w-40 h-24 object-cover rounded-lg border hidden">
-                            @endif
-                        </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Info Title</label>
-                        <input type="text" name="video_info_title"
-                               value="{{ old('video_info_title', $page->video_info_title) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Info Description</label>
-                        <input type="text" name="video_info_description"
-                               value="{{ old('video_info_description', $page->video_info_description) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                            <input type="checkbox" name="video_status" value="active"
-                                   {{ $page->video_status === 'active' ? 'checked' : '' }}
-                                   class="mr-2 w-4 h-4">
-                            Active
+        {{-- VIDEO TAB --}}
+<div id="video" class="tab-content p-8 {{ $currentTab == 'video' ? '' : 'hidden' }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Video Title</label>
+            <input type="text" name="video_title"
+                   value="{{ old('video_title', $page->video_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Video Subtitle</label>
+            <textarea name="video_subtitle" rows="2"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('video_subtitle', $page->video_subtitle) }}</textarea>
+        </div>
+        
+        <!-- Video Source Selection -->
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-4">Video Source</label>
+            <div class="space-y-4">
+                <!-- Video URL Option -->
+                <div class="border border-gray-200 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <input type="radio" name="video_source" value="url" id="video_url_option"
+                               {{ (!$page->video_file || $page->video_url) ? 'checked' : '' }}
+                               class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
+                        <label for="video_url_option" class="ml-2 text-sm font-medium text-gray-900">
+                            <i class="fas fa-link mr-2 text-primary"></i>Video URL (YouTube, Vimeo, Direct Link)
                         </label>
                     </div>
+                    <input type="text" name="video_url"
+                           value="{{ old('video_url', $page->video_url) }}"
+                           placeholder="https://www.youtube.com/watch?v=... or direct MP4 URL"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
+                           id="video_url_input">
+                    <p class="text-xs text-gray-500 mt-1">YouTube, Vimeo, or direct video file URL</p>
+                </div>
+
+                <!-- Video Upload Option -->
+                <div class="border border-gray-200 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <input type="radio" name="video_source" value="upload" id="video_upload_option"
+                               {{ $page->video_file && !$page->video_url ? 'checked' : '' }}
+                               class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
+                        <label for="video_upload_option" class="ml-2 text-sm font-medium text-gray-900">
+                            <i class="fas fa-upload mr-2 text-primary"></i>Upload Video File
+                        </label>
+                    </div>
+                    
+                    <!-- Video Upload Area -->
+                    <div class="video-upload-area border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors"
+                         id="videoUploadArea">
+                        <input type="file" name="video_file" accept="video/*" id="videoFileInput" class="hidden">
+                        
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <i class="fas fa-video text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-500">MP4, AVI, MOV up to 200MB</p>
+                        </div>
+                        
+                        <!-- Current Video Display -->
+                        @if($page->video_file)
+                            <div class="current-video" id="currentVideo">
+                                <div class="flex items-center justify-center space-x-4 p-4 bg-green-50 rounded-lg">
+                                    <i class="fas fa-file-video text-green-600 text-2xl"></i>
+                                    <div class="text-left">
+                                        <p class="text-sm font-medium text-gray-900">Current Video File</p>
+                                        <p class="text-xs text-gray-600">{{ basename($page->video_file) }}</p>
+                                    </div>
+                                    <button type="button" class="text-red-600 hover:text-red-800 text-sm" id="removeCurrentVideo">
+                                        <i class="fas fa-trash mr-1"></i>Remove
+                                    </button>
+                                </div>
+                                <input type="hidden" name="remove_current_video" id="removeCurrentInput" value="0">
+                            </div>
+                        @endif
+                        
+                        <!-- Video Preview -->
+                        <div class="video-preview hidden" id="videoPreview">
+                            <div class="flex items-center justify-center space-x-4 p-4 bg-blue-50 rounded-lg">
+                                <i class="fas fa-file-video text-blue-600 text-2xl"></i>
+                                <div class="text-left">
+                                    <p class="text-sm font-medium text-gray-900">New Video Selected</p>
+                                    <p class="text-xs text-gray-600" id="videoFileName"></p>
+                                </div>
+                                <button type="button" class="text-red-600 hover:text-red-800 text-sm" id="removeNewVideo">
+                                    <i class="fas fa-trash mr-1"></i>Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 mt-2">
+                        Supported formats: MP4, AVI, MOV, QuickTime. Maximum size: 200MB
+                    </p>
                 </div>
             </div>
+        </div>
+
+        <!-- Video Thumbnail -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Video Thumbnail</label>
+            <input type="file"
+                   name="video_thumbnail"
+                   accept="image/*"
+                   data-preview="video-thumb-preview"
+                   class="image-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+            <div class="mt-2">
+                @if($page->video_thumbnail)
+                    <img id="video-thumb-preview"
+                         src="{{ asset('storage/'.$page->video_thumbnail) }}"
+                         class="w-40 h-24 object-cover rounded-lg border">
+                @else
+                    <img id="video-thumb-preview"
+                         class="w-40 h-24 object-cover rounded-lg border hidden">
+                @endif
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Optional: Custom thumbnail for video</p>
+        </div>
+
+        <!-- Video Info -->
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Info Title</label>
+            <input type="text" name="video_info_title"
+                   value="{{ old('video_info_title', $page->video_info_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Info Description</label>
+            <input type="text" name="video_info_description"
+                   value="{{ old('video_info_description', $page->video_info_description) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                <input type="checkbox" name="video_status" value="active"
+                       {{ $page->video_status === 'active' ? 'checked' : '' }}
+                       class="mr-2 w-4 h-4">
+                Active
+            </label>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Video upload functionality
+    const videoUploadArea = document.getElementById('videoUploadArea');
+    const videoFileInput = document.getElementById('videoFileInput');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const videoPreview = document.getElementById('videoPreview');
+    const currentVideo = document.getElementById('currentVideo');
+    const videoUrlOption = document.getElementById('video_url_option');
+    const videoUploadOption = document.getElementById('video_upload_option');
+    const videoUrlInput = document.getElementById('video_url_input');
+    const removeNewVideo = document.getElementById('removeNewVideo');
+    const removeCurrentVideo = document.getElementById('removeCurrentVideo');
+    const removeCurrentInput = document.getElementById('removeCurrentInput');
+    const videoFileName = document.getElementById('videoFileName');
+
+    // Handle video source selection
+    function toggleVideoSource() {
+        if (videoUrlOption && videoUrlOption.checked) {
+            videoUrlInput.disabled = false;
+            videoFileInput.disabled = true;
+            videoUploadArea.style.opacity = '0.5';
+            videoUploadArea.style.pointerEvents = 'none';
+        } else if (videoUploadOption && videoUploadOption.checked) {
+            videoUrlInput.disabled = true;
+            videoFileInput.disabled = false;
+            videoUploadArea.style.opacity = '1';
+            videoUploadArea.style.pointerEvents = 'auto';
+        }
+    }
+
+    // Event listeners for radio buttons
+    if (videoUrlOption) videoUrlOption.addEventListener('change', toggleVideoSource);
+    if (videoUploadOption) videoUploadOption.addEventListener('change', toggleVideoSource);
+    
+    // Initial toggle
+    toggleVideoSource();
+
+    // Handle file upload area click
+    if (videoUploadArea) {
+        videoUploadArea.addEventListener('click', function(e) {
+            if (videoUploadOption && videoUploadOption.checked && !videoFileInput.disabled) {
+                videoFileInput.click();
+            }
+        });
+    }
+
+    // Handle drag and drop
+    if (videoUploadArea) {
+        videoUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('border-primary', 'bg-blue-50');
+        });
+
+        videoUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+        });
+
+        videoUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && videoUploadOption && videoUploadOption.checked) {
+                handleVideoFile(files[0]);
+            }
+        });
+    }
+
+    // Handle file selection
+    if (videoFileInput) {
+        videoFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleVideoFile(this.files[0]);
+            }
+        });
+    }
+
+    // Handle video file validation and preview
+    function handleVideoFile(file) {
+        const maxSize = 200 * 1024 * 1024; // 200MB
+        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a valid video file (MP4, AVI, MOV)');
+            videoFileInput.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 200MB');
+            videoFileInput.value = '';
+            return;
+        }
+
+        // Show preview
+        if (videoFileName) videoFileName.textContent = file.name;
+        
+        if (uploadPlaceholder) uploadPlaceholder.classList.add('hidden');
+        if (currentVideo) currentVideo.classList.add('hidden');
+        if (videoPreview) videoPreview.classList.remove('hidden');
+    }
+
+    // Remove new video
+    if (removeNewVideo) {
+        removeNewVideo.addEventListener('click', function() {
+            videoFileInput.value = '';
+            if (videoPreview) videoPreview.classList.add('hidden');
+            if (uploadPlaceholder) uploadPlaceholder.classList.remove('hidden');
+            if (currentVideo) currentVideo.classList.remove('hidden');
+        });
+    }
+
+    // Remove current video
+    if (removeCurrentVideo) {
+        removeCurrentVideo.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove the current video?')) {
+                if (currentVideo) currentVideo.classList.add('hidden');
+                if (removeCurrentInput) removeCurrentInput.value = '1';
+                if (uploadPlaceholder) uploadPlaceholder.classList.remove('hidden');
+            }
+        });
+    }
+});
+</script>
 
           
        {{-- CLIENTS TAB --}}
