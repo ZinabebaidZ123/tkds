@@ -775,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
 
                     <!-- Package Customization Options -->
-                    {{-- <div class="package-options mt-4 {{ $isSelected ? '' : 'hidden' }}">
+                    <div class="package-options mt-4 {{ $isSelected ? '' : 'hidden' }}">
                         <div class="border-t pt-4 space-y-3">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
@@ -802,7 +802,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -1228,8 +1228,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-  {{-- VIDEO TAB --}}
+{{-- VIDEO TAB --}}
 <div id="video" class="tab-content p-8 {{ $currentTab == 'video' ? '' : 'hidden' }}">
+    
+    {{-- Debug Information --}}
+    @if(!empty($page->video_file))
+        <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl mb-6">
+            <h4 class="font-bold text-yellow-800 mb-2">🔧 Debug Information:</h4>
+            <div class="text-sm text-yellow-700 space-y-1">
+                <p><strong>Raw video_file value:</strong> <code>{{ $page->video_file }}</code></p>
+                <p><strong>Value length:</strong> {{ strlen($page->video_file) }} characters</p>
+                <p><strong>File exists:</strong> 
+                    @if(Storage::disk('public')->exists($page->video_file))
+                        <span class="text-green-600">✅ YES</span>
+                    @else
+                        <span class="text-red-600">❌ NO</span>
+                    @endif
+                </p>
+                @php
+                    // 🔥 استخدام asset بدلاً من Storage::url
+                    $testUrl = asset('storage/' . $page->video_file);
+                    echo '<p><strong>Generated URL (asset):</strong> <code>' . $testUrl . '</code></p>';
+                    echo '<p><strong>URL length:</strong> ' . strlen($testUrl) . ' characters</p>';
+                    
+                    // مقارنة مع الطريقة القديمة
+                    try {
+                        $storageUrl = Storage::disk('public')->url($page->video_file);
+                        echo '<p><strong>Storage URL (old way):</strong> <code>' . $storageUrl . '</code></p>';
+                        echo '<p><strong>URLs Match:</strong> ' . ($testUrl === $storageUrl ? '<span class="text-green-600">✅ YES</span>' : '<span class="text-red-600">❌ NO</span>') . '</p>';
+                    } catch (Exception $e) {
+                        echo '<p><strong>Storage URL Error:</strong> <span class="text-red-600">' . $e->getMessage() . '</span></p>';
+                    }
+                @endphp
+            </div>
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="md:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-2">Video Title</label>
@@ -1243,85 +1277,89 @@ document.addEventListener('DOMContentLoaded', function() {
                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">{{ old('video_subtitle', $page->video_subtitle) }}</textarea>
         </div>
         
-                <!-- Video Source Selection -->
+        <!-- Video Upload Section -->
         <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-4">Video Source</label>
-            <div class="space-y-4">
-                <!-- Video URL Option -->
-                <div class="border border-gray-200 rounded-xl p-4">
-                    <div class="flex items-center mb-3">
-                        <input type="radio" name="video_source" value="url" id="video_url_option"
-                               {{ empty($page->video_file) ? 'checked' : '' }}
-                               class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
-                        <label for="video_url_option" class="ml-2 text-sm font-medium text-gray-900">
-                            <i class="fas fa-link mr-2 text-primary"></i>Video URL (YouTube, Vimeo, Direct Link)
-                        </label>
-                    </div>
-                    <input type="text" name="video_url"
-                           value="{{ old('video_url', $page->video_url) }}"
-                           placeholder="https://www.youtube.com/watch?v=... or direct MP4 URL"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
-                           id="video_url_input">
-                    <p class="text-xs text-gray-500 mt-1">YouTube, Vimeo, or direct video file URL</p>
+            <label class="block text-sm font-medium text-gray-700 mb-4">
+                <i class="fas fa-upload mr-2 text-primary"></i>Upload Video File
+            </label>
+            
+            <!-- Video Upload Area -->
+            <div class="video-upload-area border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors"
+                 id="videoUploadArea">
+                <input type="file" name="video_file" accept="video/*" id="videoFileInput" class="hidden">
+                
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                    <i class="fas fa-video text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                    <p class="text-sm text-gray-500">MP4, AVI, MOV up to 200MB</p>
                 </div>
-
-                <!-- Video Upload Option -->
-                <div class="border border-gray-200 rounded-xl p-4">
-                    <div class="flex items-center mb-3">
-                        <input type="radio" name="video_source" value="upload" id="video_upload_option"
-                               {{ !empty($page->video_file) ? 'checked' : '' }}
-                               class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
-                        <label for="video_upload_option" class="ml-2 text-sm font-medium text-gray-900">
-                            <i class="fas fa-upload mr-2 text-primary"></i>Upload Video File
-                        </label>
-                    </div>
-                    
-                    <!-- Video Upload Area -->
-                    <div class="video-upload-area border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors"
-                         id="videoUploadArea">
-                        <input type="file" name="video_file" accept="video/*" id="videoFileInput" class="hidden">
-                        
-                        <div class="upload-placeholder" id="uploadPlaceholder">
-                            <i class="fas fa-video text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
-                            <p class="text-sm text-gray-500">MP4, AVI, MOV up to 200MB</p>
-                        </div>
-                        
-                        <!-- Current Video Display -->
-                        @if($page->video_file)
-                            <div class="current-video" id="currentVideo">
-                                <div class="flex items-center justify-center space-x-4 p-4 bg-green-50 rounded-lg">
-                                    <i class="fas fa-file-video text-green-600 text-2xl"></i>
-                                    <div class="text-left">
-                                        <p class="text-sm font-medium text-gray-900">Current Video File</p>
-                                        <p class="text-xs text-gray-600">{{ basename($page->video_file) }}</p>
-                                    </div>
-                                    <button type="button" class="text-red-600 hover:text-red-800 text-sm" id="removeCurrentVideo">
-                                        <i class="fas fa-trash mr-1"></i>Remove
-                                    </button>
-                                </div>
-                                <input type="hidden" name="remove_current_video" id="removeCurrentInput" value="0">
+                
+                <!-- Current Video Display -->
+                @if($page->video_file)
+                    <div class="current-video" id="currentVideo">
+                        <div class="flex items-center justify-center space-x-4 p-4 bg-green-50 rounded-lg">
+                            <i class="fas fa-file-video text-green-600 text-2xl"></i>
+                            <div class="text-left">
+                                <p class="text-sm font-medium text-gray-900">Current Video File</p>
+                                <p class="text-xs text-gray-600">{{ basename($page->video_file) }}</p>
+                                <p class="text-xs text-blue-600">Full path: {{ $page->video_file }}</p>
+                                @php $videoUrl = asset('storage/' . $page->video_file); @endphp
+                                <p class="text-xs text-green-600">URL: {{ $videoUrl }}</p>
                             </div>
-                        @endif
+                            <button type="button" class="text-red-600 hover:text-red-800 text-sm" id="removeCurrentVideo">
+                                <i class="fas fa-trash mr-1"></i>Remove
+                            </button>
+                        </div>
+                        <input type="hidden" name="remove_current_video" id="removeCurrentInput" value="0">
                         
                         <!-- Video Preview -->
-                        <div class="video-preview hidden" id="videoPreview">
-                            <div class="flex items-center justify-center space-x-4 p-4 bg-blue-50 rounded-lg">
-                                <i class="fas fa-file-video text-blue-600 text-2xl"></i>
-                                <div class="text-left">
-                                    <p class="text-sm font-medium text-gray-900">New Video Selected</p>
-                                    <p class="text-xs text-gray-600" id="videoFileName"></p>
-                                </div>
-                                <button type="button" class="text-red-600 hover:text-red-800 text-sm" id="removeNewVideo">
-                                    <i class="fas fa-trash mr-1"></i>Remove
-                                </button>
-                            </div>
+                        <div class="mt-4">
+                            <video controls class="w-full max-w-md mx-auto rounded-lg border">
+                                <source src="{{ $videoUrl }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
                         </div>
                     </div>
-                    
-                    <p class="text-xs text-gray-500 mt-2">
-                        Supported formats: MP4, AVI, MOV, QuickTime. Maximum size: 200MB
+                @endif
+                
+                <!-- Video Preview -->
+                <div class="video-preview hidden" id="videoPreview">
+                    <div class="flex items-center justify-center space-x-4 p-4 bg-blue-50 rounded-lg">
+                        <i class="fas fa-file-video text-blue-600 text-2xl"></i>
+                        <div class="text-left">
+                            <p class="text-sm font-medium text-gray-900">New Video Selected</p>
+                            <p class="text-xs text-gray-600" id="videoFileName"></p>
+                        </div>
+                        <button type="button" class="text-red-600 hover:text-red-800 text-sm" id="removeNewVideo">
+                            <i class="fas fa-trash mr-1"></i>Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-xs text-gray-500 mt-2">
+                Supported formats: MP4, AVI, MOV, QuickTime. Maximum size: 200MB
+            </p>
+        </div>
+
+        <!-- Storage Information -->
+        <div class="md:col-span-2">
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+                <h4 class="font-bold text-blue-800 mb-2">📁 Storage Information:</h4>
+                <div class="text-sm text-blue-700 space-y-1">
+                    <p><strong>Storage Root:</strong> <code>{{ storage_path('app/public') }}</code></p>
+                    <p><strong>APP_URL:</strong> <code>{{ config('app.url') }}</code></p>
+                    <p><strong>Storage URL Base:</strong> <code>{{ config('filesystems.disks.public.url') }}</code></p>
+                    <p><strong>Public Storage Path:</strong> <code>{{ public_path('storage') }}</code></p>
+                    <p><strong>Symlink Exists:</strong> 
+                        @if(is_link(public_path('storage')))
+                            <span class="text-green-600">✅ YES</span>
+                        @else
+                            <span class="text-red-600">❌ NO</span>
+                        @endif
                     </p>
+                    <p><strong>Recommended Method:</strong> <code>asset('storage/' . $path)</code> ✅</p>
+                    <p><strong>Problematic Method:</strong> <code>Storage::disk('public')->url($path)</code> ❌</p>
                 </div>
             </div>
         </div>
@@ -1336,8 +1374,9 @@ document.addEventListener('DOMContentLoaded', function() {
                    class="image-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
             <div class="mt-2">
                 @if($page->video_thumbnail)
+                    @php $thumbnailUrl = asset('storage/' . $page->video_thumbnail); @endphp
                     <img id="video-thumb-preview"
-                         src="{{ asset('storage/'.$page->video_thumbnail) }}"
+                         src="{{ $thumbnailUrl }}"
                          class="w-40 h-24 object-cover rounded-lg border">
                 @else
                     <img id="video-thumb-preview"
@@ -1370,123 +1409,303 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // ====================
+    // Video Upload Section
+    // ====================
+    
     const videoUploadArea = document.getElementById('videoUploadArea');
     const videoFileInput = document.getElementById('videoFileInput');
     const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-    const videoPreview = document.getElementById('videoPreview');
     const currentVideo = document.getElementById('currentVideo');
-    const videoUrlOption = document.getElementById('video_url_option');
-    const videoUploadOption = document.getElementById('video_upload_option');
-    const videoUrlInput = document.getElementById('video_url_input');
-    const removeNewVideo = document.getElementById('removeNewVideo');
-    const removeCurrentVideo = document.getElementById('removeCurrentVideo');
-    const removeCurrentInput = document.getElementById('removeCurrentInput');
+    const videoPreview = document.getElementById('videoPreview');
     const videoFileName = document.getElementById('videoFileName');
+    const removeCurrentVideo = document.getElementById('removeCurrentVideo');
+    const removeNewVideo = document.getElementById('removeNewVideo');
+    const removeCurrentInput = document.getElementById('removeCurrentInput');
 
-    function toggleVideoSource() {
-        if (videoUrlOption && videoUrlOption.checked) {
-            videoUrlInput.disabled = false;
-            videoFileInput.disabled = true;
-            videoUploadArea.style.opacity = '0.5';
-            videoUploadArea.style.pointerEvents = 'none';
-        } else if (videoUploadOption && videoUploadOption.checked) {
-            videoUrlInput.disabled = true;
-            videoFileInput.disabled = false;
-            videoUploadArea.style.opacity = '1';
-            videoUploadArea.style.pointerEvents = 'auto';
-        }
-    }
-
-    if (videoUrlOption) videoUrlOption.addEventListener('change', toggleVideoSource);
-    if (videoUploadOption) videoUploadOption.addEventListener('change', toggleVideoSource);
-    
-    toggleVideoSource();
-
-    if (videoUploadArea) {
+    // Click to upload
+    if (videoUploadArea && videoFileInput) {
         videoUploadArea.addEventListener('click', function(e) {
-            if (videoUploadOption && videoUploadOption.checked && !videoFileInput.disabled) {
+            if (e.target !== removeCurrentVideo && e.target !== removeNewVideo) {
                 videoFileInput.click();
             }
         });
     }
 
-    if (videoUploadArea) {
-        videoUploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('border-primary', 'bg-blue-50');
-        });
-
-        videoUploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('border-primary', 'bg-blue-50');
-        });
-
-        videoUploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('border-primary', 'bg-blue-50');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && videoUploadOption && videoUploadOption.checked) {
-                handleVideoFile(files[0]);
-            }
-        });
-    }
-
+    // File input change event
     if (videoFileInput) {
-        videoFileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                handleVideoFile(this.files[0]);
+        videoFileInput.addEventListener('change', function(e) {
+            handleVideoFileSelection(e.target.files[0]);
+        });
+    }
+
+    // Drag & Drop functionality
+    if (videoUploadArea) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            videoUploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight on drag
+        ['dragenter', 'dragover'].forEach(eventName => {
+            videoUploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            videoUploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            videoUploadArea.classList.add('border-primary', 'bg-primary-50');
+        }
+
+        function unhighlight() {
+            videoUploadArea.classList.remove('border-primary', 'bg-primary-50');
+        }
+
+        // Handle dropped files
+        videoUploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                handleVideoFileSelection(files[0]);
             }
         });
     }
 
-    function handleVideoFile(file) {
-        const maxSize = 200 * 1024 * 1024;
-        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
+    // Handle video file selection
+    function handleVideoFileSelection(file) {
+        if (!file) return;
 
+        // Validate file type
+        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Please select a valid video file (MP4, AVI, MOV)');
-            videoFileInput.value = '';
+            showAlert('Please select a valid video file (MP4, AVI, MOV)', 'error');
             return;
         }
 
+        // Validate file size (200MB = 200 * 1024 * 1024 bytes)
+        const maxSize = 200 * 1024 * 1024;
         if (file.size > maxSize) {
-            alert('File size must be less than 200MB');
-            videoFileInput.value = '';
+            showAlert('Video file is too large. Maximum size is 200MB', 'error');
             return;
         }
 
-        if (videoFileName) videoFileName.textContent = file.name;
+        // Show new video preview
+        if (videoFileName) {
+            videoFileName.textContent = file.name;
+        }
         
-        if (uploadPlaceholder) uploadPlaceholder.classList.add('hidden');
-        if (currentVideo) currentVideo.classList.add('hidden');
-        if (videoPreview) videoPreview.classList.remove('hidden');
+        hideElement(uploadPlaceholder);
+        hideElement(currentVideo);
+        showElement(videoPreview);
+        
+        // Reset remove current video input
+        if (removeCurrentInput) {
+            removeCurrentInput.value = "0";
+        }
     }
 
-    if (removeNewVideo) {
-        removeNewVideo.addEventListener('click', function() {
-            videoFileInput.value = '';
-            if (videoPreview) videoPreview.classList.add('hidden');
-            if (uploadPlaceholder) uploadPlaceholder.classList.remove('hidden');
-            if (currentVideo) currentVideo.classList.remove('hidden');
-        });
-    }
-
+    // Remove current video
     if (removeCurrentVideo) {
-        removeCurrentVideo.addEventListener('click', function() {
-            if (confirm('Are you sure you want to remove the current video?')) {
-                if (currentVideo) currentVideo.classList.add('hidden');
-                if (removeCurrentInput) removeCurrentInput.value = '1';
-                if (uploadPlaceholder) uploadPlaceholder.classList.remove('hidden');
+        removeCurrentVideo.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (removeCurrentInput) {
+                removeCurrentInput.value = "1";
+            }
+            
+            hideElement(currentVideo);
+            showElement(uploadPlaceholder);
+            
+            // Clear file input
+            if (videoFileInput) {
+                videoFileInput.value = '';
             }
         });
+    }
+
+    // Remove new video
+    if (removeNewVideo) {
+        removeNewVideo.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            hideElement(videoPreview);
+            
+            // Show current video if exists, otherwise show placeholder
+            if (currentVideo && removeCurrentInput && removeCurrentInput.value !== "1") {
+                showElement(currentVideo);
+            } else {
+                showElement(uploadPlaceholder);
+            }
+            
+            // Clear file input
+            if (videoFileInput) {
+                videoFileInput.value = '';
+            }
+        });
+    }
+
+    // ====================
+    // Image Preview Section
+    // ====================
+    
+    const imageInputs = document.querySelectorAll('.image-input');
+    
+    imageInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            const previewId = this.getAttribute('data-preview');
+            const preview = document.getElementById(previewId);
+            
+            if (file && preview) {
+                // Validate image file type
+                if (!file.type.startsWith('image/')) {
+                    showAlert('Please select a valid image file', 'error');
+                    return;
+                }
+                
+                // Validate image size (5MB max)
+                const maxImageSize = 5 * 1024 * 1024;
+                if (file.size > maxImageSize) {
+                    showAlert('Image file is too large. Maximum size is 5MB', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    // ====================
+    // Form Validation
+    // ====================
+    
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = document.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                showFieldError(field, 'This field is required');
+                isValid = false;
+            } else {
+                clearFieldError(field);
+            }
+        });
+        
+        return isValid;
+    }
+    
+    function showFieldError(field, message) {
+        // Remove existing error
+        clearFieldError(field);
+        
+        // Add error class
+        field.classList.add('border-red-500');
+        
+        // Create error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'text-red-500 text-sm mt-1';
+        errorDiv.textContent = message;
+        errorDiv.setAttribute('data-error-for', field.name || field.id);
+        
+        // Insert error message after field
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+    }
+    
+    function clearFieldError(field) {
+        field.classList.remove('border-red-500');
+        const errorMsg = field.parentNode.querySelector(`[data-error-for="${field.name || field.id}"]`);
+        if (errorMsg) {
+            errorMsg.remove();
+        }
+    }
+
+    // ====================
+    // Helper Functions
+    // ====================
+    
+    function showElement(element) {
+        if (element) {
+            element.classList.remove('hidden');
+        }
+    }
+    
+    function hideElement(element) {
+        if (element) {
+            element.classList.add('hidden');
+        }
+    }
+    
+    function showAlert(message, type = 'info') {
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
+            type === 'error' ? 'bg-red-100 border border-red-400 text-red-700' :
+            type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' :
+            'bg-blue-100 border border-blue-400 text-blue-700'
+        }`;
+        
+        alertDiv.innerHTML = `
+            <div class="flex items-center justify-between">
+                <span>${message}</span>
+                <button class="ml-3 text-lg font-bold" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // ====================
+    // Progress Bar (Optional)
+    // ====================
+    
+    function createProgressBar() {
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'w-full bg-gray-200 rounded-full h-2 mt-4';
+        progressContainer.innerHTML = '<div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>';
+        return progressContainer;
+    }
+    
+    function updateProgress(progressContainer, percent) {
+        const progressBar = progressContainer.querySelector('.bg-blue-600');
+        if (progressBar) {
+            progressBar.style.width = percent + '%';
+        }
     }
 });
 </script>
-
           
        {{-- CLIENTS TAB --}}
 <div id="clients" class="tab-content p-8 {{ $currentTab == 'clients' ? '' : 'hidden' }}">

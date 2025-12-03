@@ -2029,42 +2029,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     <!-- Video Area -->
                     <div class="aspect-video relative overflow-hidden" id="videoArea">
                         @php
-                            // Video upload only - no URL support
+                            // 🔥 الحل الصحيح - استخدام asset بدلاً من Storage::url
                             $hasUploadedVideo = !empty($page->video_file) && Storage::disk('public')->exists($page->video_file);
+                            $videoUrl = null;
+                            $thumbnailUrl = null;
+                            
+                            if ($hasUploadedVideo) {
+                                $videoUrl = asset('storage/' . $page->video_file);
+                            }
+                            
+                            if ($page->video_thumbnail) {
+                                $thumbnailUrl = asset('storage/' . $page->video_thumbnail);
+                            } else {
+                                $thumbnailUrl = 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=';
+                            }
                         @endphp
 
                         @if($hasUploadedVideo)
                             {{-- Uploaded MP4 video with custom controls --}}
                             <video id="videoPlayer" 
                                    class="w-full h-full object-cover" 
-                                   poster="{{ $page->video_thumbnail ? Storage::url($page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
+                                   poster="{{ $thumbnailUrl }}"
                                    preload="metadata">
-                                <source src="{{ Storage::url($page->video_file) }}" type="video/mp4">
+                                <source src="{{ $videoUrl }}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
-                        @else
-                            {{-- Placeholder with background --}}
-                            <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50 flex items-center justify-center relative overflow-hidden"
-                                 style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;">
-                                <div class="absolute inset-0 bg-gradient-to-br from-neon-pink/20 to-purple-600/20"></div>
-                                <div class="absolute inset-0 opacity-30">
-                                    <div class="grid grid-cols-12 h-full">
-                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
-                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
-                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
-                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
-                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
-                                        <div class="border-r border-white/30"></div>
-                                    </div>
-                                </div>
-                                <div class="text-6xl text-neon-pink animate-pulse relative z-10">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                            </div>
-                        @endif
 
-                        <!-- Video Controls Overlay (Only for uploaded videos) -->
-                        @if($hasUploadedVideo)
+                            <!-- Video Controls Overlay -->
                             <div class="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
                                 <!-- Top Controls -->
                                 <div class="flex justify-between items-center p-4 pt-2">
@@ -2096,6 +2087,25 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
                                 </div>
                             </div>
+                        @else
+                            {{-- Placeholder with background --}}
+                            <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50 flex items-center justify-center relative overflow-hidden"
+                                 style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;">
+                                <div class="absolute inset-0 bg-gradient-to-br from-neon-pink/20 to-purple-600/20"></div>
+                                <div class="absolute inset-0 opacity-30">
+                                    <div class="grid grid-cols-12 h-full">
+                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
+                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
+                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
+                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
+                                        <div class="border-r border-white/30"></div><div class="border-r border-white/30"></div>
+                                        <div class="border-r border-white/30"></div>
+                                    </div>
+                                </div>
+                                <div class="text-6xl text-neon-pink animate-pulse relative z-10">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                            </div>
                         @endif
 
                         <!-- Corner Decorations -->
@@ -2125,15 +2135,36 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
     </div>
+
+    <!-- Debug Info للتأكد من الـ URLs -->
+    @if($hasUploadedVideo && app()->environment(['local', 'staging']))
+        <div class="container mx-auto px-6 mt-8">
+            <div class="bg-gray-900/80 border border-gray-600 rounded-lg p-4 text-center backdrop-blur-sm">
+                <p class="text-green-400 text-sm">
+                    ✅ <strong>Video URL (asset):</strong> {{ $videoUrl }}
+                </p>
+                @if($page->video_thumbnail)
+                    <p class="text-green-400 text-sm mt-1">
+                        ✅ <strong>Thumbnail URL (asset):</strong> {{ $thumbnailUrl }}
+                    </p>
+                @endif
+                <p class="text-yellow-400 text-xs mt-2">
+                    📁 File Path: {{ $page->video_file }}
+                </p>
+            </div>
+        </div>
+    @endif
 </section>
 
+@if($hasUploadedVideo)
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const videoContainer = document.getElementById('videoContainer');
     const videoArea = document.getElementById('videoArea');
-    if (!videoContainer || !videoArea) return;
-
     const videoPlayer = document.getElementById('videoPlayer');
+    
+    if (!videoContainer || !videoArea || !videoPlayer) return;
+
     const playPauseBtn = document.getElementById('playPauseBtn');
     const centerPlayBtn = document.getElementById('centerPlayBtn');
     const muteBtn = document.getElementById('muteBtn');
@@ -2145,9 +2176,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isDragging = false;
     let wasPlayingBeforeDrag = false;
-
-    // Only work with native video (not iframes)
-    if (!videoPlayer) return;
 
     // Remove native controls
     videoPlayer.removeAttribute('controls');
@@ -2163,7 +2191,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function togglePlay() {
         if (videoPlayer.paused) {
             videoPlayer.play().then(() => {
-                // Hide poster once video starts playing
                 videoPlayer.removeAttribute('poster');
                 updatePlayButtons(false);
             }).catch(function(error) {
@@ -2208,8 +2235,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update time display and progress
     function updateTime() {
-        if (!videoPlayer) return;
-        
         const current = formatTime(videoPlayer.currentTime);
         const duration = formatTime(videoPlayer.duration);
         
@@ -2250,7 +2275,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Video area click to play/pause
     if (videoArea) {
         videoArea.addEventListener('click', function(e) {
-            // Only toggle if clicking directly on video area, not on controls
             if (e.target === videoArea || e.target === videoPlayer) {
                 togglePlay();
             }
@@ -2292,10 +2316,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Video events
-    videoPlayer.addEventListener('loadstart', () => {
-        console.log('Video loading started');
-    });
-
     videoPlayer.addEventListener('loadedmetadata', () => {
         updateTime();
         updatePlayButtons(true);
@@ -2316,10 +2336,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePlayButtons(true);
         if (progressFill) progressFill.style.width = '100%';
         if (progressThumb) progressThumb.style.left = 'calc(100% - 0.5rem)';
-    });
-
-    videoPlayer.addEventListener('error', (e) => {
-        console.error('Video error:', e);
     });
 
     // Hide controls when not hovering
@@ -2348,8 +2364,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-        if (!videoPlayer) return;
-        
         switch(e.code) {
             case 'Space':
                 if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -2374,6 +2388,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTime();
 });
 </script>
+@endif
 @endif
 @break
 
