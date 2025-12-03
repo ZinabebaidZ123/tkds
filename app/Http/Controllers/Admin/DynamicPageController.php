@@ -60,51 +60,6 @@ public function edit(DynamicPage $page, Request $request)
 
     $tab = $request->get('tab', 'header');
 
-    // Debug video file information مع المقارنة بين asset و Storage::url
-    if (!empty($page->video_file)) {
-        Log::info('=== VIDEO DEBUG INFO ===');
-        Log::info('Raw video_file value: ' . $page->video_file);
-        Log::info('Video file type: ' . gettype($page->video_file));
-        Log::info('Video file length: ' . strlen($page->video_file));
-        
-        // Check if file exists
-        $fileExists = Storage::disk('public')->exists($page->video_file);
-        Log::info('File exists: ' . ($fileExists ? 'YES' : 'NO'));
-        
-        if ($fileExists) {
-            try {
-                // 🔥 مقارنة بين الطريقتين
-                $assetUrl = asset('storage/' . $page->video_file);
-                $storageUrl = Storage::disk('public')->url($page->video_file);
-                
-                Log::info('Asset URL (recommended): ' . $assetUrl);
-                Log::info('Storage URL (problematic): ' . $storageUrl);
-                Log::info('URLs match: ' . ($assetUrl === $storageUrl ? 'YES' : 'NO'));
-                Log::info('Asset URL length: ' . strlen($assetUrl));
-                Log::info('Storage URL length: ' . strlen($storageUrl));
-                
-                // Test if URLs are accessible
-                $assetPath = public_path('storage/' . $page->video_file);
-                Log::info('Asset file exists: ' . (file_exists($assetPath) ? 'YES' : 'NO'));
-                
-            } catch (Exception $e) {
-                Log::error('Error generating URLs: ' . $e->getMessage());
-            }
-        }
-        
-        // Check storage paths
-        Log::info('Storage root: ' . storage_path('app/public'));
-        Log::info('Public storage: ' . public_path('storage'));
-        Log::info('APP_URL: ' . config('app.url'));
-        Log::info('Symlink exists: ' . (is_link(public_path('storage')) ? 'YES' : 'NO'));
-        
-        if (is_link(public_path('storage'))) {
-            Log::info('Symlink target: ' . readlink(public_path('storage')));
-        }
-        
-        Log::info('=== END VIDEO DEBUG ===');
-    }
-
     $services = Service::where('status', 'active')->orderBy('title')->get();
     $packages = PricingPlan::where('status', 'active')->orderBy('name')->get();
     $products = Product::where('status', 'active')->orderBy('title')->get();
@@ -178,8 +133,10 @@ public function update(Request $request, DynamicPage $page)
 
         'video_title'              => 'nullable|max:255',
         'video_subtitle'           => 'nullable',
+        'video_url'                => 'nullable|max:255',
         'video_info_title'         => 'nullable|max:255',
         'video_info_description'   => 'nullable|max:255',
+        'video_source'             => 'nullable|in:url,upload',
 
         'clients_title'            => 'nullable|max:255',
         'clients_subtitle'         => 'nullable',
@@ -209,15 +166,13 @@ public function update(Request $request, DynamicPage $page)
         'selected_shop_products'  => 'nullable|array',
 
         'remove_current_video'    => 'nullable|boolean',
-        'video_file'              => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/quicktime,video/x-msvideo|max:204800', // 200MB
+        'video_file'              => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/quicktime,video/x-msvideo|max:204800',
     ]);
 
-    // Fix: Only set is_active to true if explicitly checked, otherwise keep current value
     if ($request->has('is_active')) {
         $data['is_active'] = true;
     }
 
-    // Handle section status checkboxes
     $data['header_status']      = $request->has('header_status') ? 'active' : 'inactive';
     $data['hero_status']        = $request->has('hero_status') ? 'active' : 'inactive';
     $data['why_choose_status']  = $request->has('why_choose_status') ? 'active' : 'inactive';
@@ -255,116 +210,102 @@ public function update(Request $request, DynamicPage $page)
         Log::error('Error updating selections: ' . $e->getMessage());
     }
 
-    // Handle file uploads
+    // Helper function to handle file uploads
+    $uploadFile = function($file, $folder) {
+        try {
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $uploadPath = public_path('storage/' . $folder);
+            
+            // Create directory with proper permissions
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+                chmod($uploadPath, 0755);
+            }
+            
+            // Move file and set permissions
+            $file->move($uploadPath, $filename);
+            chmod($uploadPath . '/' . $filename, 0644);
+            
+            return $folder . '/' . $filename;
+        } catch (\Exception $e) {
+            Log::error('File upload failed: ' . $e->getMessage());
+            throw $e;
+        }
+    };
+
+    // Handle image uploads
     if ($request->hasFile('header_logo_image')) {
-        $data['header_logo_image'] = Storage::disk('public')->putFile('dynamic-pages/header', $request->file('header_logo_image'));
+        $data['header_logo_image'] = $uploadFile($request->file('header_logo_image'), 'dynamic-pages/header');
     }
 
     if ($request->hasFile('why_choose_left_image')) {
-        $data['why_choose_left_image'] = Storage::disk('public')->putFile('dynamic-pages/why-choose', $request->file('why_choose_left_image'));
+        $data['why_choose_left_image'] = $uploadFile($request->file('why_choose_left_image'), 'dynamic-pages/why-choose');
     }
 
     if ($request->hasFile('why_choose_background_image')) {
-        $data['why_choose_background_image'] = Storage::disk('public')->putFile('dynamic-pages/why-choose', $request->file('why_choose_background_image'));
+        $data['why_choose_background_image'] = $uploadFile($request->file('why_choose_background_image'), 'dynamic-pages/why-choose');
     }
 
     if ($request->hasFile('footer_logo_image')) {
-        $data['footer_logo_image'] = Storage::disk('public')->putFile('dynamic-pages/footer', $request->file('footer_logo_image'));
+        $data['footer_logo_image'] = $uploadFile($request->file('footer_logo_image'), 'dynamic-pages/footer');
     }
 
-    if ($request->filled('remove_current_video') && $request->remove_current_video) {
-        // Remove current video file
-        if ($page->video_file && \Storage::disk('public')->exists($page->video_file)) {
-            \Storage::disk('public')->delete($page->video_file);
-            Log::info('Video file deleted: ' . $page->video_file);
-        }
-        $data['video_file'] = null;
+    // Video handling
+    $videoSource = $request->input('video_source', 'url');
+    
+    if ($videoSource === 'upload') {
         $data['video_url'] = null;
-    } elseif ($request->hasFile('video_file')) {
-        try {
-            $file = $request->file('video_file');
-            
-            // Validate file
-            if (!$file->isValid()) {
-                throw new \Exception('Invalid video file uploaded');
+        
+        if ($request->filled('remove_current_video') && $request->remove_current_video) {
+            if ($page->video_file && file_exists(public_path('storage/' . $page->video_file))) {
+                unlink(public_path('storage/' . $page->video_file));
             }
-            
-            // Check file size (200MB = 209715200 bytes)
-            if ($file->getSize() > 209715200) {
-                throw new \Exception('Video file is too large. Maximum size is 200MB');
+            $data['video_file'] = null;
+        } elseif ($request->hasFile('video_file')) {
+            try {
+                $file = $request->file('video_file');
+                
+                if (!$file->isValid()) {
+                    throw new \Exception('Invalid video file uploaded');
+                }
+                
+                if ($file->getSize() > 209715200) {
+                    throw new \Exception('Video file is too large. Maximum size is 200MB');
+                }
+                
+                $allowedMimeTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
+                if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+                    throw new \Exception('Invalid video format. Allowed: MP4, AVI, MOV');
+                }
+                
+                // Remove old video file if exists
+                if ($page->video_file && file_exists(public_path('storage/' . $page->video_file))) {
+                    unlink(public_path('storage/' . $page->video_file));
+                }
+                
+                // Upload new video
+                $data['video_file'] = $uploadFile($file, 'dynamic-pages/video');
+                
+                Log::info('Video uploaded successfully: ' . $data['video_file']);
+                
+            } catch (\Exception $e) {
+                Log::error('Video upload failed: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withErrors(['video_file' => 'Video upload failed: ' . $e->getMessage()])
+                    ->withInput();
             }
-            
-            // Check file type
-            $allowedMimeTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
-            if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
-                throw new \Exception('Invalid video format. Allowed: MP4, AVI, MOV');
+        }
+    } else {
+        if ($request->filled('video_url')) {
+            if ($page->video_file && file_exists(public_path('storage/' . $page->video_file))) {
+                unlink(public_path('storage/' . $page->video_file));
             }
-            
-            // Remove old video file if exists
-            if ($page->video_file && \Storage::disk('public')->exists($page->video_file)) {
-                \Storage::disk('public')->delete($page->video_file);
-                Log::info('Old video file deleted: ' . $page->video_file);
-            }
-            
-            // Store new video with timestamp and original name
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $fileName = preg_replace('/[^A-Za-z0-9\-_.]/u', '_', $fileName); // Clean filename
-            $path = $file->storeAs('dynamic-pages/video', $fileName, 'public');
-            
-            if (!$path) {
-                throw new \Exception('Failed to store video file');
-            }
-            
-            // Verify file was actually stored
-            if (!\Storage::disk('public')->exists($path)) {
-                throw new \Exception('Video file was not saved properly');
-            }
-            
-            $data['video_file'] = $path;
-            $data['video_url'] = null;
-            
-            $assetUrl = asset('storage/' . $path);
-            $storageUrl = \Storage::disk('public')->url($path);
-            $fullSystemPath = \Storage::disk('public')->path($path);
-            
-            Log::info('Video uploaded successfully', [
-                'original_name' => $file->getClientOriginalName(),
-                'stored_path' => $path,
-                'size_mb' => round($file->getSize() / 1024 / 1024, 2),
-                'mime_type' => $file->getMimeType(),
-                'full_system_path' => $fullSystemPath,
-                'asset_url' => $assetUrl,
-                'storage_url' => $storageUrl,
-                'urls_match' => $assetUrl === $storageUrl ? 'YES' : 'NO',
-                'asset_url_length' => strlen($assetUrl),
-                'storage_url_length' => strlen($storageUrl),
-                'app_url' => config('app.url'),
-                'expected_url' => config('app.url') . '/storage/' . $path,
-                'file_exists_in_public' => file_exists(public_path('storage/' . $path)) ? 'YES' : 'NO'
-            ]);
-            
-        } catch (\Exception $e) {
-            Log::error('Video upload failed: ' . $e->getMessage());
-            return redirect()->back()
-                ->withErrors(['video_file' => 'Video upload failed: ' . $e->getMessage()])
-                ->withInput();
+            $data['video_file'] = null;
         }
     }
 
     if ($request->hasFile('video_thumbnail')) {
-        $data['video_thumbnail'] = Storage::disk('public')->putFile('dynamic-pages/video', $request->file('video_thumbnail'));
-        
-        if (isset($data['video_thumbnail'])) {
-            $thumbnailAssetUrl = asset('storage/' . $data['video_thumbnail']);
-            $thumbnailStorageUrl = Storage::disk('public')->url($data['video_thumbnail']);
-            
-            Log::info('Video thumbnail uploaded', [
-                'path' => $data['video_thumbnail'],
-                'asset_url' => $thumbnailAssetUrl,
-                'storage_url' => $thumbnailStorageUrl,
-                'urls_match' => $thumbnailAssetUrl === $thumbnailStorageUrl ? 'YES' : 'NO'
-            ]);
-        }
+        $data['video_thumbnail'] = $uploadFile($request->file('video_thumbnail'), 'dynamic-pages/video');
     }
 
     // Handle why choose cards
@@ -398,7 +339,7 @@ public function update(Request $request, DynamicPage $page)
             if (!$file) {
                 continue;
             }
-            $clientLogos[] = Storage::disk('public')->putFile('dynamic-pages/clients', $file);
+            $clientLogos[] = $uploadFile($file, 'dynamic-pages/clients');
         }
     }
 
@@ -432,7 +373,7 @@ public function update(Request $request, DynamicPage $page)
         $avatarPath = $existingAvatar[$index] ?? null;
 
         if ($request->hasFile("reviews_avatar.$index")) {
-            $avatarPath = Storage::disk('public')->putFile('dynamic-pages/reviews', $request->file("reviews_avatar.$index"));
+            $avatarPath = $uploadFile($request->file("reviews_avatar.$index"), 'dynamic-pages/reviews');
         }
 
         $reviews[] = [
@@ -446,8 +387,7 @@ public function update(Request $request, DynamicPage $page)
     }
     $data['reviews_items'] = $reviews;
 
-    // Remove form fields that shouldn't be saved to database
-    unset($data['selected_services'], $data['selected_packages'], $data['selected_products'], $data['selected_shop_products'], $data['remove_current_video']);
+    unset($data['selected_services'], $data['selected_packages'], $data['selected_products'], $data['selected_shop_products'], $data['remove_current_video'], $data['video_source']);
 
     $page->update($data);
 

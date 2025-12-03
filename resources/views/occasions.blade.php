@@ -1999,11 +1999,12 @@ document.addEventListener('DOMContentLoaded', function () {
 @break
 
 
-@case('video')
+ @case('video')
 @if($page->hasActiveSection('video'))
 <!-- Video Section -->
 <section class="py-20 relative overflow-hidden" 
-         style="background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80'); background-size: cover; background-position: center;">
+         style="
+'); background-size: cover; background-position: center;">
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/60 to-gray-900/90"></div>
     
     <!-- Background Pattern -->
@@ -2028,65 +2029,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md border border-gray-700/50 shadow-2xl" id="videoContainer">
                     <!-- Video Area -->
                     <div class="aspect-video relative overflow-hidden" id="videoArea">
-                        @php
-                            // 🔥 الحل الصحيح - استخدام asset بدلاً من Storage::url
-                            $hasUploadedVideo = !empty($page->video_file) && Storage::disk('public')->exists($page->video_file);
-                            $videoUrl = null;
-                            $thumbnailUrl = null;
-                            
-                            if ($hasUploadedVideo) {
-                                $videoUrl = asset('storage/' . $page->video_file);
-                            }
-                            
-                            if ($page->video_thumbnail) {
-                                $thumbnailUrl = asset('storage/' . $page->video_thumbnail);
-                            } else {
-                                $thumbnailUrl = 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=';
-                            }
-                        @endphp
+                        @if($page->video_url)
+                            @php
+                                $isYoutube = str_contains($page->video_url, 'youtube.com') || str_contains($page->video_url, 'youtu.be');
+                                $isVimeo = str_contains($page->video_url, 'vimeo.com');
+                                $isEmbed = $isYoutube || $isVimeo;
+                            @endphp
 
-                        @if($hasUploadedVideo)
-                            {{-- Uploaded MP4 video with custom controls --}}
-                            <video id="videoPlayer" 
-                                   class="w-full h-full object-cover" 
-                                   poster="{{ $thumbnailUrl }}"
-                                   preload="metadata">
-                                <source src="{{ $videoUrl }}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-
-                            <!-- Video Controls Overlay -->
-                            <div class="absolute inset-0 flex flex-col opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
-                                <!-- Top Controls -->
-                                <div class="flex justify-between items-center p-4 pt-2">
-                                    <div class="flex items-center space-x-2">
-                                        <button id="playPauseBtn" class="video-control-btn w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="playpause">
-                                            <i class="fas fa-play"></i>
-                                        </button>
-                                        <button id="muteBtn" class="video-control-btn w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="mute">
-                                            <i class="fas fa-volume-up"></i>
-                                        </button>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span id="timeDisplay" class="text-white text-sm font-mono">0:00 / 0:00</span>
-                                    </div>
-                                </div>
-
-                                <!-- Center Play Button (large) -->
-                                <div class="flex-1 flex items-center justify-center">
-                                    <button id="centerPlayBtn" class="video-control-btn w-24 h-24 bg-gradient-to-br from-red-600/90 to-red-500/90 rounded-full flex items-center justify-center text-white text-3xl shadow-2xl hover:scale-110 transition-all duration-300 backdrop-blur-sm border-4 border-white/40" data-action="playpause">
-                                        <i class="fas fa-play ml-2"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Bottom Progress Bar -->
-                                <div class="p-4 pb-2">
-                                    <div class="w-full bg-white/20 rounded-full h-2 cursor-pointer relative group-hover:h-3 transition-all duration-200 overflow-hidden" id="progressBar">
-                                        <div class="absolute left-0 top-0 bg-gradient-to-r from-neon-pink to-purple-600 h-full rounded-full transition-all duration-300" id="progressFill" style="width: 0%"></div>
-                                        <div class="absolute left-0 top-0 bg-white/50 w-4 h-4 rounded-full -mt-1 ml-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shadow-md" id="progressThumb"></div>
-                                    </div>
-                                </div>
-                            </div>
+                            @if($isEmbed)
+                                {{-- YouTube/Vimeo iframe --}}
+                                <iframe id="videoIframe" 
+                                        src="{{ $page->video_url }}?enablejsapi=1&controls=0&rel=0&modestbranding=1&showinfo=0"
+                                        class="w-full h-full"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                            @else
+                                {{-- Native MP4 video with custom controls --}}
+                                <video id="videoPlayer" 
+                                       class="w-full h-full object-cover" 
+                                       poster="{{ $page->video_thumbnail ? asset('storage/'.$page->video_thumbnail) : 'https://media.istockphoto.com/id/1041174316/photo/european-telecommunication-network-connected-over-europe-france-germany-uk-italy-concept.webp?a=1&b=1&s=612x612&w=0&k=20&c=elHHTOV7XD6d4QpDljTBsUabpbCHudVhv9xXaj6UBnM=' }}"
+                                       preload="metadata">
+                                    <source src="{{ $page->video_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            @endif
                         @else
                             {{-- Placeholder with background --}}
                             <div class="w-full h-full bg-gradient-to-br from-gray-800/50 to-dark-card/50 flex items-center justify-center relative overflow-hidden"
@@ -2108,6 +2075,39 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                         @endif
 
+                        <!-- Video Controls Overlay -->
+                        <div class="absolute inset-0 flex flex-col   opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto" id="videoControls">
+                            <!-- Top Controls -->
+                            <div class="flex justify-between items-center p-4 pt-2">
+                                <div class="flex items-center space-x-2">
+                                    <button id="playPauseBtn" class="video-control-btn w-12 h-12 bg-white/20  rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="playpause">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button id="muteBtn" class="video-control-btn w-12 h-12 bg-white/20  rounded-full flex items-center justify-center text-white text-xl transition-all duration-200" data-action="mute">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span id="timeDisplay" class="text-white text-sm font-mono">0:00 / 0:00</span>
+                                </div>
+                            </div>
+
+                            <!-- Center Play Button (large) -->
+                            <div class="flex-1 flex items-center justify-center">
+                                <button id="centerPlayBtn" class="video-control-btn w-24 h-24 bg-gradient-to-br from-red-600/90 to-red-500/90 rounded-full flex items-center justify-center text-white text-3xl shadow-2xl hover:scale-110 transition-all duration-300 backdrop-blur-sm border-4 border-white/40" data-action="playpause">
+                                    <i class="fas fa-play ml-2"></i>
+                                </button>
+                            </div>
+
+                            <!-- Bottom Progress Bar -->
+                            <div class="p-4 pb-2">
+                                <div class="w-full bg-white/20 rounded-full h-2 cursor-pointer relative group-hover:h-3 transition-all duration-200 overflow-hidden" id="progressBar">
+                                    <div class="absolute left-0 top-0 bg-gradient-to-r from-neon-pink to-purple-600 h-full rounded-full transition-all duration-300" id="progressFill" style="width: 0%"></div>
+                                    <div class="absolute left-0 top-0 bg-white/50 w-4 h-4 rounded-full -mt-1 ml-[-0.5rem] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shadow-md" id="progressThumb"></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Corner Decorations -->
                         <div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-neon-pink/50 pointer-events-none"></div>
                         <div class="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-neon-pink/50 pointer-events-none"></div>
@@ -2126,6 +2126,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     {{ $page->video_info_description ?? 'Experience the future of hosting and streaming technology' }}
                                 </p>
                             </div>
+                        
                         </div>
                     </div>
                 </div>
@@ -2135,36 +2136,15 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
     </div>
-
-    <!-- Debug Info للتأكد من الـ URLs -->
-    @if($hasUploadedVideo && app()->environment(['local', 'staging']))
-        <div class="container mx-auto px-6 mt-8">
-            <div class="bg-gray-900/80 border border-gray-600 rounded-lg p-4 text-center backdrop-blur-sm">
-                <p class="text-green-400 text-sm">
-                    ✅ <strong>Video URL (asset):</strong> {{ $videoUrl }}
-                </p>
-                @if($page->video_thumbnail)
-                    <p class="text-green-400 text-sm mt-1">
-                        ✅ <strong>Thumbnail URL (asset):</strong> {{ $thumbnailUrl }}
-                    </p>
-                @endif
-                <p class="text-yellow-400 text-xs mt-2">
-                    📁 File Path: {{ $page->video_file }}
-                </p>
-            </div>
-        </div>
-    @endif
 </section>
 
-@if($hasUploadedVideo)
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const videoContainer = document.getElementById('videoContainer');
     const videoArea = document.getElementById('videoArea');
-    const videoPlayer = document.getElementById('videoPlayer');
-    
-    if (!videoContainer || !videoArea || !videoPlayer) return;
+    if (!videoContainer || !videoArea) return;
 
+    const videoPlayer = document.getElementById('videoPlayer');
     const playPauseBtn = document.getElementById('playPauseBtn');
     const centerPlayBtn = document.getElementById('centerPlayBtn');
     const muteBtn = document.getElementById('muteBtn');
@@ -2172,57 +2152,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressFill = document.getElementById('progressFill');
     const progressThumb = document.getElementById('progressThumb');
     const timeDisplay = document.getElementById('timeDisplay');
-    const videoControls = document.getElementById('videoControls');
 
     let isDragging = false;
-    let wasPlayingBeforeDrag = false;
+    let isVideoAreaClick = false;
 
-    // Remove native controls
-    videoPlayer.removeAttribute('controls');
+    // Only work with native video
+    if (!videoPlayer) return;
 
     // Prevent event bubbling on control buttons
     document.querySelectorAll('.video-control-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
+            isVideoAreaClick = false;
         });
     });
 
-    // Play/Pause function
+    // Play/Pause
     function togglePlay() {
         if (videoPlayer.paused) {
-            videoPlayer.play().then(() => {
-                videoPlayer.removeAttribute('poster');
-                updatePlayButtons(false);
-            }).catch(function(error) {
-                console.error('Error playing video:', error);
-            });
+            videoPlayer.play();
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            centerPlayBtn.innerHTML = '<i class="fas fa-pause ml-2"></i>';
         } else {
             videoPlayer.pause();
-            updatePlayButtons(true);
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
         }
     }
 
-    // Update play button icons
-    function updatePlayButtons(isPaused) {
-        const playIcon = isPaused ? 'fa-play' : 'fa-pause';
-        const playIconCenter = isPaused ? 'fa-play ml-2' : 'fa-pause';
-        
-        if (playPauseBtn) {
-            playPauseBtn.innerHTML = `<i class="fas ${playIcon}"></i>`;
-        }
-        if (centerPlayBtn) {
-            centerPlayBtn.innerHTML = `<i class="fas ${playIconCenter}"></i>`;
-        }
-    }
-
-    // Mute/Unmute
+    // Mute/Unmute - FIXED: no play/pause interference
     function toggleMute() {
         videoPlayer.muted = !videoPlayer.muted;
-        if (muteBtn) {
-            muteBtn.innerHTML = videoPlayer.muted ? 
-                '<i class="fas fa-volume-mute"></i>' : 
-                '<i class="fas fa-volume-up"></i>';
-        }
+        muteBtn.innerHTML = videoPlayer.muted ? 
+            '<i class="fas fa-volume-mute"></i>' : 
+            '<i class="fas fa-volume-up"></i>';
     }
 
     // Time formatting
@@ -2237,160 +2200,68 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTime() {
         const current = formatTime(videoPlayer.currentTime);
         const duration = formatTime(videoPlayer.duration);
+        timeDisplay.textContent = `${current} / ${duration}`;
         
-        if (timeDisplay) {
-            timeDisplay.textContent = `${current} / ${duration}`;
-        }
-        
-        if (!isDragging && !isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+        if (!isDragging && !isNaN(videoPlayer.duration)) {
             const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-            if (progressFill) {
-                progressFill.style.width = `${percent}%`;
-            }
-            if (progressThumb) {
-                progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
-            }
+            progressFill.style.width = `${percent}%`;
+            progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
         }
     }
 
     // Progress bar click/drag
     function handleProgress(e) {
-        if (!progressBar || !videoPlayer || isNaN(videoPlayer.duration)) return;
-        
         e.stopPropagation();
         const rect = progressBar.getBoundingClientRect();
         const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
         const time = (percent / 100) * videoPlayer.duration;
-        
         videoPlayer.currentTime = time;
-        
-        if (progressFill) {
-            progressFill.style.width = `${percent}%`;
-        }
-        if (progressThumb) {
-            progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
-        }
+        progressFill.style.width = `${percent}%`;
+        progressThumb.style.left = `calc(${percent}% - 0.5rem)`;
     }
 
-    // Video area click to play/pause
-    if (videoArea) {
-        videoArea.addEventListener('click', function(e) {
-            if (e.target === videoArea || e.target === videoPlayer) {
-                togglePlay();
-            }
-        });
-    }
+    // Event Listeners - FIXED event handling
+    videoArea.addEventListener('click', function(e) {
+        if (!isVideoAreaClick) {
+            togglePlay();
+        }
+        isVideoAreaClick = false;
+    });
 
-    // Control button events
     if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlay);
     if (centerPlayBtn) centerPlayBtn.addEventListener('click', togglePlay);
     if (muteBtn) muteBtn.addEventListener('click', toggleMute);
 
-    // Progress bar events
     if (progressBar) {
         progressBar.addEventListener('click', handleProgress);
-        
-        if (progressThumb) {
-            progressThumb.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                wasPlayingBeforeDrag = !videoPlayer.paused;
-                videoPlayer.pause();
-                e.stopPropagation();
-            });
-        }
-        
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging && progressBar) {
-                handleProgress(e);
-            }
+        progressThumb.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            e.stopPropagation();
         });
-        
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) handleProgress(e);
+        });
         document.addEventListener('mouseup', () => {
-            if (isDragging) {
-                isDragging = false;
-                if (wasPlayingBeforeDrag) {
-                    videoPlayer.play();
-                }
-            }
+            isDragging = false;
         });
     }
 
     // Video events
-    videoPlayer.addEventListener('loadedmetadata', () => {
-        updateTime();
-        updatePlayButtons(true);
-    });
-
     videoPlayer.addEventListener('timeupdate', updateTime);
-
-    videoPlayer.addEventListener('play', () => {
-        videoPlayer.removeAttribute('poster');
-        updatePlayButtons(false);
-    });
-
-    videoPlayer.addEventListener('pause', () => {
-        updatePlayButtons(true);
-    });
-
+    videoPlayer.addEventListener('loadedmetadata', updateTime);
     videoPlayer.addEventListener('ended', () => {
-        updatePlayButtons(true);
-        if (progressFill) progressFill.style.width = '100%';
-        if (progressThumb) progressThumb.style.left = 'calc(100% - 0.5rem)';
-    });
-
-    // Hide controls when not hovering
-    let hideTimeout;
-    
-    if (videoContainer) {
-        videoContainer.addEventListener('mouseenter', () => {
-            if (hideTimeout) clearTimeout(hideTimeout);
-            if (videoControls) {
-                videoControls.style.opacity = '1';
-                videoControls.style.pointerEvents = 'auto';
-            }
-        });
-
-        videoContainer.addEventListener('mouseleave', () => {
-            if (!videoPlayer.paused) {
-                hideTimeout = setTimeout(() => {
-                    if (videoControls) {
-                        videoControls.style.opacity = '0';
-                        videoControls.style.pointerEvents = 'none';
-                    }
-                }, 2000);
-            }
-        });
-    }
-
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        switch(e.code) {
-            case 'Space':
-                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    togglePlay();
-                }
-                break;
-            case 'KeyM':
-                toggleMute();
-                break;
-            case 'ArrowLeft':
-                videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
-                break;
-            case 'ArrowRight':
-                videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
-                break;
-        }
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
+        progressFill.style.width = '100%';
     });
 
     // Initial state
-    updatePlayButtons(true);
-    updateTime();
+    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    centerPlayBtn.innerHTML = '<i class="fas fa-play ml-2"></i>';
 });
 </script>
-@endif
-@endif
-@break
+  @endif
+ @break
 
 
 

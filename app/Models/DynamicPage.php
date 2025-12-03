@@ -296,4 +296,97 @@ class DynamicPage extends Model
             });
     }
 
+    // Add these methods to your DynamicPage model
+
+public function getVideoUrl()
+{
+    if ($this->video_file && file_exists(public_path('storage/' . $this->video_file))) {
+        return asset('storage/' . $this->video_file);
+    }
+    return $this->video_url;
+}
+
+public function getVideoThumbnailUrl()
+{
+    if ($this->video_thumbnail && file_exists(public_path('storage/' . $this->video_thumbnail))) {
+        return asset('storage/' . $this->video_thumbnail);
+    }
+    return null;
+}
+
+public function hasVideo()
+{
+    return !empty($this->video_file) || !empty($this->video_url);
+}
+
+public function hasUploadedVideo()
+{
+    return !empty($this->video_file) && file_exists(public_path('storage/' . $this->video_file));
+}
+
+public function getHeaderLogoUrl()
+{
+    if ($this->header_logo_image && file_exists(public_path('storage/' . $this->header_logo_image))) {
+        return asset('storage/' . $this->header_logo_image);
+    }
+    return null;
+}
+
+public function getFooterLogoUrl()
+{
+    if ($this->footer_logo_image && file_exists(public_path('storage/' . $this->footer_logo_image))) {
+        return asset('storage/' . $this->footer_logo_image);
+    }
+    return null;
+}
+
+public function getWhyChooseLeftImageUrl()
+{
+    if ($this->why_choose_left_image && file_exists(public_path('storage/' . $this->why_choose_left_image))) {
+        return asset('storage/' . $this->why_choose_left_image);
+    }
+    return null;
+}
+
+public function getWhyChooseBackgroundImageUrl()
+{
+    if ($this->why_choose_background_image && file_exists(public_path('storage/' . $this->why_choose_background_image))) {
+        return asset('storage/' . $this->why_choose_background_image);
+    }
+    return null;
+}
+
+public function getClientsLogosUrls()
+{
+    if (!$this->clients_logos || !is_array($this->clients_logos)) {
+        return [];
+    }
+    
+    $urls = [];
+    foreach ($this->clients_logos as $logo) {
+        if ($logo && file_exists(public_path('storage/' . $logo))) {
+            $urls[] = asset('storage/' . $logo);
+        }
+    }
+    return $urls;
+}
+
+public function getReviewsWithAvatarUrls()
+{
+    if (!$this->reviews_items || !is_array($this->reviews_items)) {
+        return [];
+    }
+    
+    $reviews = $this->reviews_items;
+    foreach ($reviews as &$review) {
+        if (isset($review['avatar']) && $review['avatar'] && file_exists(public_path('storage/' . $review['avatar']))) {
+            $review['avatar_url'] = asset('storage/' . $review['avatar']);
+        } else {
+            $review['avatar_url'] = null;
+        }
+    }
+    
+    return $reviews;
+}
+
 }
