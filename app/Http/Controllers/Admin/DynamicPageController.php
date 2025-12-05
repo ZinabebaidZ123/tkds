@@ -167,6 +167,11 @@ public function update(Request $request, DynamicPage $page)
 
         'remove_current_video'    => 'nullable|boolean',
         'video_file'              => 'nullable|file|mimetypes:video/mp4,video/avi,video/mov,video/quicktime,video/x-msvideo|max:204800',
+
+        // Why Choose Left Media validation
+        'why_choose_left_media_source' => 'nullable|in:image,video',
+        'why_choose_left_file'         => 'nullable|file|max:204800',
+        'remove_current_why_left_media' => 'nullable|boolean',
     ]);
 
     if ($request->has('is_active')) {
@@ -238,16 +243,90 @@ public function update(Request $request, DynamicPage $page)
         $data['header_logo_image'] = $uploadFile($request->file('header_logo_image'), 'dynamic-pages/header');
     }
 
-    if ($request->hasFile('why_choose_left_image')) {
-        $data['why_choose_left_image'] = $uploadFile($request->file('why_choose_left_image'), 'dynamic-pages/why-choose');
-    }
-
     if ($request->hasFile('why_choose_background_image')) {
         $data['why_choose_background_image'] = $uploadFile($request->file('why_choose_background_image'), 'dynamic-pages/why-choose');
     }
 
     if ($request->hasFile('footer_logo_image')) {
         $data['footer_logo_image'] = $uploadFile($request->file('footer_logo_image'), 'dynamic-pages/footer');
+    }
+
+    // Handle Why Choose Left Media
+    $leftMediaSource = $request->input('why_choose_left_media_source', 'image');
+    
+    if ($leftMediaSource === 'image') {
+        // Clear video fields
+        $data['why_choose_left_video'] = null;
+        
+        if ($request->filled('remove_current_why_left_media') && $request->remove_current_why_left_media) {
+            // Remove current image
+            if ($page->why_choose_left_image && file_exists(public_path('storage/' . $page->why_choose_left_image))) {
+                unlink(public_path('storage/' . $page->why_choose_left_image));
+            }
+            $data['why_choose_left_image'] = null;
+        } elseif ($request->hasFile('why_choose_left_file')) {
+            // Validate image file
+            $file = $request->file('why_choose_left_file');
+            $allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+            
+            if (!in_array($file->getMimeType(), $allowedImageTypes)) {
+                return redirect()->back()
+                    ->withErrors(['why_choose_left_file' => 'Invalid image format. Allowed: JPEG, PNG, JPG, GIF, WebP'])
+                    ->withInput();
+            }
+            
+            // Remove old image if exists
+            if ($page->why_choose_left_image && file_exists(public_path('storage/' . $page->why_choose_left_image))) {
+                unlink(public_path('storage/' . $page->why_choose_left_image));
+            }
+            
+            // Upload new image
+            $data['why_choose_left_image'] = $uploadFile($file, 'dynamic-pages/why-choose');
+        }
+    } else {
+        // Clear image fields
+        $data['why_choose_left_image'] = null;
+        
+        if ($request->filled('remove_current_why_left_media') && $request->remove_current_why_left_media) {
+            // Remove current video
+            if ($page->why_choose_left_video && file_exists(public_path('storage/' . $page->why_choose_left_video))) {
+                unlink(public_path('storage/' . $page->why_choose_left_video));
+            }
+            $data['why_choose_left_video'] = null;
+        } elseif ($request->hasFile('why_choose_left_file')) {
+            try {
+                $file = $request->file('why_choose_left_file');
+                
+                if (!$file->isValid()) {
+                    throw new \Exception('Invalid video file uploaded');
+                }
+                
+                if ($file->getSize() > 209715200) { // 200MB
+                    throw new \Exception('Video file is too large. Maximum size is 200MB');
+                }
+                
+                $allowedVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
+                if (!in_array($file->getMimeType(), $allowedVideoTypes)) {
+                    throw new \Exception('Invalid video format. Allowed: MP4, AVI, MOV');
+                }
+                
+                // Remove old video file if exists
+                if ($page->why_choose_left_video && file_exists(public_path('storage/' . $page->why_choose_left_video))) {
+                    unlink(public_path('storage/' . $page->why_choose_left_video));
+                }
+                
+                // Upload new video
+                $data['why_choose_left_video'] = $uploadFile($file, 'dynamic-pages/why-choose');
+                
+                Log::info('Why Choose Left Video uploaded successfully: ' . $data['why_choose_left_video']);
+                
+            } catch (\Exception $e) {
+                Log::error('Why Choose Left Video upload failed: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withErrors(['why_choose_left_file' => 'Video upload failed: ' . $e->getMessage()])
+                    ->withInput();
+            }
+        }
     }
 
     // Video handling
@@ -387,7 +466,17 @@ public function update(Request $request, DynamicPage $page)
     }
     $data['reviews_items'] = $reviews;
 
-    unset($data['selected_services'], $data['selected_packages'], $data['selected_products'], $data['selected_shop_products'], $data['remove_current_video'], $data['video_source']);
+    unset(
+        $data['selected_services'], 
+        $data['selected_packages'], 
+        $data['selected_products'], 
+        $data['selected_shop_products'], 
+        $data['remove_current_video'], 
+        $data['video_source'],
+        $data['why_choose_left_media_source'],
+        $data['why_choose_left_file'],
+        $data['remove_current_why_left_media']
+    );
 
     $page->update($data);
 

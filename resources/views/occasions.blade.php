@@ -222,7 +222,7 @@
   @endif
  @break
 
-  @case('why_choose')
+ @case('why_choose')
 @if($page->hasActiveSection('why_choose'))
 <!-- Why Choose Us Section -->
 <section class="py-20 relative overflow-hidden min-h-screen">
@@ -246,38 +246,76 @@
     
     <div class="container mx-auto px-6 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto min-h-screen">
-            <!-- Left Image Column -->
+            <!-- Left Media Column -->
             <div class="relative group">
-                <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md border border-gray-700/70 shadow-2xl h-[500px] lg:h-[600px]">
-                    <img 
-                        src="{{ $page->why_choose_left_image
-                                ? asset('storage/'.$page->why_choose_left_image)
-                                : 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}" 
-                        alt="Why Choose Us" 
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <!-- Overlay Grid Pattern -->
-                    <div class="absolute inset-0 opacity-20">
-                        <div class="grid grid-cols-12 h-full">
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
-                            <div class="border-r border-white/10"></div>
+                @php
+                    $mediaType = $page->getWhyChooseLeftMediaType();
+                @endphp
+                
+                @if($mediaType === 'video')
+                    <!-- Video Container -->
+                    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md border border-gray-700/70 shadow-2xl h-[500px] lg:h-[600px]">
+                        <div class="video-container w-full h-full relative">
+                            <video 
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                controls 
+                                preload="metadata"
+                                poster="{{ $page->getWhyChooseLeftImageUrl() ?: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}"
+                                id="whyChooseVideo">
+                                <source src="{{ $page->getWhyChooseLeftVideoUrl() }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            
+                            <!-- Video Overlay Controls -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto bg-black/20">
+                                <button class="play-pause-btn w-20 h-20 bg-gradient-to-br from-neon-pink/90 to-purple-600/90 rounded-full flex items-center justify-center text-white text-2xl shadow-2xl hover:scale-110 transition-all duration-300 backdrop-blur-sm border-4 border-white/40">
+                                    <i class="fas fa-play ml-1"></i>
+                                </button>
+                            </div>
                         </div>
+                        
+                        <!-- Corner Decorations -->
+                        <div class="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-neon-pink/60"></div>
+                        <div class="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 border-neon-pink/60"></div>
+                        <div class="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 border-neon-pink/60"></div>
+                        <div class="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-neon-pink/60"></div>
                     </div>
-                    <!-- Corner Decorations -->
-                    <div class="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-neon-pink/60"></div>
-                    <div class="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 border-neon-pink/60"></div>
-                    <div class="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 border-neon-pink/60"></div>
-                    <div class="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-neon-pink/60"></div>
-                </div>
+                @else
+                    <!-- Image Container -->
+                    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-dark-card/90 to-gray-900/90 backdrop-blur-md border border-gray-700/70 shadow-2xl h-[500px] lg:h-[600px]">
+                        <img 
+                            src="{{ $page->getWhyChooseLeftImageUrl()
+                                    ? $page->getWhyChooseLeftImageUrl()
+                                    : 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}" 
+                            alt="Why Choose Us" 
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        
+                        <!-- Overlay Grid Pattern -->
+                        <div class="absolute inset-0 opacity-20">
+                            <div class="grid grid-cols-12 h-full">
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                                <div class="border-r border-white/10"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Corner Decorations -->
+                        <div class="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-neon-pink/60"></div>
+                        <div class="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 border-neon-pink/60"></div>
+                        <div class="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 border-neon-pink/60"></div>
+                        <div class="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-neon-pink/60"></div>
+                    </div>
+                @endif
+                
                 <!-- Glow Effect -->
                 <div class="absolute -inset-2 bg-gradient-to-br from-neon-pink/30 to-purple-600/30 rounded-3xl blur-xl opacity-60 -z-10 group-hover:opacity-80 transition-opacity"></div>
             </div>
@@ -368,6 +406,62 @@
     </div>
 </section>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle video play/pause for Why Choose section
+    const whyChooseVideo = document.getElementById('whyChooseVideo');
+    const playPauseBtn = document.querySelector('.play-pause-btn');
+    
+    if (whyChooseVideo && playPauseBtn) {
+        let isPlaying = false;
+        
+        function togglePlay() {
+            if (isPlaying) {
+                whyChooseVideo.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play ml-1"></i>';
+                isPlaying = false;
+            } else {
+                whyChooseVideo.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+            }
+        }
+        
+        playPauseBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            togglePlay();
+        });
+        
+        whyChooseVideo.addEventListener('click', function(e) {
+            e.stopPropagation();
+            togglePlay();
+        });
+        
+        // Update button when video ends
+        whyChooseVideo.addEventListener('ended', function() {
+            playPauseBtn.innerHTML = '<i class="fas fa-play ml-1"></i>';
+            isPlaying = false;
+        });
+        
+        // Update button when video is paused externally
+        whyChooseVideo.addEventListener('pause', function() {
+            if (isPlaying) {
+                playPauseBtn.innerHTML = '<i class="fas fa-play ml-1"></i>';
+                isPlaying = false;
+            }
+        });
+        
+        // Update button when video is played externally
+        whyChooseVideo.addEventListener('play', function() {
+            if (!isPlaying) {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                isPlaying = true;
+            }
+        });
+    }
+});
+</script>
+
   @endif
  @break
 
@@ -376,7 +470,7 @@
 @case('services')
 @if($page->hasActiveSection('services') && $services && $services->count() > 0)
 <!-- Premium Services Section -->
-<section class="py-20 relative overflow-hidden">
+<section class="py-12 md:py-20 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-red-900/10 to-red-900/10"></div>
     
     <div class="container mx-auto px-6 relative z-10">
@@ -666,7 +760,7 @@ document.addEventListener('DOMContentLoaded', function () {
 @case('packages')
 @if($page->hasActiveSection('packages') && $packages && $packages->count() > 0)
 <!-- Pricing Plans Section - Slider Design -->
-<section class="py-20 relative overflow-hidden">
+<section class="py-12 md:py-20 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-red-900/10 to-red-800/10"></div>
     
     <div class="container mx-auto px-6 relative z-10">
@@ -1137,17 +1231,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     .packages-nav-button.prev {
-        left: -20px;
+        left: 10px;
     }
     
     .packages-nav-button.next {
-        right: -20px;
+        right: 10px;
     }
 }
 
 @media (max-width: 480px) {
     .packages-slide {
-        width: 280px;
+        width: 320px;
     }
 }
 </style>
@@ -1336,7 +1430,7 @@ document.addEventListener('DOMContentLoaded', function () {
 @case('products')
 @if($page->hasActiveSection('products') && $products && $products->count() > 0)
 <!-- SaaS Products Section -->
-<section class="py-20 relative overflow-hidden">
+<section class="py-12 md:py-20 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-purple-900/10"></div>
     
     <div class="container mx-auto px-6 relative z-10">
@@ -1653,7 +1747,7 @@ document.addEventListener('DOMContentLoaded', function () {
 @case('shop_products')
 @if($page->hasActiveSection('shop_products') && isset($shopProducts) && $shopProducts->count() > 0)
 <!-- Shop Products Section -->
-<section class="py-20 relative overflow-hidden">
+<section class="py-12 md:py-20 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-orange-900/10 to-pink-900/10"></div>
     
     <div class="container mx-auto px-6 relative z-10">
@@ -1852,7 +1946,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
         <!-- Global CTA -->
-        <div class="text-center mt-12">
+        <div class="text-center mt-32">
             <a href="{{ route('shop.index') }}" 
                class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-red-500/50">
                 <i class="fas fa-shopping-bag mr-3"></i>

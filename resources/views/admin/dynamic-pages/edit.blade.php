@@ -287,187 +287,708 @@
                 </div>
             </div>
 
-            {{-- WHY CHOOSE TAB --}}
-            <div id="why-choose" class="tab-content p-8 {{ $currentTab == 'why-choose' ? '' : 'hidden' }}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                        <input type="text" name="why_choose_title"
-                               value="{{ old('why_choose_title', $page->why_choose_title) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
-                        <input type="text" name="why_choose_subtitle"
-                               value="{{ old('why_choose_subtitle', $page->why_choose_subtitle) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <input type="text" name="why_choose_description"
-                               value="{{ old('why_choose_description', $page->why_choose_description) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
+{{-- WHY CHOOSE TAB --}}
+<div id="why-choose" class="tab-content p-8 {{ $currentTab == 'why-choose' ? '' : 'hidden' }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <input type="text" name="why_choose_title"
+                   value="{{ old('why_choose_title', $page->why_choose_title) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
+            <input type="text" name="why_choose_subtitle"
+                   value="{{ old('why_choose_subtitle', $page->why_choose_subtitle) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <input type="text" name="why_choose_description"
+                   value="{{ old('why_choose_description', $page->why_choose_description) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Left Image</label>
-                        <input type="file"
-                               name="why_choose_left_image"
-                               accept="image/*"
-                               data-preview="why-left-preview"
-                               class="image-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                        <div class="mt-2">
-                            @if($page->why_choose_left_image)
-                                <img id="why-left-preview"
-                                     src="{{ asset('storage/'.$page->why_choose_left_image) }}"
-                                     class="w-40 h-24 object-cover rounded-lg border">
-                            @else
-                                <img id="why-left-preview"
-                                     class="w-40 h-24 object-cover rounded-lg border hidden">
-                            @endif
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Background Image</label>
-                        <input type="file"
-                               name="why_choose_background_image"
-                               accept="image/*"
-                               data-preview="why-bg-preview"
-                               class="image-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                        <div class="mt-2">
-                            @if($page->why_choose_background_image)
-                                <img id="why-bg-preview"
-                                     src="{{ asset('storage/'.$page->why_choose_background_image) }}"
-                                     class="w-40 h-24 object-cover rounded-lg border">
-                            @else
-                                <img id="why-bg-preview"
-                                     class="w-40 h-24 object-cover rounded-lg border hidden">
-                            @endif
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
-                        <input type="text" name="why_choose_button_text"
-                               value="{{ old('why_choose_button_text', $page->why_choose_button_text) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Button URL</label>
-                        <input type="text" name="why_choose_button_url"
-                               value="{{ old('why_choose_button_url', $page->why_choose_button_url) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                            <input type="checkbox" name="why_choose_status" value="active"
-                                   {{ $page->why_choose_status === 'active' ? 'checked' : '' }}
-                                   class="mr-2 w-4 h-4">
-                            Active
+        <!-- Left Media Section -->
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-4">Left Media (Image or Video)</label>
+            
+            <!-- Media Type Selection -->
+            <div class="space-y-4">
+                <!-- Image Option -->
+                <div class="border border-gray-200 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <input type="radio" name="why_choose_left_media_source" value="image" 
+                               id="left_image_option"
+                               {{ (empty($page->why_choose_left_video) || old('why_choose_left_media_source') === 'image') ? 'checked' : '' }}
+                               class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
+                        <label for="left_image_option" class="ml-2 text-sm font-medium text-gray-900">
+                            <i class="fas fa-image mr-2 text-primary"></i>Upload Image
                         </label>
                     </div>
+                    
+                    <!-- Image Upload Area -->
+                    <div class="image-upload-area border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors" 
+                         id="imageUploadArea">
+                        <input type="file" name="why_choose_left_file" accept="image/*" id="imageFileInput" class="hidden">
+                        
+                        <div class="upload-placeholder" id="imageUploadPlaceholder">
+                            <i class="fas fa-image text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-500">JPEG, PNG, JPG, GIF, WebP up to 10MB</p>
+                        </div>
+                        
+                        <!-- Current Image Display -->
+                        @if($page->why_choose_left_image && !$page->why_choose_left_video)
+                            <div class="current-media" id="currentImage">
+                                <div class="relative inline-block">
+                                    <img src="{{ asset('storage/'.$page->why_choose_left_image) }}" 
+                                         class="max-w-48 max-h-32 object-cover rounded-lg border mx-auto">
+                                    <button type="button" 
+                                            class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" 
+                                            id="removeCurrentImage">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">Current Image</p>
+                            </div>
+                        @endif
+                        
+                        <!-- Image Preview -->
+                        <div class="image-preview hidden" id="imagePreview">
+                            <div class="relative inline-block">
+                                <img id="imagePreviewImg" src="" class="max-w-48 max-h-32 object-cover rounded-lg border mx-auto">
+                                <button type="button" 
+                                        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" 
+                                        id="removeNewImage">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">New Image Selected</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mt-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-md font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-list-alt mr-2 text-primary"></i>
-                            Features Cards
-                        </h3>
-                        <button type="button"
-                                id="addWhyCardBtn"
-                                class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-xl text-sm hover:bg-secondary transition">
-                            <i class="fas fa-plus mr-2"></i>Add Feature
+                <!-- Video Option -->
+                <div class="border border-gray-200 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <input type="radio" name="why_choose_left_media_source" value="video" 
+                               id="left_video_option"
+                               {{ !empty($page->why_choose_left_video) ? 'checked' : '' }}
+                               class="w-4 h-4 text-primary border-gray-300 focus:ring-primary">
+                        <label for="left_video_option" class="ml-2 text-sm font-medium text-gray-900">
+                            <i class="fas fa-video mr-2 text-primary"></i>Upload Video
+                        </label>
+                    </div>
+                    
+                    <!-- Video Upload Area -->
+                    <div class="video-upload-area border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors" 
+                         id="videoUploadArea">
+                        <input type="file" name="why_choose_left_file" accept="video/*" id="videoFileInput" class="hidden">
+                        
+                        <div class="upload-placeholder" id="videoUploadPlaceholder">
+                            <i class="fas fa-video text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-500">MP4, AVI, MOV up to 200MB</p>
+                        </div>
+                        
+                        <!-- Current Video Display -->
+                        @if($page->why_choose_left_video)
+                            <div class="current-media" id="currentVideo">
+                                <div class="relative inline-block">
+                                    <video class="max-w-48 max-h-32 object-cover rounded-lg border mx-auto" 
+                                           controls preload="metadata">
+                                        <source src="{{ asset('storage/'.$page->why_choose_left_video) }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <button type="button" 
+                                            class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" 
+                                            id="removeCurrentVideo">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">Current Video</p>
+                            </div>
+                        @endif
+                        
+                        <!-- Video Preview -->
+                        <div class="video-preview hidden" id="videoPreview">
+                            <div class="relative inline-block">
+                                <video id="videoPreviewPlayer" class="max-w-48 max-h-32 object-cover rounded-lg border mx-auto" 
+                                       controls preload="metadata">
+                                    <source id="videoPreviewSource" src="" type="video/mp4">
+                                </video>
+                                <button type="button" 
+                                        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" 
+                                        id="removeNewVideo">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2" id="videoFileName">New Video Selected</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 mt-2">
+                        Supported formats: MP4, AVI, MOV, QuickTime. Maximum size: 200MB
+                    </p>
+                </div>
+                
+                <!-- Hidden input for removal -->
+                <input type="hidden" name="remove_current_why_left_media" id="removeCurrentMediaInput" value="0">
+            </div>
+        </div>
+
+        <!-- Background Image -->
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-4">
+                <i class="fas fa-image mr-2 text-primary"></i>Background Image
+            </label>
+            
+            <!-- Background Image Upload Area -->
+            <div class="border border-gray-200 rounded-xl p-4">
+                <div class="bg-upload-area border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors" 
+                     id="bgUploadArea">
+                    <input type="file" name="why_choose_background_image" accept="image/*" id="bgFileInput" class="hidden">
+                    
+                    <div class="upload-placeholder" id="bgUploadPlaceholder">
+                        <i class="fas fa-image text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                        <p class="text-sm text-gray-500">JPEG, PNG, JPG, GIF, WebP up to 10MB</p>
+                    </div>
+                    
+                    <!-- Current Background Image Display -->
+                    @if($page->why_choose_background_image)
+                        <div class="current-bg" id="currentBgImage">
+                            <div class="relative inline-block">
+                                <img src="{{ asset('storage/'.$page->why_choose_background_image) }}" 
+                                     class="max-w-48 max-h-32 object-cover rounded-lg border mx-auto">
+                                <div class="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                    <span class="text-white text-xs">Background Image</span>
+                                </div>
+                                <button type="button" 
+                                        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" 
+                                        id="removeCurrentBg">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">Current Background Image</p>
+                        </div>
+                    @endif
+                    
+                    <!-- Background Image Preview -->
+                    <div class="bg-preview hidden" id="bgPreview">
+                        <div class="relative inline-block">
+                            <img id="bgPreviewImg" src="" class="max-w-48 max-h-32 object-cover rounded-lg border mx-auto">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                <span class="text-white text-xs">Background Preview</span>
+                            </div>
+                            <button type="button" 
+                                    class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700" 
+                                    id="removeNewBg">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">New Background Selected</p>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-500 mt-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    This image will be used as section background. Recommended size: 1920x1080px
+                </p>
+                
+                <!-- Hidden input for removal -->
+                <input type="hidden" name="remove_current_bg" id="removeCurrentBgInput" value="0">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+            <input type="text" name="why_choose_button_text"
+                   value="{{ old('why_choose_button_text', $page->why_choose_button_text) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Button URL</label>
+            <input type="text" name="why_choose_button_url"
+                   value="{{ old('why_choose_button_url', $page->why_choose_button_url) }}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="flex items-center text-sm font-medium text-gray-700 mb-2">
+                <input type="checkbox" name="why_choose_status" value="active"
+                       {{ $page->why_choose_status === 'active' ? 'checked' : '' }}
+                       class="mr-2 w-4 h-4">
+                Active
+            </label>
+        </div>
+    </div>
+
+    <!-- Features Cards Section -->
+    <div class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-md font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-list-alt mr-2 text-primary"></i>
+                Features Cards
+            </h3>
+            <button type="button"
+                    id="addWhyCardBtn"
+                    class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-xl text-sm hover:bg-secondary transition">
+                <i class="fas fa-plus mr-2"></i>Add Feature
+            </button>
+        </div>
+
+        <div id="whyCardsContainer" class="space-y-4">
+            @forelse($whyChooseCards as $index => $card)
+                <div class="why-card-item bg-gray-50 border border-gray-200 rounded-xl p-4" data-index="{{ $index }}">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-semibold text-gray-700">Feature #{{ $index + 1 }}</span>
+                        <button type="button" class="remove-why-card text-red-600 text-xs hover:underline">
+                            Remove
                         </button>
                     </div>
-
-                    <div id="whyCardsContainer" class="space-y-4">
-                        @forelse($whyChooseCards as $index => $card)
-                            <div class="why-card-item bg-gray-50 border border-gray-200 rounded-xl p-4" data-index="{{ $index }}">
-                                <div class="flex justify-between items-center mb-3">
-                                    <span class="text-sm font-semibold text-gray-700">Feature #{{ $index + 1 }}</span>
-                                    <button type="button" class="remove-why-card text-red-600 text-xs hover:underline">
-                                        Remove
-                                    </button>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
-                                        <input type="text" name="why_cards_title[]" value="{{ $card['title'] ?? '' }}"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                                        <input type="text" name="why_cards_description[]" value="{{ $card['description'] ?? '' }}"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Icon (class)</label>
-                                        <input type="text" name="why_cards_icon[]" value="{{ $card['icon'] ?? '' }}"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                                               placeholder="fas fa-star">
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-700 mb-1">Color From</label>
-                                            <input type="color" name="why_cards_color_from[]"
-                                                   value="{{ $card['color_from'] ?? '#000000' }}"
-                                                   class="w-12 h-10 p-0 border border-gray-300 rounded">
-                                        </div>
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-700 mb-1">Color To</label>
-                                            <input type="color" name="why_cards_color_to[]"
-                                                   value="{{ $card['color_to'] ?? '#000000' }}"
-                                                   class="w-12 h-10 p-0 border border-gray-300 rounded">
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" name="why_cards_title[]" value="{{ $card['title'] ?? '' }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                            <input type="text" name="why_cards_description[]" value="{{ $card['description'] ?? '' }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Icon (class)</label>
+                            <input type="text" name="why_cards_icon[]" value="{{ $card['icon'] ?? '' }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                                   placeholder="fas fa-star">
+                        </div>
+                        <div class="flex space-x-2">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Color From</label>
+                                <input type="color" name="why_cards_color_from[]"
+                                       value="{{ $card['color_from'] ?? '#000000' }}"
+                                       class="w-12 h-10 p-0 border border-gray-300 rounded">
                             </div>
-                        @empty
-                            <div class="why-card-item bg-gray-50 border border-gray-200 rounded-xl p-4" data-index="0">
-                                <div class="flex justify-between items-center mb-3">
-                                    <span class="text-sm font-semibold text-gray-700">Feature #1</span>
-                                    <button type="button" class="remove-why-card text-red-600 text-xs hover:underline">
-                                        Remove
-                                    </button>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
-                                        <input type="text" name="why_cards_title[]"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                                        <input type="text" name="why_cards_description[]"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 mb-1">Icon (class)</label>
-                                        <input type="text" name="why_cards_icon[]"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                                               placeholder="fas fa-star">
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-700 mb-1">Color From</label>
-                                            <input type="color" name="why_cards_color_from[]" value="#000000"
-                                                   class="w-12 h-10 p-0 border border-gray-300 rounded">
-                                        </div>
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-700 mb-1">Color To</label>
-                                            <input type="color" name="why_cards_color_to[]" value="#000000"
-                                                   class="w-12 h-10 p-0 border border-gray-300 rounded">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Color To</label>
+                                <input type="color" name="why_cards_color_to[]"
+                                       value="{{ $card['color_to'] ?? '#000000' }}"
+                                       class="w-12 h-10 p-0 border border-gray-300 rounded">
                             </div>
-                        @endforelse
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="why-card-item bg-gray-50 border border-gray-200 rounded-xl p-4" data-index="0">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-semibold text-gray-700">Feature #1</span>
+                        <button type="button" class="remove-why-card text-red-600 text-xs hover:underline">
+                            Remove
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" name="why_cards_title[]"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                            <input type="text" name="why_cards_description[]"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Icon (class)</label>
+                            <input type="text" name="why_cards_icon[]"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+                                   placeholder="fas fa-star">
+                        </div>
+                        <div class="flex space-x-2">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Color From</label>
+                                <input type="color" name="why_cards_color_from[]" value="#000000"
+                                       class="w-12 h-10 p-0 border border-gray-300 rounded">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Color To</label>
+                                <input type="color" name="why_cards_color_to[]" value="#000000"
+                                       class="w-12 h-10 p-0 border border-gray-300 rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Why Choose Left Media Handler
+    const leftImageOption = document.getElementById('left_image_option');
+    const leftVideoOption = document.getElementById('left_video_option');
+    const imageUploadArea = document.getElementById('imageUploadArea');
+    const videoUploadArea = document.getElementById('videoUploadArea');
+    const imageFileInput = document.getElementById('imageFileInput');
+    const videoFileInput = document.getElementById('videoFileInput');
+    const removeCurrentMediaInput = document.getElementById('removeCurrentMediaInput');
+
+    // Background Image Handler
+    const bgUploadArea = document.getElementById('bgUploadArea');
+    const bgFileInput = document.getElementById('bgFileInput');
+    const removeCurrentBgInput = document.getElementById('removeCurrentBgInput');
+
+    // Toggle media source
+    function toggleMediaSource() {
+        if (leftImageOption && leftImageOption.checked) {
+            // Enable image upload
+            if (imageFileInput) imageFileInput.disabled = false;
+            if (videoFileInput) videoFileInput.disabled = true;
+            if (imageUploadArea) {
+                imageUploadArea.style.opacity = '1';
+                imageUploadArea.style.pointerEvents = 'auto';
+            }
+            if (videoUploadArea) {
+                videoUploadArea.style.opacity = '0.5';
+                videoUploadArea.style.pointerEvents = 'none';
+            }
+        } else if (leftVideoOption && leftVideoOption.checked) {
+            // Enable video upload
+            if (videoFileInput) videoFileInput.disabled = false;
+            if (imageFileInput) imageFileInput.disabled = true;
+            if (videoUploadArea) {
+                videoUploadArea.style.opacity = '1';
+                videoUploadArea.style.pointerEvents = 'auto';
+            }
+            if (imageUploadArea) {
+                imageUploadArea.style.opacity = '0.5';
+                imageUploadArea.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+    // Event listeners for radio buttons
+    if (leftImageOption) leftImageOption.addEventListener('change', toggleMediaSource);
+    if (leftVideoOption) leftVideoOption.addEventListener('change', toggleMediaSource);
+    
+    // Initial toggle
+    toggleMediaSource();
+
+    // Image Upload Handler
+    if (imageUploadArea) {
+        imageUploadArea.addEventListener('click', function(e) {
+            if (leftImageOption && leftImageOption.checked && !imageFileInput.disabled) {
+                imageFileInput.click();
+            }
+        });
+
+        imageUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (leftImageOption && leftImageOption.checked) {
+                this.classList.add('border-primary', 'bg-blue-50');
+            }
+        });
+
+        imageUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+        });
+
+        imageUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+            
+            if (leftImageOption && leftImageOption.checked) {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleImageFile(files[0]);
+                }
+            }
+        });
+    }
+
+    // Video Upload Handler
+    if (videoUploadArea) {
+        videoUploadArea.addEventListener('click', function(e) {
+            if (leftVideoOption && leftVideoOption.checked && !videoFileInput.disabled) {
+                videoFileInput.click();
+            }
+        });
+
+        videoUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (leftVideoOption && leftVideoOption.checked) {
+                this.classList.add('border-primary', 'bg-blue-50');
+            }
+        });
+
+        videoUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+        });
+
+        videoUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+            
+            if (leftVideoOption && leftVideoOption.checked) {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleVideoFile(files[0]);
+                }
+            }
+        });
+    }
+
+    // Background Image Upload Handler
+    if (bgUploadArea) {
+        bgUploadArea.addEventListener('click', function(e) {
+            if (!e.target.closest('.remove-btn')) {
+                bgFileInput.click();
+            }
+        });
+
+        bgUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('border-primary', 'bg-blue-50');
+        });
+
+        bgUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+        });
+
+        bgUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary', 'bg-blue-50');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleBgImageFile(files[0]);
+            }
+        });
+    }
+
+    // File input handlers
+    if (imageFileInput) {
+        imageFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleImageFile(this.files[0]);
+            }
+        });
+    }
+
+    if (videoFileInput) {
+        videoFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleVideoFile(this.files[0]);
+            }
+        });
+    }
+
+    if (bgFileInput) {
+        bgFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleBgImageFile(this.files[0]);
+            }
+        });
+    }
+
+    // Handle image file
+    function handleImageFile(file) {
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, GIF, WebP)');
+            imageFileInput.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 10MB');
+            imageFileInput.value = '';
+            return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imagePreviewImg = document.getElementById('imagePreviewImg');
+            const imagePreview = document.getElementById('imagePreview');
+            const imageUploadPlaceholder = document.getElementById('imageUploadPlaceholder');
+            const currentImage = document.getElementById('currentImage');
+
+            if (imagePreviewImg) imagePreviewImg.src = e.target.result;
+            if (imageUploadPlaceholder) imageUploadPlaceholder.classList.add('hidden');
+            if (currentImage) currentImage.classList.add('hidden');
+            if (imagePreview) imagePreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Handle video file
+    function handleVideoFile(file) {
+        const maxSize = 200 * 1024 * 1024; // 200MB
+        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a valid video file (MP4, AVI, MOV)');
+            videoFileInput.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 200MB');
+            videoFileInput.value = '';
+            return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const videoPreviewSource = document.getElementById('videoPreviewSource');
+            const videoPreviewPlayer = document.getElementById('videoPreviewPlayer');
+            const videoPreview = document.getElementById('videoPreview');
+            const videoUploadPlaceholder = document.getElementById('videoUploadPlaceholder');
+            const currentVideo = document.getElementById('currentVideo');
+            const videoFileName = document.getElementById('videoFileName');
+
+            if (videoPreviewSource) videoPreviewSource.src = e.target.result;
+            if (videoPreviewPlayer) videoPreviewPlayer.load();
+            if (videoFileName) videoFileName.textContent = file.name;
+            if (videoUploadPlaceholder) videoUploadPlaceholder.classList.add('hidden');
+            if (currentVideo) currentVideo.classList.add('hidden');
+            if (videoPreview) videoPreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Handle background image file
+    function handleBgImageFile(file) {
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, GIF, WebP)');
+            bgFileInput.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('File size must be less than 10MB');
+            bgFileInput.value = '';
+            return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const bgPreviewImg = document.getElementById('bgPreviewImg');
+            const bgPreview = document.getElementById('bgPreview');
+            const bgUploadPlaceholder = document.getElementById('bgUploadPlaceholder');
+            const currentBgImage = document.getElementById('currentBgImage');
+
+            if (bgPreviewImg) bgPreviewImg.src = e.target.result;
+            if (bgUploadPlaceholder) bgUploadPlaceholder.classList.add('hidden');
+            if (currentBgImage) currentBgImage.classList.add('hidden');
+            if (bgPreview) bgPreview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Remove buttons for left media
+    const removeCurrentImage = document.getElementById('removeCurrentImage');
+    const removeCurrentVideo = document.getElementById('removeCurrentVideo');
+    const removeNewImage = document.getElementById('removeNewImage');
+    const removeNewVideo = document.getElementById('removeNewVideo');
+
+    if (removeCurrentImage) {
+        removeCurrentImage.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove the current image?')) {
+                const currentImage = document.getElementById('currentImage');
+                const imageUploadPlaceholder = document.getElementById('imageUploadPlaceholder');
+                
+                if (currentImage) currentImage.classList.add('hidden');
+                if (imageUploadPlaceholder) imageUploadPlaceholder.classList.remove('hidden');
+                if (removeCurrentMediaInput) removeCurrentMediaInput.value = '1';
+            }
+        });
+    }
+
+    if (removeCurrentVideo) {
+        removeCurrentVideo.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove the current video?')) {
+                const currentVideo = document.getElementById('currentVideo');
+                const videoUploadPlaceholder = document.getElementById('videoUploadPlaceholder');
+                
+                if (currentVideo) currentVideo.classList.add('hidden');
+                if (videoUploadPlaceholder) videoUploadPlaceholder.classList.remove('hidden');
+                if (removeCurrentMediaInput) removeCurrentMediaInput.value = '1';
+            }
+        });
+    }
+
+    if (removeNewImage) {
+        removeNewImage.addEventListener('click', function() {
+            const imagePreview = document.getElementById('imagePreview');
+            const imageUploadPlaceholder = document.getElementById('imageUploadPlaceholder');
+            const currentImage = document.getElementById('currentImage');
+            
+            if (imageFileInput) imageFileInput.value = '';
+            if (imagePreview) imagePreview.classList.add('hidden');
+            if (imageUploadPlaceholder) imageUploadPlaceholder.classList.remove('hidden');
+            if (currentImage) currentImage.classList.remove('hidden');
+        });
+    }
+
+    if (removeNewVideo) {
+        removeNewVideo.addEventListener('click', function() {
+            const videoPreview = document.getElementById('videoPreview');
+            const videoUploadPlaceholder = document.getElementById('videoUploadPlaceholder');
+            const currentVideo = document.getElementById('currentVideo');
+            
+            if (videoFileInput) videoFileInput.value = '';
+            if (videoPreview) videoPreview.classList.add('hidden');
+            if (videoUploadPlaceholder) videoUploadPlaceholder.classList.remove('hidden');
+            if (currentVideo) currentVideo.classList.remove('hidden');
+        });
+    }
+
+    // Remove buttons for background image
+    const removeCurrentBg = document.getElementById('removeCurrentBg');
+    const removeNewBg = document.getElementById('removeNewBg');
+
+    if (removeCurrentBg) {
+        removeCurrentBg.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove the current background image?')) {
+                const currentBgImage = document.getElementById('currentBgImage');
+                const bgUploadPlaceholder = document.getElementById('bgUploadPlaceholder');
+                
+                if (currentBgImage) currentBgImage.classList.add('hidden');
+                if (bgUploadPlaceholder) bgUploadPlaceholder.classList.remove('hidden');
+                if (removeCurrentBgInput) removeCurrentBgInput.value = '1';
+            }
+        });
+    }
+
+    if (removeNewBg) {
+        removeNewBg.addEventListener('click', function() {
+            const bgPreview = document.getElementById('bgPreview');
+            const bgUploadPlaceholder = document.getElementById('bgUploadPlaceholder');
+            const currentBgImage = document.getElementById('currentBgImage');
+            
+            if (bgFileInput) bgFileInput.value = '';
+            if (bgPreview) bgPreview.classList.add('hidden');
+            if (bgUploadPlaceholder) bgUploadPlaceholder.classList.remove('hidden');
+            if (currentBgImage) currentBgImage.classList.remove('hidden');
+        });
+    }
+});
+</script>
 
         {{-- SERVICES TAB --}}
 <div id="services" class="tab-content p-8 {{ $currentTab == 'services' ? '' : 'hidden' }}">

@@ -45,6 +45,7 @@ class DynamicPage extends Model
         'why_choose_subtitle',
         'why_choose_description',
         'why_choose_left_image',
+        'why_choose_left_video',
         'why_choose_background_image',
         'why_choose_button_text',
         'why_choose_button_url',
@@ -340,13 +341,35 @@ public function getFooterLogoUrl()
     return null;
 }
 
-public function getWhyChooseLeftImageUrl()
-{
-    if ($this->why_choose_left_image && file_exists(public_path('storage/' . $this->why_choose_left_image))) {
-        return asset('storage/' . $this->why_choose_left_image);
+   public function getWhyChooseLeftImageUrl()
+    {
+        if ($this->why_choose_left_image && file_exists(public_path('storage/' . $this->why_choose_left_image))) {
+            return asset('storage/' . $this->why_choose_left_image);
+        }
+        return null;
     }
-    return null;
-}
+       public function getWhyChooseLeftVideoUrl()
+    {
+        if ($this->why_choose_left_video && file_exists(public_path('storage/' . $this->why_choose_left_video))) {
+            return asset('storage/' . $this->why_choose_left_video);
+        }
+        return null;
+    }
+
+    public function hasWhyChooseLeftVideo()
+    {
+        return !empty($this->why_choose_left_video) && file_exists(public_path('storage/' . $this->why_choose_left_video));
+    }
+
+    public function getWhyChooseLeftMediaType()
+    {
+        if ($this->hasWhyChooseLeftVideo()) {
+            return 'video';
+        } elseif ($this->getWhyChooseLeftImageUrl()) {
+            return 'image';
+        }
+        return null;
+    }
 
 public function getWhyChooseBackgroundImageUrl()
 {

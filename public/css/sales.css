@@ -939,11 +939,11 @@
             }
 
             .prev-btn {
-                left: -25px;
+                left: 10px;
             }
 
             .next-btn {
-                right: -25px;
+                right: 10px;
             }
         }
 
@@ -1273,6 +1273,16 @@
 .saas-nav-button.next {
     right: 20px;
 }
+@media(max-width:767px){
+    .saas-nav-button.prev {
+    left: 10px;
+}
+
+
+.saas-nav-button.next {
+    right: 10px;
+}
+}
 
 
 .saas-dots-indicator {
@@ -1309,7 +1319,7 @@
 
 @media (max-width: 768px) {
     .saas-slide {
-        width: 280px;
+        width: 320px !important;
     }
     
     .saas-slide.active {
@@ -1415,6 +1425,15 @@
 
 .services-nav-button.next {
     right: -30px;
+}
+@media(max-width:768px){
+    .services-nav-button.prev {
+    left: 10px;
+}
+
+.services-nav-button.next {
+    right: 10px;
+}
 }
 
 .services-dots-indicator {
