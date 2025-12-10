@@ -24,7 +24,7 @@
         </div>
         
         <!-- Epic Logo Showcase -->
-        <div class="space-y-12 w-full overflow-hidden">
+        <div class="space-y-8 w-full overflow-hidden">
             
             @if($clientsByCategory->has('streaming') && $clientsByCategory['streaming']->count() > 0)
             <!-- First Row - Streaming Giants -->
@@ -34,29 +34,33 @@
                 <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/40 to-transparent z-10 pointer-events-none"></div>
                 
                 <div class="marquee-container">
-                    <div class="marquee-content marquee-left-smooth">
+                    <!-- الصف الأول: من اليمين للشمال -->
+                    <div class="marquee-content marquee-clients-right-to-left flex items-center gap-10" data-category="streaming">
                         @php
                             $streamingClients = $clientsByCategory['streaming'];
-                            $tripleClients = $streamingClients->concat($streamingClients)->concat($streamingClients);
+                            // تكرار العناصر للحصول على حلقة مستمرة
+                            $displayClients = collect();
+                            for($i = 0; $i < 20; $i++) { // تقليل العدد لـ 20 بدل 30
+                                $displayClients->push($streamingClients[$i % $streamingClients->count()]);
+                            }
                         @endphp
                         
-                        @foreach($tripleClients as $client)
-                            <div class="flex-shrink-0 w-48 h-24 rounded-2xl flex items-center justify-center group transition-all duration-500 border backdrop-blur-sm mx-6 client-card"
-                                 style="background-color: {{ $client->background_color ?: '#FFFFFF' }}; 
-                                        border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};
-                                        opacity: {{ $client->opacity ?: '1' }};"
-                                 data-hover-bg="{{ $client->hover_background_color ?: '#F5F5F5' }}"
-                                 data-hover-opacity="{{ $client->hover_opacity ?: '0.8' }}"
-                                 data-hover-scale="{{ $client->hover_scale ?: '1.1' }}"
-                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" style="cursor: pointer;" @endif>
+                        @foreach($displayClients as $client)
+                            <div class="flex-shrink-0 w-64 h-36 rounded-2xl flex items-center justify-center group transition-all duration-500 backdrop-blur-sm hover:scale-110 hover:rotate-1 cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl client-card p-4"
+                                 style="background-color: {{ $client->background_color ?: 'rgba(255,255,255,0.05)' }}; border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};"
+                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" title="Visit {{ $client->name }}" @endif>
+                                
                                 @if($client->logo)
                                     <img src="{{ $client->getLogoUrl() }}" 
                                          alt="{{ $client->name }}" 
-                                         class="max-w-[75%] max-h-[55%] object-contain transition-transform duration-300"
+                                         class="max-h-16 max-w-[75%] object-contain transition-all duration-500 group-hover:scale-110 filter brightness-90 group-hover:brightness-110"
                                          loading="lazy">
                                 @else
-                                    <span class="text-lg font-bold transition-transform duration-300">{{ $client->name }}</span>
+                                    <span class="text-white text-base font-bold transition-all duration-300 group-hover:text-red-400">{{ $client->name }}</span>
                                 @endif
+                                
+                                <!-- Hover Overlay Effect -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/10 to-red-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-2xl"></div>
                             </div>
                         @endforeach
                     </div>
@@ -72,29 +76,33 @@
                 <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/40 to-transparent z-10 pointer-events-none"></div>
                 
                 <div class="marquee-container">
-                    <div class="marquee-content marquee-right-smooth">
+                    <!-- الصف التاني: من الشمال لليمين (عكس الأول) -->
+                    <div class="marquee-content marquee-clients-left-to-right flex items-center gap-10" data-category="news_sports">
                         @php
                             $newsClients = $clientsByCategory['news_sports'];
-                            $tripleNewsClients = $newsClients->concat($newsClients)->concat($newsClients);
+                            // نفس التكرار
+                            $displayNewsClients = collect();
+                            for($i = 0; $i < 20; $i++) {
+                                $displayNewsClients->push($newsClients[$i % $newsClients->count()]);
+                            }
                         @endphp
                         
-                        @foreach($tripleNewsClients as $client)
-                            <div class="flex-shrink-0 w-48 h-24 rounded-2xl flex items-center justify-center group transition-all duration-500 border backdrop-blur-sm mx-6 client-card"
-                                 style="background-color: {{ $client->background_color ?: '#FFFFFF' }}; 
-                                        border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};
-                                        opacity: {{ $client->opacity ?: '1' }};"
-                                 data-hover-bg="{{ $client->hover_background_color ?: '#F5F5F5' }}"
-                                 data-hover-opacity="{{ $client->hover_opacity ?: '0.8' }}"
-                                 data-hover-scale="{{ $client->hover_scale ?: '1.1' }}"
-                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" style="cursor: pointer;" @endif>
+                        @foreach($displayNewsClients as $client)
+                            <div class="flex-shrink-0 w-64 h-36 rounded-2xl flex items-center justify-center group transition-all duration-500 backdrop-blur-sm hover:scale-110 hover:rotate-1 cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl client-card p-4"
+                                 style="background-color: {{ $client->background_color ?: 'rgba(255,255,255,0.05)' }}; border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};"
+                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" title="Visit {{ $client->name }}" @endif>
+                                
                                 @if($client->logo)
                                     <img src="{{ $client->getLogoUrl() }}" 
                                          alt="{{ $client->name }}" 
-                                         class="max-w-[75%] max-h-[55%] object-contain transition-transform duration-300"
+                                         class="max-h-16 max-w-[75%] object-contain transition-all duration-500 group-hover:scale-110 filter brightness-90 group-hover:brightness-110"
                                          loading="lazy">
                                 @else
-                                    <span class="text-lg font-bold transition-transform duration-300">{{ $client->name }}</span>
+                                    <span class="text-white text-base font-bold transition-all duration-300 group-hover:text-red-400">{{ $client->name }}</span>
                                 @endif
+                                
+                                <!-- Hover Overlay Effect -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/10 to-red-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-2xl"></div>
                             </div>
                         @endforeach
                     </div>
@@ -110,29 +118,33 @@
                 <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/40 to-transparent z-10 pointer-events-none"></div>
                 
                 <div class="marquee-container">
-                    <div class="marquee-content marquee-left-smooth">
+                    <!-- الصف التالت: من اليمين للشمال (زي الأول) -->
+                    <div class="marquee-content marquee-clients-right-to-left flex items-center gap-10" data-category="tech_gaming">
                         @php
                             $techClients = $clientsByCategory['tech_gaming'];
-                            $tripleTechClients = $techClients->concat($techClients)->concat($techClients);
+                            // نفس التكرار
+                            $displayTechClients = collect();
+                            for($i = 0; $i < 20; $i++) {
+                                $displayTechClients->push($techClients[$i % $techClients->count()]);
+                            }
                         @endphp
                         
-                        @foreach($tripleTechClients as $client)
-                            <div class="flex-shrink-0 w-48 h-24 rounded-2xl flex items-center justify-center group transition-all duration-500 border backdrop-blur-sm mx-6 client-card"
-                                 style="background-color: {{ $client->background_color ?: '#FFFFFF' }}; 
-                                        border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};
-                                        opacity: {{ $client->opacity ?: '1' }};"
-                                 data-hover-bg="{{ $client->hover_background_color ?: '#F5F5F5' }}"
-                                 data-hover-opacity="{{ $client->hover_opacity ?: '0.8' }}"
-                                 data-hover-scale="{{ $client->hover_scale ?: '1.1' }}"
-                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" style="cursor: pointer;" @endif>
+                        @foreach($displayTechClients as $client)
+                            <div class="flex-shrink-0 w-64 h-36 rounded-2xl flex items-center justify-center group transition-all duration-500 backdrop-blur-sm hover:scale-110 hover:rotate-1 cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl client-card p-4"
+                                 style="background-color: {{ $client->background_color ?: 'rgba(255,255,255,0.05)' }}; border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};"
+                                 @if($client->website_url) onclick="window.open('{{ $client->website_url }}', '_blank')" title="Visit {{ $client->name }}" @endif>
+                                
                                 @if($client->logo)
                                     <img src="{{ $client->getLogoUrl() }}" 
                                          alt="{{ $client->name }}" 
-                                         class="max-w-[75%] max-h-[55%] object-contain transition-transform duration-300"
+                                         class="max-h-16 max-w-[75%] object-contain transition-all duration-500 group-hover:scale-110 filter brightness-90 group-hover:brightness-110"
                                          loading="lazy">
                                 @else
-                                    <span class="text-lg font-bold transition-transform duration-300">{{ $client->name }}</span>
+                                    <span class="text-white text-base font-bold transition-all duration-300 group-hover:text-red-400">{{ $client->name }}</span>
                                 @endif
+                                
+                                <!-- Hover Overlay Effect -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/10 to-red-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-2xl"></div>
                             </div>
                         @endforeach
                     </div>
@@ -142,7 +154,7 @@
             
             @if($clientsByCategory->has('other') && $clientsByCategory['other']->count() > 0)
             <!-- PARTNERS Section - Enhanced with Smooth Animation -->
-            <div class="mt-16 bg-gradient-to-br  to-black rounded-3xl p-12 border border-white/10 shadow-2xl overflow-hidden relative">
+            <div class="mt-8 md:mt-12 bg-gradient-to-br to-black rounded-3xl p-8 md:p-12 border border-white/10 shadow-2xl overflow-hidden relative">
                 <!-- Background Effects -->
                 <div class="absolute inset-0 opacity-30">
                     <div class="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
@@ -151,33 +163,37 @@
                 </div>
 
                 <!-- Header -->
-                <div class="text-center mb-12 relative z-10">
+                <div class="text-center mb-8 md:mb-12 relative z-10">
                     <h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold bg-gradient-to-br from-red-400 via-red-500 to-red-700 text-transparent bg-clip-text drop-shadow-lg">
                         PARTNERS
                     </h2>
                     <div class="mt-4 h-1 w-32 bg-gradient-to-r from-transparent via-red-500 to-transparent mx-auto rounded-full"></div>
-                    <p class="mt-6 text-xl text-gray-300 font-medium tracking-wide">
+                    <p class="mt-4 md:mt-6 text-xl text-gray-300 font-medium tracking-wide">
                         Powerful collaborations that fuel our mission
                     </p>
                 </div>
 
-<!-- Partners Logos Container -->
+                <!-- Partners Logos Container -->
                 <div class="relative z-10">
                     <!-- Gradient Overlays for Smooth Fade Effect -->
                     <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#1a1a1a] to-transparent z-20 pointer-events-none"></div>
                     <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#1a1a1a] to-transparent z-20 pointer-events-none"></div>
                     
                     <!-- Animated Logos Track -->
-                    <div class="partners-track-container overflow-hidden">
-                        <div class="partners-track flex items-center gap-10">
+                    <div class="marquee-container">
+                        <div class="marquee-content marquee-scroll-left flex items-center gap-10" data-category="partners">
                             @php
                                 $otherClients = $clientsByCategory['other'];
-                                $tripleOtherClients = $otherClients->concat($otherClients)->concat($otherClients);
+                                // نفس التكرار للبارتنرز
+                                $displayOtherClients = collect();
+                                for($i = 0; $i < 20; $i++) {
+                                    $displayOtherClients->push($otherClients[$i % $otherClients->count()]);
+                                }
                             @endphp
                             
-                            @foreach($tripleOtherClients as $client)
-                                <div class="partner-logo-card flex-shrink-0 w-64 h-36 flex items-center justify-center rounded-2xl backdrop-blur-sm transition-all duration-500 hover:scale-110 hover:rotate-1 group cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl"
-                                     style="background: linear-gradient(135deg, {{ $client->background_color ?: 'rgba(255,255,255,0.05)' }}, {{ $client->hover_background_color ?: 'rgba(255,255,255,0.1)' }});"
+                            @foreach($displayOtherClients as $client)
+                                <div class="partner-logo-card flex-shrink-0 w-64 h-36 flex items-center justify-center rounded-2xl backdrop-blur-sm transition-all duration-500 hover:scale-110 hover:rotate-1 group cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl p-4"
+                                     style="background-color: {{ $client->background_color ?: 'rgba(255,255,255,0.05)' }}; border-color: {{ $client->border_color ?: 'rgba(255,255,255,0.2)' }};"
                                      @if($client->website_url) 
                                          onclick="window.open('{{ $client->website_url }}', '_blank')"
                                          title="Visit {{ $client->name }}"
@@ -186,7 +202,7 @@
                                     @if($client->logo)
                                         <img src="{{ $client->getLogoUrl() }}"
                                              alt="{{ $client->name }}"
-                                             class="max-h-20 max-w-[85%] object-contain transition-all duration-500 group-hover:scale-110 filter brightness-90 group-hover:brightness-110"
+                                             class="max-h-16 max-w-[75%] object-contain transition-all duration-500 group-hover:scale-110 filter brightness-90 group-hover:brightness-110"
                                              loading="lazy">
                                     @else
                                         <span class="text-white text-base font-bold transition-all duration-300 group-hover:text-red-400">
@@ -203,7 +219,7 @@
                 </div>
                 
                 <!-- Bottom Accent -->
-                <div class="mt-8 flex justify-center relative z-10">
+                <div class="mt-6 md:mt-8 flex justify-center relative z-10">
                     <div class="flex space-x-2">
                         <div class="w-3 h-3 bg-red-500 rounded-full animate-bounce"></div>
                         <div class="w-3 h-3 bg-red-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
@@ -215,7 +231,7 @@
         </div>
         
         <!-- Epic Closing -->
-        <div class="text-center mt-20">
+        <div class="text-center mt-12 md:mt-16">
             <p class="text-xl text-gray-400 font-medium">
                 Ready to join the elite?
             </p>
@@ -224,98 +240,101 @@
 </section>
 
 <style>
-/* Perfect seamless infinite marquee - ENHANCED */
+/* 🚀 ZERO DELAY MARQUEE SYSTEM */
 .marquee-container {
     overflow: hidden;
     position: relative;
     width: 100%;
+    /* CRITICAL: GPU acceleration */
+    transform: translateZ(0);
+    will-change: transform;
+    contain: layout style paint;
 }
 
 .marquee-content {
     display: flex;
     align-items: center;
     white-space: nowrap;
-    will-change: transform;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    backface-visibility: hidden;
-    perspective: 1000px;
-    transform: translateZ(0);
-}
-
-/* Smooth Left Scroll - No Gaps - SAME AS PARTNERS */
-.marquee-left-smooth {
-    animation: marquee-smooth-left 80s linear infinite;
-}
-
-/* Smooth Right Scroll - No Gaps - SAME AS PARTNERS */
-.marquee-right-smooth {
-    animation: marquee-smooth-right 80s linear infinite;
-}
-
-@keyframes marquee-smooth-left {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-33.333%);
-    }
-}
-
-@keyframes marquee-smooth-right {
-    0% {
-        transform: translateX(-33.333%);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-/* Partners Track Animation - EXACT SAME LOGIC */
-.partners-track-container {
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-}
-
-.partners-track {
-    width: max-content;
-    animation: smooth-scroll-partners 80s linear infinite;
+    
+    /* 🎯 CRITICAL: Remove all fill modes that cause delays */
+    animation-fill-mode: none !important;
+    animation-delay: 0s !important;
+    animation-play-state: running !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+    
+    /* PERFORMANCE OPTIMIZATIONS */
     will-change: transform;
     backface-visibility: hidden;
     perspective: 1000px;
     transform: translateZ(0);
+    
+    /* FIXED WIDTH: 20 cards * (256px + 40px gap) = 5920px */
+    width: 5920px !important;
+    min-width: 5920px !important;
 }
 
-@keyframes smooth-scroll-partners {
+/* 🔥 SEAMLESS ANIMATIONS - ZERO DELAYS */
+.marquee-clients-right-to-left {
+    animation: zero-delay-rtl 50s linear infinite !important;
+}
+
+.marquee-clients-left-to-right {
+    animation: zero-delay-ltr 50s linear infinite !important;
+}
+
+.marquee-scroll-left {
+    animation: zero-delay-partners 50s linear infinite !important;
+}
+
+/* 🎯 CRITICAL: Perfect keyframes calculations */
+@keyframes zero-delay-rtl {
     0% {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
     }
     100% {
-        transform: translateX(-33.333%);
+        /* Move exactly half the width for seamless loop */
+        transform: translate3d(-2960px, 0, 0); /* Half of 5920px */
     }
 }
 
-/* Hover Effects for Client Cards */
-.client-card:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(197, 48, 48, 0.1);
-    transform: translateY(-2px);
+@keyframes zero-delay-ltr {
+    0% {
+        transform: translate3d(-2960px, 0, 0);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
 }
 
-.client-card:hover img,
-.client-card:hover span {
-    transform: scale(1.05);
+@keyframes zero-delay-partners {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(-2960px, 0, 0);
+    }
 }
 
-/* Partner Logo Card Enhancements */
+/* CARD STYLES */
+.client-card,
 .partner-logo-card {
     position: relative;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* EXACT FIXED DIMENSIONS */
+    width: 256px !important;
+    height: 144px !important;
+    flex-shrink: 0 !important;
+    
+    /* PERFORMANCE */
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
+.client-card::before,
 .partner-logo-card::before {
     content: '';
     position: absolute;
@@ -327,10 +346,12 @@
     transition: left 0.6s ease;
 }
 
+.client-card:hover::before,
 .partner-logo-card:hover::before {
     left: 100%;
 }
 
+.client-card:hover,
 .partner-logo-card:hover {
     box-shadow: 
         0 20px 25px -5px rgba(0, 0, 0, 0.3),
@@ -339,63 +360,93 @@
     border-color: rgba(197, 48, 48, 0.5);
 }
 
-/* Pause animations on container hover for better UX */
-.marquee-container:hover .marquee-content,
-.partners-track-container:hover .partners-track {
-    animation-play-state: paused;
+.client-card img,
+.client-card span,
+.partner-logo-card img,
+.partner-logo-card span {
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Performance optimizations */
-.marquee-content *,
-.partners-track * {
-    backface-visibility: hidden;
-    transform: translateZ(0);
+.client-card:hover img,
+.client-card:hover span,
+.partner-logo-card:hover img,
+.partner-logo-card:hover span {
+    transform: scale(1.1);
+    filter: brightness(110%);
 }
 
-/* Responsive adjustments */
+/* RESPONSIVE BREAKPOINTS */
 @media (max-width: 768px) {
-    .marquee-left-smooth,
-    .marquee-right-smooth {
-        animation-duration: 50s;
-    }
-    
-    .partners-track {
-        animation-duration: 50s;
+    .marquee-content {
+        /* MOBILE: 20 cards * (200px + 32px gap) = 4640px */
+        width: 4640px !important;
+        min-width: 4640px !important;
     }
     
     .client-card,
     .partner-logo-card {
-        width: 180px;
-        height: 80px;
+        width: 200px !important;
+        height: 100px !important;
     }
     
-    .partner-logo-card {
-        height: 100px;
+    @keyframes zero-delay-rtl {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-2320px, 0, 0); } /* Half of 4640px */
+    }
+    
+    @keyframes zero-delay-ltr {
+        0% { transform: translate3d(-2320px, 0, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+    
+    @keyframes zero-delay-partners {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-2320px, 0, 0); }
+    }
+    
+    .marquee-clients-right-to-left,
+    .marquee-clients-left-to-right,
+    .marquee-scroll-left {
+        animation-duration: 35s !important;
     }
 }
 
 @media (max-width: 480px) {
-    .marquee-left-smooth,
-    .marquee-right-smooth {
-        animation-duration: 35s;
-    }
-    
-    .partners-track {
-        animation-duration: 35s;
+    .marquee-content {
+        /* SMALL MOBILE: 20 cards * (180px + 24px gap) = 4080px */
+        width: 4080px !important;
+        min-width: 4080px !important;
     }
     
     .client-card,
     .partner-logo-card {
-        width: 160px;
-        height: 70px;
+        width: 180px !important;
+        height: 90px !important;
     }
     
-    .partner-logo-card {
-        height: 90px;
+    @keyframes zero-delay-rtl {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-2040px, 0, 0); } /* Half of 4080px */
+    }
+    
+    @keyframes zero-delay-ltr {
+        0% { transform: translate3d(-2040px, 0, 0); }
+        100% { transform: translate3d(0, 0, 0); }
+    }
+    
+    @keyframes zero-delay-partners {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-2040px, 0, 0); }
+    }
+    
+    .marquee-clients-right-to-left,
+    .marquee-clients-left-to-right,
+    .marquee-scroll-left {
+        animation-duration: 30s !important;
     }
 }
 
-/* Enhanced loading state */
+/* LOAD STATE OPTIMIZATION */
 .client-card img,
 .partner-logo-card img {
     opacity: 0;
@@ -403,97 +454,365 @@
 }
 
 @keyframes fadeInImage {
-    to {
-        opacity: 1;
+    to { opacity: 1; }
+}
+
+/* SAFARI COMPATIBILITY */
+@supports (-webkit-appearance: none) {
+    .marquee-content {
+        -webkit-animation-fill-mode: none !important;
+        -webkit-animation-play-state: running !important;
+        -webkit-transform: translateZ(0);
     }
 }
 
-/* Smooth logo transitions */
-.client-card img,
-.partner-logo-card img {
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* FORCE HARDWARE ACCELERATION */
+.marquee-content,
+.client-card,
+.partner-logo-card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle all optional hover effects from admin settings
-    const clientCards = document.querySelectorAll('.client-card');
-    
-    clientCards.forEach(card => {
-        const hoverBg = card.dataset.hoverBg;
-        const hoverOpacity = card.dataset.hoverOpacity;
-        const hoverScale = card.dataset.hoverScale;
-        
-        const originalBg = card.style.backgroundColor;
-        const originalOpacity = card.style.opacity;
-        
-        card.addEventListener('mouseenter', function() {
-            // Apply hover background if set
-            if (hoverBg && hoverBg !== originalBg) {
-                this.style.backgroundColor = hoverBg;
-            }
+    // 🚀 ZERO DELAY ANIMATION SYSTEM - COMPLETE VERSION
+    class ZeroDelayMarquee {
+        constructor() {
+            this.marquees = document.querySelectorAll('.marquee-content');
+            this.isVisible = true;
+            this.animationController = null;
             
-            // Apply hover opacity if set
-            if (hoverOpacity && hoverOpacity !== originalOpacity) {
-                this.style.opacity = hoverOpacity;
-            }
+            this.init();
+        }
+
+        init() {
+            console.log('🚀 Initializing Zero Delay Marquee System...');
             
-            // Apply hover scale if set
-            if (hoverScale && hoverScale !== '1') {
-                this.style.transform = `scale(${hoverScale}) translateY(-2px)`;
-            }
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            // Reset to original values
-            this.style.backgroundColor = originalBg;
-            this.style.opacity = originalOpacity;
-            this.style.transform = 'scale(1) translateY(0)';
-        });
-    });
-    
-    // Intersection Observer for performance - only animate when visible
-    const marqueeElements = document.querySelectorAll('.marquee-content, .partners-track');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animationPlayState = 'running';
+            // WAIT FOR STYLES TO LOAD
+            this.waitForStyles().then(() => {
+                this.setupMarquees();
+                this.setupVisibilityHandling();
+                this.setupResizeHandling();
+                this.startMonitoring();
+                this.forceAnimations();
+                
+                console.log('✅ Zero Delay Marquee System Active - NO MORE DELAYS!');
+            });
+        }
+
+        waitForStyles() {
+            return new Promise((resolve) => {
+                // Check if styles are loaded
+                if (document.styleSheets.length > 0) {
+                    setTimeout(resolve, 100); // Small delay for CSS to apply
+                } else {
+                    setTimeout(() => this.waitForStyles().then(resolve), 50);
+                }
+            });
+        }
+
+        setupMarquees() {
+            this.marquees.forEach((marquee, index) => {
+                // 🎯 CRITICAL: Force all animation properties
+                marquee.style.animationFillMode = 'none';
+                marquee.style.animationDelay = '0s';
+                marquee.style.animationPlayState = 'running';
+                marquee.style.animationTimingFunction = 'linear';
+                marquee.style.animationIterationCount = 'infinite';
+                
+                // FORCE GPU ACCELERATION
+                marquee.style.transform = 'translateZ(0)';
+                marquee.style.willChange = 'transform';
+                marquee.style.backfaceVisibility = 'hidden';
+                
+                // ENSURE PROPER DIMENSIONS
+                this.updateMarqueeDimensions(marquee);
+                
+                console.log(`✅ Marquee ${index + 1} configured for zero delays`);
+            });
+        }
+
+        updateMarqueeDimensions(marquee) {
+            const screenWidth = window.innerWidth;
+            let totalWidth, animationDuration;
+            
+            if (screenWidth <= 480) {
+                totalWidth = 4080; // 20 * (180 + 24)
+                animationDuration = '30s';
+            } else if (screenWidth <= 768) {
+                totalWidth = 4640; // 20 * (200 + 32)
+                animationDuration = '35s';
             } else {
-                entry.target.style.animationPlayState = 'paused';
+                totalWidth = 5920; // 20 * (256 + 40)
+                animationDuration = '50s';
             }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '50px'
-    });
-    
-    marqueeElements.forEach(element => {
-        observer.observe(element);
-    });
+            
+            marquee.style.width = totalWidth + 'px';
+            marquee.style.minWidth = totalWidth + 'px';
+            marquee.style.animationDuration = animationDuration;
+            
+            // UPDATE CARD DIMENSIONS
+            const cards = marquee.querySelectorAll('.client-card, .partner-logo-card');
+            cards.forEach(card => {
+                if (screenWidth <= 480) {
+                    card.style.width = '180px';
+                    card.style.height = '90px';
+                } else if (screenWidth <= 768) {
+                    card.style.width = '200px';
+                    card.style.height = '100px';
+                } else {
+                    card.style.width = '256px';
+                    card.style.height = '144px';
+                }
+                card.style.flexShrink = '0';
+            });
+        }
 
-    // Prevent animation jank on page load
-    window.addEventListener('load', function() {
-        document.body.classList.add('animations-ready');
-    });
+        setupVisibilityHandling() {
+            // HANDLE TAB VISIBILITY CHANGE
+            document.addEventListener('visibilitychange', () => {
+                this.isVisible = !document.hidden;
+                if (this.isVisible) {
+                    setTimeout(() => {
+                        this.forceAnimations();
+                        console.log('🔄 Animations restored after tab focus');
+                    }, 100);
+                }
+            });
 
-    // Add smooth scroll behavior for better performance
-    let ticking = false;
-    
-    function updateAnimations() {
-        // Update any dynamic animations here if needed
-        ticking = false;
-    }
+            // HANDLE WINDOW FOCUS/BLUR
+            window.addEventListener('focus', () => {
+                this.isVisible = true;
+                setTimeout(() => this.forceAnimations(), 50);
+            });
 
-    function requestAnimationUpdate() {
-        if (!ticking) {
-            requestAnimationFrame(updateAnimations);
-            ticking = true;
+            window.addEventListener('blur', () => {
+                this.isVisible = false;
+            });
+        }
+
+        setupResizeHandling() {
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    this.handleResize();
+                    console.log('🔄 Animations updated for new screen size');
+                }, 150);
+            });
+
+            // HANDLE ORIENTATION CHANGE (Mobile)
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    this.handleResize();
+                    console.log('🔄 Animations updated for orientation change');
+                }, 300);
+            });
+        }
+
+        handleResize() {
+            this.marquees.forEach(marquee => {
+                this.updateMarqueeDimensions(marquee);
+                
+                // RESTART ANIMATIONS AFTER RESIZE
+                const currentAnimation = marquee.style.animationName;
+                marquee.style.animationName = 'none';
+                marquee.offsetHeight; // Force reflow
+                marquee.style.animationName = currentAnimation;
+            });
+            
+            this.forceAnimations();
+        }
+
+        forceAnimations() {
+            this.marquees.forEach(marquee => {
+                // 🎯 CRITICAL: Force animation properties
+                marquee.style.animationPlayState = 'running';
+                marquee.style.animationFillMode = 'none';
+                marquee.style.animationDelay = '0s';
+                
+                // Force reflow to ensure animation continues
+                marquee.offsetHeight;
+            });
+        }
+
+        // 🔥 CONTINUOUS MONITORING SYSTEM
+        startMonitoring() {
+            // Main monitoring loop
+            this.animationController = setInterval(() => {
+                if (this.isVisible) {
+                    this.checkAnimationHealth();
+                }
+            }, 1000);
+
+            // Performance monitoring
+            this.startPerformanceMonitoring();
+            
+            console.log('🔍 Animation monitoring started');
+        }
+
+        checkAnimationHealth() {
+            let needsRestart = false;
+            
+            this.marquees.forEach((marquee, index) => {
+                // CHECK CRITICAL ANIMATION PROPERTIES
+                if (marquee.style.animationPlayState !== 'running') {
+                    marquee.style.animationPlayState = 'running';
+                    needsRestart = true;
+                    console.warn(`🔧 Fixed paused animation on marquee ${index + 1}`);
+                }
+                
+                if (marquee.style.animationFillMode !== 'none') {
+                    marquee.style.animationFillMode = 'none';
+                    needsRestart = true;
+                    console.warn(`🔧 Fixed animation fill mode on marquee ${index + 1}`);
+                }
+                
+                if (marquee.style.animationDelay !== '0s') {
+                    marquee.style.animationDelay = '0s';
+                    needsRestart = true;
+                    console.warn(`🔧 Fixed animation delay on marquee ${index + 1}`);
+                }
+                
+                // CHECK IF ANIMATION IS ACTUALLY RUNNING
+                const computedStyle = window.getComputedStyle(marquee);
+                if (computedStyle.animationPlayState !== 'running') {
+                    marquee.style.animationPlayState = 'running';
+                    marquee.offsetHeight; // Force reflow
+                    needsRestart = true;
+                    console.warn(`🔧 Force restarted animation on marquee ${index + 1}`);
+                }
+            });
+            
+            if (needsRestart) {
+                console.log('🚀 Animation health check completed with fixes');
+            }
+        }
+
+        startPerformanceMonitoring() {
+            let frameCount = 0;
+            let lastTime = performance.now();
+            
+            const monitor = () => {
+                frameCount++;
+                const currentTime = performance.now();
+                
+                if (currentTime - lastTime >= 2000) { // Check every 2 seconds
+                    const fps = Math.round(frameCount * 1000 / (currentTime - lastTime));
+                    
+                    if (fps < 30 && this.isVisible) {
+                        console.warn(`⚠️ Low FPS detected: ${fps}. Optimizing animations...`);
+                        this.optimizeAnimations();
+                    }
+                    
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                if (this.animationController) {
+                    requestAnimationFrame(monitor);
+                }
+            };
+            
+            monitor();
+        }
+
+        optimizeAnimations() {
+            this.marquees.forEach(marquee => {
+                // REDUCE ANIMATION COMPLEXITY DURING LOW PERFORMANCE
+                marquee.style.willChange = 'transform';
+                marquee.style.backfaceVisibility = 'hidden';
+                marquee.style.perspective = '1000px';
+                
+                // ENSURE GPU ACCELERATION
+                marquee.style.transform = 'translateZ(0)';
+            });
+        }
+
+        // PUBLIC METHODS FOR MANUAL CONTROL
+        pause() {
+            this.marquees.forEach(marquee => {
+                marquee.style.animationPlayState = 'paused';
+            });
+            console.log('⏸️ Animations paused');
+        }
+
+        resume() {
+            this.forceAnimations();
+            console.log('▶️ Animations resumed');
+        }
+
+        restart() {
+            this.marquees.forEach(marquee => {
+                const currentAnimation = marquee.style.animationName;
+                marquee.style.animationName = 'none';
+                marquee.offsetHeight; // Force reflow
+                marquee.style.animationName = currentAnimation;
+            });
+            this.forceAnimations();
+            console.log('🔄 Animations restarted');
+        }
+
+        destroy() {
+            if (this.animationController) {
+                clearInterval(this.animationController);
+                this.animationController = null;
+            }
+            console.log('🛑 Animation controller destroyed');
         }
     }
 
-    // Optimize scroll performance
-    window.addEventListener('scroll', requestAnimationUpdate, { passive: true });
+    // 🚀 INITIALIZE THE SYSTEM
+    let marqueeSystem;
+    
+    // MULTIPLE INITIALIZATION METHODS
+    const initializeSystem = () => {
+        if (!marqueeSystem) {
+            marqueeSystem = new ZeroDelayMarquee();
+            
+            // EXPOSE TO GLOBAL SCOPE FOR DEBUGGING
+            window.marqueeSystem = marqueeSystem;
+        }
+    };
+
+    // METHOD 1: DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeSystem);
+    } else {
+        // METHOD 2: Document already loaded
+        initializeSystem();
+    }
+
+    // METHOD 3: Window load as backup
+    window.addEventListener('load', () => {
+        if (!marqueeSystem) {
+            setTimeout(initializeSystem, 100);
+        }
+    });
+
+    // METHOD 4: Immediate execution for modern browsers
+    if (document.readyState === 'complete') {
+        setTimeout(initializeSystem, 50);
+    }
+
+    // CLEANUP ON PAGE UNLOAD
+    window.addEventListener('beforeunload', () => {
+        if (marqueeSystem) {
+            marqueeSystem.destroy();
+        }
+    });
+
+    // EMERGENCY RESTART FUNCTION (for debugging)
+    window.restartMarquees = () => {
+        if (marqueeSystem) {
+            marqueeSystem.restart();
+        } else {
+            initializeSystem();
+        }
+    };
+
+    console.log('🎯 Zero Delay Marquee Script Loaded - Ready for action!');
 });
 </script>

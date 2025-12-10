@@ -100,6 +100,103 @@
         </div>
     </div>
 
+    <!-- Section Title & Subtitle Form -->
+@php
+    $firstPlan = $plans->first();
+    $defaultTitlePart1 = $firstPlan->title_part1 ?? 'Choose Your';
+    $defaultTitlePart2 = $firstPlan->title_part2 ?? 'Perfect Plan';
+    $defaultSubtitle = $firstPlan->subtitle ?? 'Flexible pricing designed to scale with your needs, from startup to enterprise';
+@endphp
+
+<div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+    <div class="px-6 py-4 bg-gradient-to-r from-primary/10 to-secondary/10 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-heading mr-2 text-primary"></i>
+            Pricing Section Title & Subtitle
+        </h3>
+        <p class="text-gray-600 text-sm mt-1">Edit the main title and subtitle for the pricing section</p>
+    </div>
+    
+    <form id="pricingSectionTitleForm" class="p-6">
+        @csrf
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Left Column - Title Parts -->
+            <div class="space-y-6">
+                <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl border border-primary/10">
+                    <h4 class="text-md font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-heading mr-2 text-primary"></i>
+                        Pricing Section Title
+                    </h4>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Create a dynamic title like "Choose Your <span class="text-primary font-semibold">Perfect Plan</span>"
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="pricing_title_part1" class="block text-sm font-medium text-gray-700 mb-2">
+                                First Part
+                            </label>
+                            <input type="text" 
+                                   id="pricing_title_part1"
+                                   name="title_part1"
+                                   value="{{ $defaultTitlePart1 }}"
+                                   placeholder="e.g., Choose Your"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200">
+                        </div>
+                        
+                        <div>
+                            <label for="pricing_title_part2" class="block text-sm font-medium text-gray-700 mb-2">
+                                Second Part (Highlighted)
+                            </label>
+                            <input type="text" 
+                                   id="pricing_title_part2"
+                                   name="title_part2"
+                                   value="{{ $defaultTitlePart2 }}"
+                                   placeholder="e.g., Perfect Plan"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200">
+                        </div>
+                    </div>
+                    
+                    <!-- Preview -->
+                    <div class="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                        <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                        <div id="pricingTitlePreview" class="text-xl font-bold text-gray-900">
+                            <span id="pricingPart1Preview">{{ $defaultTitlePart1 }}</span>
+                            <span id="pricingPart2Preview" class="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">{{ $defaultTitlePart2 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Subtitle -->
+            <div class="space-y-6">
+                <div>
+                    <label for="pricing_subtitle" class="block text-sm font-medium text-gray-700 mb-2">
+                        Pricing Section Subtitle
+                        <span class="text-gray-500 font-normal">- Appears below the main title</span>
+                    </label>
+                    <textarea id="pricing_subtitle" 
+                              name="subtitle"
+                              rows="4"
+                              placeholder="e.g., Flexible pricing designed to scale with your needs, from startup to enterprise"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200">{{ $defaultSubtitle }}</textarea>
+                </div>
+
+                <!-- Save Button -->
+                <div class="pt-4">
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl hover:from-secondary hover:to-primary transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
     <!-- Plans Table -->
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
@@ -889,5 +986,70 @@ console.log('Pricing Plans Index page initialized', {
     'total_plans': {{ $stats['total'] ?? 0 }},
     'timestamp': new Date().toISOString()
 });
+
+// Pricing Title Preview functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const pricingTitlePart1 = document.getElementById('pricing_title_part1');
+    const pricingTitlePart2 = document.getElementById('pricing_title_part2');
+    const pricingPart1Preview = document.getElementById('pricingPart1Preview');
+    const pricingPart2Preview = document.getElementById('pricingPart2Preview');
+    
+    if (pricingTitlePart1 && pricingTitlePart2 && pricingPart1Preview && pricingPart2Preview) {
+        function updatePricingTitlePreview() {
+            const part1 = pricingTitlePart1.value || 'Choose Your';
+            const part2 = pricingTitlePart2.value || 'Perfect Plan';
+            
+            pricingPart1Preview.textContent = part1;
+            pricingPart2Preview.textContent = part2;
+        }
+        
+        pricingTitlePart1.addEventListener('input', updatePricingTitlePreview);
+        pricingTitlePart2.addEventListener('input', updatePricingTitlePreview);
+    }
+});
+
+// Pricing Section Title Form Submit
+const pricingSectionTitleForm = document.getElementById('pricingSectionTitleForm');
+if (pricingSectionTitleForm) {
+    pricingSectionTitleForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+        
+        const formData = {
+            title_part1: document.getElementById('pricing_title_part1').value,
+            title_part2: document.getElementById('pricing_title_part2').value,
+            subtitle: document.getElementById('pricing_subtitle').value
+        };
+        
+        fetch('{{ route("admin.pricing-plans.update-section-title") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Pricing section title updated successfully!', 'success');
+            } else {
+                throw new Error(data.message || 'Failed to update pricing section title');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to update pricing section title', 'error');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+}
 </script>
 @endpush

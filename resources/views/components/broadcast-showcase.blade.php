@@ -120,7 +120,7 @@
   <div class="container mx-auto px-4">
     
     <!-- Section Header -->
-    <div class="text-center mb-16" data-aos="fade-down">
+    <div class="text-center mb-8 md:mb-16" data-aos="fade-down">
       <h2 class="text-4xl md:text-5xl font-black text-white mb-4">
         @if($firstSolution && ($firstSolution->title_part1 || $firstSolution->title_part2))
           {!! $firstSolution->getSectionTitle() !!}

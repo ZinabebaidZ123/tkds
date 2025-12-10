@@ -16,7 +16,7 @@ class PricingPlan extends Model
         'short_description',
         'price_monthly',
         'price_yearly',
-        'setup_fee', // ✅ NEW: Setup fee field
+        'setup_fee',
         'currency',
         'stripe_price_id_monthly',
         'stripe_price_id_yearly',
@@ -37,7 +37,10 @@ class PricingPlan extends Model
         'sort_order',
         'status',
         'meta_title',
-        'meta_description'
+        'meta_description',
+        'title_part1',       
+        'title_part2',       
+        'subtitle'           
     ];
 
     protected $casts = [
@@ -54,6 +57,26 @@ class PricingPlan extends Model
         'show_in_home' => 'boolean',
         'show_in_pricing' => 'boolean',
     ];
+
+//    : Section Title Methods
+    public function getSectionTitle(): string
+    {
+        $part1 = $this->title_part1 ?? 'Choose Your';
+        $part2 = $this->title_part2 ?? 'Perfect Plan';
+        
+        return $part1 . ' <span class="text-gradient bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">' . $part2 . '</span>';
+    }
+
+    public function getSectionSubtitle(): string
+    {
+        return $this->subtitle ?? 'Flexible pricing designed to scale with your needs, from startup to enterprise';
+    }
+
+    // ✅ Static method to get first plan for section title management
+    public static function getFirstPlan()
+    {
+        return self::active()->showInPricing()->ordered()->first();
+    }
 
     // Relationships
     public function subscriptions()
@@ -133,7 +156,6 @@ class PricingPlan extends Model
         return $this->features ?? [];
     }
 
-    // ✅ FIXED: Display exact prices without rounding
     public function getFormattedPriceMonthly(): string
     {
         if (!$this->price_monthly) {
@@ -163,7 +185,6 @@ class PricingPlan extends Model
         return $this->formatPrice($price) . '/' . $cycle;
     }
 
-    // ✅ NEW: Setup fee formatting
     public function getFormattedSetupFee(): string
     {
         if (!$this->setup_fee || $this->setup_fee == 0) {
@@ -178,7 +199,6 @@ class PricingPlan extends Model
         return $this->setup_fee && $this->setup_fee > 0;
     }
 
-    // ✅ FIXED: Format price to show exact decimals
     private function formatPrice($price): string
     {
         $symbol = match ($this->currency) {
@@ -188,7 +208,6 @@ class PricingPlan extends Model
             default => $this->currency . ' '
         };
 
-        // ✅ Show exact price - remove unnecessary decimals only if they're .00
         $formattedPrice = $price == floor($price) ? number_format($price, 0) : number_format($price, 2);
         
         return $symbol . $formattedPrice;
@@ -258,20 +277,16 @@ class PricingPlan extends Model
                (!empty($this->stripe_price_id_monthly) || !empty($this->stripe_price_id_yearly));
     }
 
-    // ✅ FIXED: Allow display even without Stripe integration
     public function canPurchase(): bool
     {
-        // Plan must be active and shown in pricing to be purchasable
         return $this->isActive() && $this->showInPricing();
     }
 
-    // ✅ NEW: Check if payment processing is available
     public function canProcessPayment(): bool
     {
         return $this->isActive() && $this->hasStripeIntegration();
     }
 
-    // ✅ NEW: Check if plan is displayable on pricing page
     public function canDisplay(): bool
     {
         return $this->isActive() && $this->showInPricing();
@@ -329,4 +344,6 @@ class PricingPlan extends Model
             ->ordered()
             ->get();
     }
+
+    
 }

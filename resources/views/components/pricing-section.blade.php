@@ -5,6 +5,15 @@
                 ->ordered()
                 ->limit(3)
                 ->get();
+
+    // جلب البيانات الديناميكية من أول خطة تسعير
+    $firstPlan = \App\Models\PricingPlan::orderBy('sort_order', 'asc')->first();
+    
+    $sectionData = [
+        'title_part1' => $firstPlan->title_part1 ?? 'Choose Your',
+        'title_part2' => $firstPlan->title_part2 ?? 'Video Content Management Package',
+        'subtitle' => $firstPlan->subtitle ?? 'Flexible pricing designed to scale with your needs, from startup to enterprise'
+    ];
 @endphp
 
 <section id="packages" class="py-20 bg-dark relative overflow-hidden">
@@ -18,16 +27,19 @@
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <!-- Section Header -->
-        <div class="text-center mb-16" data-aos="fade-up">
+        <div class="text-center mb-16 max-w-7xl" data-aos="fade-up">
             <div class="inline-flex items-center space-x-2 bg-secondary/10 rounded-full px-6 py-2 mb-6">
                 <i class="fas fa-star text-secondary"></i>
                 <span class="text-secondary font-medium">Pricing Plans</span>
             </div>
             <h2 class="text-4xl md:text-5xl font-black text-white mb-6">
-                Choose Your <span class="text-gradient">Broadcasting Package</span>
+                {{ $sectionData['title_part1'] ?? 'Choose Your' }} 
+                <span class="text-gradient bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                    {{ $sectionData['title_part2'] ?? 'Video Content Management Package' }}
+                </span>
             </h2>
             <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                Flexible plans designed to scale with your needs, from startup to enterprise
+                {{ $sectionData['subtitle'] ?? 'Flexible pricing designed to scale with your needs, from startup to enterprise' }}
             </p>
         </div>
         
@@ -80,7 +92,7 @@
                             <div class="mb-6">
                                 @if($plan->price_monthly)
                                     <span class="text-4xl font-black text-white monthly-price" data-monthly="{{ $plan->price_monthly }}">
-                                        {{-- ✅ FIXED: Show exact price --}}
+                                        {{-- Show exact price --}}
                                         @if($plan->price_monthly == floor($plan->price_monthly))
                                             ${{ number_format($plan->price_monthly, 0) }}
                                         @else
@@ -91,7 +103,7 @@
                                 
                                 @if($plan->price_yearly)
                                     <span class="text-4xl font-black text-white yearly-price hidden" data-yearly="{{ $plan->price_yearly }}">
-                                        {{-- ✅ FIXED: Show exact yearly price --}}
+                                        {{-- Show exact yearly price --}}
                                         @php $monthlyFromYearly = $plan->price_yearly / 12; @endphp
                                         @if($monthlyFromYearly == floor($monthlyFromYearly))
                                             ${{ number_format($monthlyFromYearly, 0) }}
@@ -113,7 +125,7 @@
                                     </div>
                                 @endif
 
-                                {{-- ✅ NEW: Setup Fee Display --}}
+                                {{-- Setup Fee Display --}}
                                 @if($plan->hasSetupFee())
                                     <div class="mt-3 text-sm text-orange-300 bg-orange-500/10 border border-orange-500/20 rounded-lg p-2">
                                         <i class="fas fa-plus-circle mr-1"></i>
@@ -134,7 +146,7 @@
                                 </ul>
                             @endif
 
-                            {{-- ✅ ENHANCED: Usage Limits Display --}}
+                            {{-- Usage Limits Display --}}
                             @if($plan->max_users || $plan->max_projects || $plan->storage_limit || $plan->bandwidth_limit)
                                 <div class="border-t border-gray-700 pt-4 mb-6">
                                     <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">

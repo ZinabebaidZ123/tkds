@@ -294,8 +294,12 @@ Route::post('products/update-section-title', [App\Http\Controllers\Admin\Product
         Route::post('users/bulk-actions', [App\Http\Controllers\Admin\UserController::class, 'bulkActions'])->name('users.bulk-actions');
         Route::get('users/export/csv', [App\Http\Controllers\Admin\UserController::class, 'exportUsers'])->name('users.export');
 
-        // ===================== PRICING PLANS MANAGEMENT - COMPLETELY FIXED =====================
+ // ===================== PRICING PLANS MANAGEMENT =====================
         Route::prefix('pricing-plans')->name('pricing-plans.')->group(function () {
+            // Section Title Management Routes 
+            Route::get('/get-section-title', [App\Http\Controllers\Admin\PricingPlanController::class, 'getSectionTitle'])->name('get-section-title');
+            Route::post('/update-section-title', [App\Http\Controllers\Admin\PricingPlanController::class, 'updateSectionTitle'])->name('update-section-title');
+            
             // Non-parameter routes FIRST - these are static routes that don't conflict
             Route::get('/', [App\Http\Controllers\Admin\PricingPlanController::class, 'index'])->name('index');
             Route::get('/create', [App\Http\Controllers\Admin\PricingPlanController::class, 'create'])->name('create');

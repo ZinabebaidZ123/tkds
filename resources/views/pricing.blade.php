@@ -14,19 +14,25 @@
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <!-- Section Header -->
-        <div class="text-center mb-16" data-aos="fade-up">
+
+
+        {{-- <div class="text-center mb-16" data-aos="fade-up">
             <div class="inline-flex items-center space-x-2 bg-secondary/10 rounded-full px-6 py-2 mb-6">
                 <i class="fas fa-star text-secondary"></i>
                 <span class="text-secondary font-medium">Pricing Plans</span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-black text-white mb-6">
-                Choose Your <span class="text-gradient">Video Content Management Package</span>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
+                {{ $sectionData['title_part1'] ?? 'Choose Your' }} 
+                <span class="text-gradient bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                    {{ $sectionData['title_part2'] ?? 'Video Content Management Package' }}
+                </span>
             </h1>
 
-            <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                Flexible plans designed to scale with your needs, from startup to enterprise
+            <p class="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+                {{ $sectionData['subtitle'] ?? 'Flexible pricing designed to scale with your needs, from startup to enterprise' }}
             </p>
-        </div>
+        </div> --}}
         
         <!-- Pricing Toggle -->
         <div class="flex items-center justify-center mb-12" data-aos="fade-up">

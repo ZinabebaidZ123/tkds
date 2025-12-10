@@ -1021,4 +1021,138 @@ class PricingPlanController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get section title data for pricing plans
+     */
+    public function getSectionTitle()
+    {
+        try {
+            Log::info('PricingPlanController@getSectionTitle - Start');
+
+            $firstPlan = PricingPlan::getFirstPlan();
+            
+            return response()->json([
+                'success' => true,
+                'title_part1' => $firstPlan->title_part1 ?? 'Choose Your',
+                'title_part2' => $firstPlan->title_part2 ?? 'Perfect Plan',
+                'subtitle' => $firstPlan->subtitle ?? 'Flexible pricing designed to scale with your needs, from startup to enterprise'
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('PricingPlanController@getSectionTitle - Error', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get section title: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update section title for pricing plans
+     */
+    public function updateSectionTitle(Request $request)
+    {
+        Log::info('PricingPlanController@updateSectionTitle - Start', [
+            'request_data' => $request->all(),
+            'user' => auth('admin')->id()
+        ]);
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'title_part1' => 'nullable|string|max:255',
+                'title_part2' => 'nullable|string|max:255',
+                'subtitle' => 'nullable|string|max:1000',
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('Section title update validation failed', [
+                    'errors' => $validator->errors()->toArray()
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            $firstPlan = PricingPlan::getFirstPlan();
+            
+            if ($firstPlan) {
+                // Update existing first plan
+                $updated = $firstPlan->update([
+                    'title_part1' => $request->title_part1 ?: 'Choose Your',
+                    'title_part2' => $request->title_part2 ?: 'Perfect Plan',
+                    'subtitle' => $request->subtitle ?: 'Flexible pricing designed to scale with your needs, from startup to enterprise'
+                ]);
+
+                if (!$updated) {
+                    throw new Exception('Failed to update existing plan section title');
+                }
+
+                Log::info('Updated existing plan section title', [
+                    'plan_id' => $firstPlan->id,
+                    'plan_name' => $firstPlan->name
+                ]);
+
+            } else {
+                // Create default plan for section title management
+                $defaultPlan = PricingPlan::create([
+                    'name' => 'Default Plan',
+                    'slug' => 'default-plan-' . time(),
+                    'description' => 'This is a default plan created for section title management.',
+                    'short_description' => 'Default plan for section title.',
+                    'title_part1' => $request->title_part1 ?: 'Choose Your',
+                    'title_part2' => $request->title_part2 ?: 'Perfect Plan',
+                    'subtitle' => $request->subtitle ?: 'Flexible pricing designed to scale with your needs, from startup to enterprise',
+                    'currency' => 'USD',
+                    'support_level' => 'basic',
+                    'icon' => 'fas fa-star',
+                    'color' => 'primary',
+                    'is_popular' => false,
+                    'is_featured' => false,
+                    'show_in_home' => false,
+                    'show_in_pricing' => true,
+                    'sort_order' => 0,
+                    'status' => 'active'
+                ]);
+
+                Log::info('Created default plan for section title', [
+                    'plan_id' => $defaultPlan->id
+                ]);
+            }
+
+            DB::commit();
+
+            Log::info('PricingPlanController@updateSectionTitle - Success');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Section title updated successfully!'
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollback();
+            
+            Log::error('PricingPlanController@updateSectionTitle - Error', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update section title: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
