@@ -44,14 +44,7 @@ class FooterSetting extends Model
         'status'
     ];
 
-    protected $casts = [
-        'newsletter_enabled' => 'boolean',
-        'show_services_section' => 'boolean',
-        'show_company_section' => 'boolean',
-        'show_legal_section' => 'boolean',
-        'show_social_media' => 'boolean',
-        'show_trust_badges' => 'boolean',
-    ];
+    // No casts needed since we're handling integers directly
 
     // Get the single instance
     public static function getSettings()
@@ -59,7 +52,32 @@ class FooterSetting extends Model
         $settings = self::first();
         
         if (!$settings) {
-            $settings = self::create([]);
+            $settings = self::create([
+                'newsletter_enabled' => 1,
+                'newsletter_title' => 'Stay in the Loop',
+                'newsletter_subtitle' => 'Get the latest broadcasting insights and exclusive offers delivered to your inbox.',
+                'newsletter_placeholder' => 'Enter your email',
+                'newsletter_button_text' => 'Subscribe',
+                'newsletter_privacy_text' => 'We respect your privacy. Unsubscribe at any time.',
+                'company_name' => 'TKDS Media',
+                'company_tagline' => 'Your World, Live and Direct',
+                'company_description' => 'Leading the future of digital broadcasting with innovative streaming solutions, professional expertise, and cutting-edge technology.',
+                'contact_email' => 'info7@tkdsmedia.com',
+                'contact_phone' => '+1 (231) 360-0088',
+                'support_hours' => '24/7 Available',
+                'show_services_section' => 1,
+                'show_company_section' => 1,
+                'show_legal_section' => 1,
+                'show_social_media' => 1,
+                'show_trust_badges' => 1,
+                'copyright_text' => 'TKDS Media LLC. All rights reserved.',
+                'footer_subtitle' => 'Empowering broadcasters worldwide since 2020',
+                'ssl_secured_text' => 'SSL Secured',
+                'iso_certified_text' => 'ISO Certified',
+                'global_cdn_text' => 'Global CDN',
+                'back_to_top_text' => 'Back to Top',
+                'status' => 'active'
+            ]);
         }
         
         return $settings;
@@ -118,7 +136,8 @@ class FooterSetting extends Model
                 'color' => '#1877F2'
             ];
         }
-             if ($this->social_tiktok) {
+        
+        if ($this->social_tiktok) {
             $links['tiktok'] = [
                 'url' => $this->social_tiktok,
                 'icon' => 'fab fa-tiktok',

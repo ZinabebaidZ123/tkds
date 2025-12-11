@@ -17,7 +17,7 @@
                 <i class="fas fa-tools mr-2"></i>
                 SEO Tools
             </a>
-            <button onclick="generateReport()" class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200 transition-colors duration-200">
+            <button id="exportReportBtn" class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200 transition-colors duration-200">
                 <i class="fas fa-file-export mr-2"></i>
                 Export Report
             </button>
@@ -353,22 +353,22 @@
         </div>
         <div class="p-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <button onclick="generateSitemap()" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                <button id="generateSitemapBtn" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <i class="fas fa-sitemap text-2xl text-blue-600 mb-2"></i>
                     <span class="text-sm font-medium text-gray-900">Generate Sitemap</span>
                 </button>
                 
-                <button onclick="testPageSpeed()" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                <button id="testPageSpeedBtn" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <i class="fas fa-tachometer-alt text-2xl text-green-600 mb-2"></i>
                     <span class="text-sm font-medium text-gray-900">Test Page Speed</span>
                 </button>
                 
-                <button onclick="validateStructuredData()" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                <button id="validateStructuredDataBtn" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <i class="fas fa-code text-2xl text-purple-600 mb-2"></i>
                     <span class="text-sm font-medium text-gray-900">Test Schema</span>
                 </button>
                 
-                <button onclick="checkMobile()" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                <button id="checkMobileBtn" class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <i class="fas fa-mobile-alt text-2xl text-orange-600 mb-2"></i>
                     <span class="text-sm font-medium text-gray-900">Mobile Test</span>
                 </button>
@@ -376,103 +376,242 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden data for JavaScript -->
+<script id="seo-data" type="application/json">
+{!! json_encode([
+    'seo_score' => $analytics['seo_score'] ?? 0,
+    'total_pages' => $pageSettings->count() ?? 0,
+    'recommendations' => $analytics['recommendations'] ?? [],
+    'sitemap_url' => route('admin.seo.tools.generate-sitemap'),
+    'site_url' => url('/')
+]) !!}
+</script>
 @endsection
 
 @push('scripts')
 <script>
-// Generate Report
-function generateReport() {
-    const reportData = {
-        timestamp: new Date().toLocaleString(),
-        seo_score: {{ $analytics['seo_score'] }},
-        total_pages: {{ $pageSettings->count() }},
-        recommendations: {{ json_encode($analytics['recommendations']) }}
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    // Get data from PHP
+    const seoDataElement = document.getElementById('seo-data');
+    let seoData = {};
     
-    const reportHtml = `
-        <html>
-        <head><title>SEO Report - ${reportData.timestamp}</title></head>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-            <h1>SEO Analysis Report</h1>
-            <p>Generated on: ${reportData.timestamp}</p>
-            <h2>Overall Score: ${reportData.seo_score}%</h2>
-            <h3>Recommendations:</h3>
-            <ul>
-                ${reportData.recommendations.map(rec => `<li><strong>${rec.title}</strong>: ${rec.description}</li>`).join('')}
-            </ul>
-        </body>
-        </html>
-    `;
-    
-    const blob = new Blob([reportHtml], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `seo-report-${new Date().toISOString().split('T')[0]}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
+    try {
+        seoData = JSON.parse(seoDataElement.textContent);
+    } catch (error) {
+        console.error('Error parsing SEO data:', error);
+        seoData = {
+            seo_score: 0,
+            total_pages: 0,
+            recommendations: [],
+            sitemap_url: '',
+            site_url: ''
+        };
+    }
 
-// Quick Actions
-function generateSitemap() {
-    fetch('{{ route("admin.seo.tools.generate-sitemap") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    // Export Report Function
+    function generateReport() {
+        try {
+            const reportData = {
+                timestamp: new Date().toLocaleString(),
+                seo_score: seoData.seo_score || 0,
+                total_pages: seoData.total_pages || 0,
+                recommendations: seoData.recommendations || []
+            };
+            
+            const reportHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>SEO Report - ${reportData.timestamp}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            padding: 20px; 
+                            line-height: 1.6;
+                            color: #333;
+                        }
+                        .header {
+                            background: #f8f9fa;
+                            padding: 20px;
+                            border-radius: 8px;
+                            margin-bottom: 20px;
+                        }
+                        .score {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #28a745;
+                        }
+                        .recommendation {
+                            background: #f1f3f4;
+                            padding: 15px;
+                            margin: 10px 0;
+                            border-radius: 5px;
+                            border-left: 4px solid #007bff;
+                        }
+                        .priority-high { border-left-color: #dc3545; }
+                        .priority-medium { border-left-color: #ffc107; }
+                        .priority-low { border-left-color: #28a745; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>SEO Analysis Report</h1>
+                        <p><strong>Generated on:</strong> ${reportData.timestamp}</p>
+                        <p><strong>Website:</strong> {{ config('app.name', 'Website') }}</p>
+                    </div>
+                    
+                    <div class="score">
+                        Overall SEO Score: ${reportData.seo_score}%
+                    </div>
+                    
+                    <h2>Summary</h2>
+                    <ul>
+                        <li><strong>Total Pages Analyzed:</strong> ${reportData.total_pages}</li>
+                        <li><strong>Recommendations:</strong> ${reportData.recommendations.length}</li>
+                    </ul>
+                    
+                    <h2>Recommendations</h2>
+                    ${reportData.recommendations.map(rec => `
+                        <div class="recommendation priority-${rec.priority}">
+                            <h3>${rec.title}</h3>
+                            <p><strong>Priority:</strong> ${rec.priority.toUpperCase()}</p>
+                            <p>${rec.description}</p>
+                        </div>
+                    `).join('')}
+                    
+                    ${reportData.recommendations.length === 0 ? '<p>No specific recommendations at this time. Great job!</p>' : ''}
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([reportHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `seo-report-${new Date().toISOString().split('T')[0]}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Report exported successfully!', 'success');
+        } catch (error) {
+            console.error('Error generating report:', error);
+            showNotification('Failed to export report', 'error');
         }
-    })
-    .then(response => response.text())
-    .then(() => {
-        showNotification('Sitemap generated successfully!', 'success');
-    })
-    .catch(error => {
-        showNotification('Failed to generate sitemap', 'error');
-    });
-}
+    }
 
-function testPageSpeed() {
-    const url = '{{ url("/") }}';
-    window.open(`https://pagespeed.web.dev/report?url=${encodeURIComponent(url)}`, '_blank');
-}
-
-function validateStructuredData() {
-    const url = '{{ url("/") }}';
-    window.open(`https://search.google.com/test/rich-results?url=${encodeURIComponent(url)}`, '_blank');
-}
-
-function checkMobile() {
-    const url = '{{ url("/") }}';
-    window.open(`https://search.google.com/test/mobile-friendly?url=${encodeURIComponent(url)}`, '_blank');
-}
-
-// Notification function
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
-    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-    
-    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ${bgColor} text-white`;
-    notification.innerHTML = `
-        <div class="flex items-center">
-            <i class="fas ${icon} mr-2"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-    }, 100);
-    
-    setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
+    // Quick Actions Functions
+    function generateSitemap() {
+        if (!seoData.sitemap_url) {
+            showNotification('Sitemap URL not available', 'error');
+            return;
+        }
+        
+        fetch(seoData.sitemap_url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'Content-Type': 'application/json'
             }
-        }, 300);
-    }, 3000);
-}
+        })
+        .then(response => {
+            if (response.ok) {
+                showNotification('Sitemap generated successfully!', 'success');
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to generate sitemap', 'error');
+        });
+    }
+
+    function testPageSpeed() {
+        if (!seoData.site_url) {
+            showNotification('Site URL not available', 'error');
+            return;
+        }
+        const url = encodeURIComponent(seoData.site_url);
+        window.open(`https://pagespeed.web.dev/report?url=${url}`, '_blank');
+    }
+
+    function validateStructuredData() {
+        if (!seoData.site_url) {
+            showNotification('Site URL not available', 'error');
+            return;
+        }
+        const url = encodeURIComponent(seoData.site_url);
+        window.open(`https://search.google.com/test/rich-results?url=${url}`, '_blank');
+    }
+
+    function checkMobile() {
+        if (!seoData.site_url) {
+            showNotification('Site URL not available', 'error');
+            return;
+        }
+        const url = encodeURIComponent(seoData.site_url);
+        window.open(`https://search.google.com/test/mobile-friendly?url=${url}`, '_blank');
+    }
+
+    // Notification function
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+        
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ${bgColor} text-white`;
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas ${icon} mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Attach event listeners
+    const exportBtn = document.getElementById('exportReportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', generateReport);
+    }
+
+    const generateSitemapBtn = document.getElementById('generateSitemapBtn');
+    if (generateSitemapBtn) {
+        generateSitemapBtn.addEventListener('click', generateSitemap);
+    }
+
+    const testPageSpeedBtn = document.getElementById('testPageSpeedBtn');
+    if (testPageSpeedBtn) {
+        testPageSpeedBtn.addEventListener('click', testPageSpeed);
+    }
+
+    const validateStructuredDataBtn = document.getElementById('validateStructuredDataBtn');
+    if (validateStructuredDataBtn) {
+        validateStructuredDataBtn.addEventListener('click', validateStructuredData);
+    }
+
+    const checkMobileBtn = document.getElementById('checkMobileBtn');
+    if (checkMobileBtn) {
+        checkMobileBtn.addEventListener('click', checkMobile);
+    }
+});
 </script>
 @endpush

@@ -11,7 +11,7 @@
             <p class="text-gray-600 mt-1">Manage your video sections and live streams</p>
         </div>
         <a href="{{ route('admin.video-sections.create') }}" 
-           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+           class ="inline-flex items-center justify-center bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
             <i class="fas fa-plus mr-2"></i>
             Add Video Section
         </a>
@@ -129,12 +129,12 @@
                             </div>
                             
                             <!-- Video Source Info -->
-                            <div class="text-xs text-gray-500">
+                            {{-- <div class="text-xs text-gray-500">
                                 @if($section->hasVideo())
                                     @if($section->isLiveStream())
                                         <div class="flex items-center">
                                             <i class="fas fa-link mr-1"></i>
-                                            {{ Str::limit($section->video_url, 30) }}
+                                            {{ Str::limit($section->video_url, 10) }}
                                         </div>
                                     @else
                                         <div class="flex items-center">
@@ -145,7 +145,7 @@
                                 @else
                                     <span class="text-red-500">No video source</span>
                                 @endif
-                            </div>
+                            </div> --}}
                         </td>
 
                         <!-- Settings -->
@@ -261,7 +261,7 @@
             <h3 class="text-lg font-medium text-gray-900 mb-2">No Video Sections</h3>
             <p class="text-gray-500 mb-6">Get started by creating your first video section.</p>
             <a href="{{ route('admin.video-sections.create') }}" 
-               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+               class="inline-flex items-center justify-center bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                 <i class="fas fa-plus mr-2"></i>
                 Create Video Section
             </a>

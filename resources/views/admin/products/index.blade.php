@@ -428,7 +428,7 @@
 
 @push('scripts')
 <script>
-  let deleteId = null;
+let deleteId = null;
 
 // Title Preview functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -507,12 +507,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                this.value;
             
             this.disabled = true;
-            console.log('Updating product ID:', id, 'to status:', status);
 
-            const url = `{{ route('admin.products.status', ':id') }}`.replace(':id', id);
-            console.log('Request URL:', url);
-
-            fetch(url, {
+            fetch('/admin/products/' + id + '/status', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -522,24 +518,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ status: status })
             })
             .then(response => {
-                console.log('Response status:', response.status);
-                
                 if (!response.ok) {
-                    return response.text().then(text => {
-                        console.log('Error response body:', text);
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    });
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Success response:', data);
                 if (data.success) {
                     showNotification('Status updated successfully!', 'success');
                     updateSelectStyling(this, status);
-                    
-                    this.querySelector('option[selected]')?.removeAttribute('selected');
-                    this.querySelector(`option[value="${status}"]`).setAttribute('selected', 'selected');
                 } else {
                     throw new Error(data.message || 'Failed to update status');
                 }
@@ -598,33 +585,59 @@ function closeDeleteModal() {
     }, 300);
 }
 
+// ✅ حذف المنتج باستخدام الـ route الجديد المنفصل
 document.getElementById('confirmDelete').addEventListener('click', function() {
     if (deleteId) {
+        console.log('Deleting product ID:', deleteId);
+        
         this.disabled = true;
         this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
 
+        // استخدام الـ route الجديد: /admin/products/{id}/delete
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `{{ route('admin.products.destroy', ':id') }}`.replace(':id', deleteId);
-        form.innerHTML = `
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="_method" value="DELETE">
-        `;
+        form.action = window.location.origin + '/admin/products/' + deleteId + '/delete';
+        form.style.display = 'none';
+        
+        // CSRF Token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // Method Spoofing for DELETE
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        
+        form.appendChild(csrfInput);
+        form.appendChild(methodInput);
+        
+        // إضافة الفورم للصفحة وإرساله
         document.body.appendChild(form);
+        
+        console.log('Form action:', form.action);
+        console.log('Form method:', form.method);
+        console.log('CSRF Token:', csrfInput.value);
+        
         form.submit();
     }
 });
 
 function duplicateProduct(id) {
     if (confirm('Are you sure you want to duplicate this product?')) {
-        console.log('Duplicating product ID:', id);
-        
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `{{ route('admin.products.duplicate', ':id') }}`.replace(':id', id);
-        form.innerHTML = `
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-        `;
+        form.action = window.location.origin + '/admin/products/' + id + '/duplicate';
+        form.style.display = 'none';
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        form.appendChild(csrfInput);
         document.body.appendChild(form);
         form.submit();
     }
@@ -659,6 +672,7 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
+// Event Listeners for modal
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeDeleteModal();

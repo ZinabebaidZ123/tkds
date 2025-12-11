@@ -435,17 +435,7 @@
                 <a href="{{ route('products') }}" class="block py-3 text-gray-300 hover:text-primary transition-colors duration-200 font-medium">
                     Products
                 </a>
-                @if($availablePage)
-    <a href="{{ route('occasions') }}" class="relative group text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text hover:from-pink-400 hover:via-red-500 hover:to-pink-600 transition-all duration-300 font-bold animate-pulse">
-        <span class="flex items-center space-x-1">
-            <i class="fas fa-fire text-sm text-red-500 group-hover:text-pink-500"></i>
-            <span>Special Offers</span>
-        
-        </span>
-        <!-- Glow effect -->
-        <div class="absolute -inset-1 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-    </a>
-@endif
+
                 <a href="{{ route('shop.index') }}" class="block py-3 text-gray-300 hover:text-primary transition-colors duration-200 font-medium">
                     <i class="fas fa-shopping-bag mr-2"></i>Shop
                 </a>
@@ -461,9 +451,17 @@
                 <a href="{{ route('contact') }}" class="block py-3 text-gray-300 hover:text-primary transition-colors duration-200 font-medium">
                     Contact
                 </a>
-                <a href="{{ route('occasions') }}" class="block py-3 text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text font-bold animate-pulse">
-    <i class="fas fa-fire mr-2 text-red-500"></i>Special Offers
-</a>
+                      @if($availablePage)
+    <a href="{{ route('occasions') }}" class="relative group text-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text hover:from-pink-400 hover:via-red-500 hover:to-pink-600 transition-all duration-300 font-bold animate-pulse">
+        <span class="flex items-center space-x-1">
+            <i class="fas fa-fire text-sm text-white group-hover:text-pink-500"></i>
+            <span class = "text-white font-bold ms-1">Special Offers</span>
+        
+        </span>
+        <!-- Glow effect -->
+        <div class="absolute -inset-1 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 rounded-lg blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+    </a>
+@endif
             </div>
 
             @auth

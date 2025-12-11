@@ -31,54 +31,50 @@
             <div class="lg:col-span-5 order-2 lg:order-1 space-y-8" data-aos="fade-right" data-aos-duration="800">
                 
                 <!-- Live Badge - FIXED CENTERING -->
-                @if($activeVideo->isLiveStream())
-                <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-red-600/20 to-red-500/20 border border-red-500/30 rounded-full backdrop-blur-sm">
-                    <div class="relative flex items-center justify-center">
-                        <span class="w-3 h-3 bg-red-500 rounded-full animate-ping absolute"></span>
-                        <span class="w-3 h-3 bg-red-600 rounded-full relative"></span>
+                <div id="video-badge">
+                    @if($activeVideo->isLiveStream())
+                    <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-red-600/20 to-red-500/20 border border-red-500/30 rounded-full backdrop-blur-sm">
+                        <div class="relative flex items-center justify-center">
+                            <span class="w-3 h-3 bg-red-500 rounded-full animate-ping absolute"></span>
+                            <span class="w-3 h-3 bg-red-600 rounded-full relative"></span>
+                        </div>
+                        <span class="text-red-400 font-semibold text-sm tracking-wider">LIVE STREAMING</span>
                     </div>
-                    <span class="text-red-400 font-semibold text-sm tracking-wider">LIVE STREAMING</span>
+                    @else
+                    <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-blue-600/20 to-purple-500/20 border border-blue-500/30 rounded-full backdrop-blur-sm">
+                        <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                        <span class="text-blue-400 font-semibold text-sm tracking-wider">PROFESSIONAL VIDEO</span>
+                    </div>
+                    @endif
                 </div>
-                @else
-                <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-blue-600/20 to-purple-500/20 border border-blue-500/30 rounded-full backdrop-blur-sm">
-                    <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                    <span class="text-blue-400 font-semibold text-sm tracking-wider">PROFESSIONAL VIDEO</span>
-                </div>
-                @endif
                 
                 <!-- Main Title -->
                 <div class="space-y-4">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
+                    <h1 id="video-title" class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
                         <span class="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
                             {!! $activeVideo->title !!}
                         </span>
                     </h1>
                     
-                    @if($activeVideo->subtitle)
-                    <h2 class="text-xl sm:text-2xl lg:text-3xl text-gray-300 font-medium">
+                    <h2 id="video-subtitle" class="text-xl sm:text-2xl lg:text-3xl text-gray-300 font-medium {{ $activeVideo->subtitle ? '' : 'hidden' }}">
                         {{ $activeVideo->subtitle }}
                     </h2>
-                    @endif
                 </div>
                 
                 <!-- Description -->
-                @if($activeVideo->description)
-                <p class="text-gray-400 text-lg leading-relaxed max-w-xl">
+                <p id="video-description" class="text-gray-400 text-lg leading-relaxed max-w-xl {{ $activeVideo->description ? '' : 'hidden' }}">
                     {{ $activeVideo->description }}
                 </p>
-                @endif
                 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4">
-                    @if($activeVideo->button_text && $activeVideo->button_link)
-                    <a href="{{ $activeVideo->button_link }}" 
-                       class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-500 hover:to-red-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25">
-                        {{ $activeVideo->button_text }}
+                    <a id="video-button" href="{{ $activeVideo->button_link }}" 
+                       class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-500 hover:to-red-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25 {{ $activeVideo->button_text && $activeVideo->button_link ? '' : 'hidden' }}">
+                        <span id="video-button-text">{{ $activeVideo->button_text }}</span>
                         <svg class="w-5 h-5 ml-3 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                         </svg>
                     </a>
-                    @endif
                     
                     <button onclick="toggleVideo()" 
                             class="group inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-gray-600 text-white font-semibold rounded-xl hover:border-red-500 hover:bg-red-500/10 transition-all duration-300 backdrop-blur-sm">
@@ -170,8 +166,7 @@
                             @endif
                             
                             <!-- Live Badge Overlay - FIXED CENTERING -->
-                            @if($activeVideo->isLiveStream())
-                            <div class="absolute top-6 left-6">
+                            <div id="live-overlay" class="absolute top-6 left-6 {{ $activeVideo->isLiveStream() ? '' : 'hidden' }}">
                                 <div class="flex items-center justify-center space-x-2 px-4 py-2 bg-red-600/90 backdrop-blur-sm text-white text-sm font-bold rounded-full shadow-lg">
                                     <div class="flex items-center justify-center">
                                         <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -179,7 +174,6 @@
                                     <span>LIVE</span>
                                 </div>
                             </div>
-                            @endif
 
                             <!-- Quality Badge -->
                             <div class="absolute top-6 right-6">
@@ -189,15 +183,13 @@
                             </div>
                             
                             <!-- Custom Play Button Overlay -->
-                            @if(!$activeVideo->shouldAutoplay())
-                            <div id="play-overlay" class="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer hover:bg-black/40 transition-all duration-300 backdrop-blur-sm" onclick="toggleVideo()">
+                            <div id="play-overlay" class="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer hover:bg-black/40 transition-all duration-300 backdrop-blur-sm {{ $activeVideo->shouldAutoplay() ? 'hidden' : '' }}" onclick="toggleVideo()">
                                 <div class="group w-24 h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-2xl transform hover:scale-110 transition-all duration-300 border border-white/30">
                                     <svg class="w-8 h-8 text-white ml-1 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
                             </div>
-                            @endif
                         </div>
                     </div>
                     
@@ -335,12 +327,16 @@ video::-webkit-media-controls {
 </style>
 
 <script>
-// Use the helper methods for boolean values instead of direct property access
+// Enhanced video data with all content
 @php
     $videoDataArray = $videoSections->map(function($video) {
         return [
             'id' => $video->id,
             'title' => $video->title,
+            'subtitle' => $video->subtitle,
+            'description' => $video->description,
+            'button_text' => $video->button_text,
+            'button_link' => $video->button_link,
             'video_type' => $video->video_type,
             'video_source' => $video->video_source,
             'thumbnail_url' => $video->thumbnail_url,
@@ -361,8 +357,9 @@ function switchVideo(index) {
     const video = document.getElementById('main-video');
     const pills = document.querySelectorAll('.video-nav-pill');
     const playOverlay = document.getElementById('play-overlay');
+    const liveOverlay = document.getElementById('live-overlay');
     
-    // Update pill states with smooth transitions
+    // Update pill states
     pills.forEach((pill, i) => {
         pill.classList.remove('bg-gradient-to-r', 'from-red-600/20', 'to-red-500/20', 'border-red-500/30', 'text-red-400');
         pill.classList.remove('bg-gray-800/30', 'border-gray-700/50', 'text-gray-300');
@@ -374,13 +371,12 @@ function switchVideo(index) {
         }
     });
     
-    // Update video source with loading state
+    // Update video and content
     if (video && videoData[index]) {
         const newVideoData = videoData[index];
         
-        // Show loading state
+        // Update video source
         video.style.opacity = '0.5';
-        
         video.pause();
         video.src = newVideoData.video_source;
         
@@ -392,11 +388,13 @@ function switchVideo(index) {
         
         video.load();
         
-        // Restore opacity when loaded
         video.addEventListener('loadeddata', function onLoad() {
             video.style.opacity = '1';
             video.removeEventListener('loadeddata', onLoad);
         });
+        
+        // Update content elements
+        updateVideoContent(newVideoData);
         
         // Handle autoplay and overlay
         if (playOverlay) {
@@ -410,7 +408,78 @@ function switchVideo(index) {
             }
         }
         
+        // Update live overlay
+        if (liveOverlay) {
+            if (newVideoData.is_live_stream) {
+                liveOverlay.classList.remove('hidden');
+            } else {
+                liveOverlay.classList.add('hidden');
+            }
+        }
+        
         updatePlayButton();
+    }
+}
+
+function updateVideoContent(videoData) {
+    // Update badge
+    const badge = document.getElementById('video-badge');
+    if (badge) {
+        badge.innerHTML = videoData.is_live_stream ? `
+            <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-red-600/20 to-red-500/20 border border-red-500/30 rounded-full backdrop-blur-sm">
+                <div class="relative flex items-center justify-center">
+                    <span class="w-3 h-3 bg-red-500 rounded-full animate-ping absolute"></span>
+                    <span class="w-3 h-3 bg-red-600 rounded-full relative"></span>
+                </div>
+                <span class="text-red-400 font-semibold text-sm tracking-wider">LIVE STREAMING</span>
+            </div>
+        ` : `
+            <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-gradient-to-r from-blue-600/20 to-purple-500/20 border border-blue-500/30 rounded-full backdrop-blur-sm">
+                <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                <span class="text-blue-400 font-semibold text-sm tracking-wider">PROFESSIONAL VIDEO</span>
+            </div>
+        `;
+    }
+    
+    // Update title
+    const title = document.getElementById('video-title');
+    if (title && videoData.title) {
+        title.innerHTML = `<span class="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">${videoData.title}</span>`;
+    }
+    
+    // Update subtitle
+    const subtitle = document.getElementById('video-subtitle');
+    if (subtitle) {
+        if (videoData.subtitle) {
+            subtitle.textContent = videoData.subtitle;
+            subtitle.classList.remove('hidden');
+        } else {
+            subtitle.classList.add('hidden');
+        }
+    }
+    
+    // Update description
+    const description = document.getElementById('video-description');
+    if (description) {
+        if (videoData.description) {
+            description.textContent = videoData.description;
+            description.classList.remove('hidden');
+        } else {
+            description.classList.add('hidden');
+        }
+    }
+    
+    // Update button
+    const button = document.getElementById('video-button');
+    const buttonText = document.getElementById('video-button-text');
+    if (button && buttonText) {
+        if (videoData.button_text && videoData.button_link) {
+            button.href = videoData.button_link;
+            buttonText.textContent = videoData.button_text;
+            button.classList.remove('hidden');
+        } else {
+            button.classList.add('hidden');
+        }
     }
 }
 
@@ -469,7 +538,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('HLS Error:', data);
             });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            // Safari native support
             video.src = video.src;
         }
     }

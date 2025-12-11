@@ -10,15 +10,23 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <!-- Section Header -->
         <div class="text-center mb-16" data-aos="fade-up">
-            <div class="inline-block">
-                <span class="text-primary text-sm font-semibold uppercase tracking-wider mb-2 block">Our Services</span>
-                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
-                    <span class="text-gradient bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent uppercase opacity-60">
-                        achieve your goals
-                    </span>
-                </h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+            <div class="inline-flex items-center space-x-3 bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-lg rounded-full px-8 py-4 border border-primary/20 mb-8 group hover:border-primary/40 transition-all duration-500">
+                <div class="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                @php
+                    $sectionData = \App\Models\Service::getSectionTitleData();
+                @endphp
+                <span class="text-sm font-semibold tracking-wider uppercase text-primary">{{ $sectionData['subtitle'] }}</span>
+                <i class="fas fa-cogs text-primary group-hover:rotate-12 transition-transform duration-300"></i>
             </div>
+            
+            <h2 class="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-8 leading-tight">
+                {{ $sectionData['title_part1'] }} 
+                <span class="text-gradient bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">{{ $sectionData['title_part2'] }}</span>
+            </h2>
+            
+            <p class="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
+                Professional solutions to elevate your business and achieve exceptional results.
+            </p>
         </div>
 
         <!-- Services Grid from Database (Latest 8 Services) -->

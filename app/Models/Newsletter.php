@@ -36,6 +36,7 @@ class Newsletter extends Model
         'bounce_count' => 'integer',
     ];
 
+    // Status constants
     const STATUS_ACTIVE = 'active';
     const STATUS_UNSUBSCRIBED = 'unsubscribed';
     const STATUS_BOUNCED = 'bounced';
@@ -52,6 +53,11 @@ class Newsletter extends Model
     public function scopeActive($query)
     {
         return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->whereNotIn('status', [self::STATUS_ACTIVE]);
     }
 
     public function scopeUnsubscribed($query)
@@ -88,6 +94,11 @@ class Newsletter extends Model
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function isInactive(): bool
+    {
+        return $this->status !== self::STATUS_ACTIVE;
     }
 
     public function isUnsubscribed(): bool
@@ -212,18 +223,41 @@ class Newsletter extends Model
         return true;
     }
 
-    // Static methods
+    // ✅ Updated Static methods with inactive count
     public static function getStats(): array
     {
+        $total = self::count();
+        $active = self::active()->count();
+        $inactive = $total - $active; // All non-active subscribers
+        
         return [
-            'total' => self::count(),
-            'active' => self::active()->count(),
+            'total' => $total,
+            'active' => $active,
+            'inactive' => $inactive,
             'unsubscribed' => self::unsubscribed()->count(),
             'bounced' => self::bounced()->count(),
             'blocked' => self::blocked()->count(),
             'recent' => self::recent(7)->count(),
             'verified' => self::verified()->count()
         ];
+    }
+
+    public static function getDetailedStats(): array
+    {
+        $baseStats = self::getStats();
+        
+        // Additional detailed stats
+        $baseStats['today'] = self::whereDate('created_at', today())->count();
+        $baseStats['this_week'] = self::recent(7)->count();
+        $baseStats['this_month'] = self::recent(30)->count();
+        $baseStats['verified_percentage'] = $baseStats['total'] > 0 
+            ? round(($baseStats['verified'] / $baseStats['total']) * 100, 1) 
+            : 0;
+        $baseStats['active_percentage'] = $baseStats['total'] > 0 
+            ? round(($baseStats['active'] / $baseStats['total']) * 100, 1) 
+            : 0;
+            
+        return $baseStats;
     }
 
     public static function getGrowthData(int $days = 30): array
@@ -247,6 +281,23 @@ class Newsletter extends Model
             ->orderBy('count', 'desc')
             ->get()
             ->pluck('count', 'source')
+            ->toArray();
+    }
+
+    public static function getStatusBreakdown(): array
+    {
+        return self::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->orderBy('count', 'desc')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [
+                    $item->status => [
+                        'count' => $item->count,
+                        'label' => self::STATUSES[$item->status] ?? ucfirst($item->status)
+                    ]
+                ];
+            })
             ->toArray();
     }
 }

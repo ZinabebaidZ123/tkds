@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="space-y-6">
-    
+   
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>

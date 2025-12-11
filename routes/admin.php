@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ShopCategoryController;
 use App\Http\Controllers\Admin\NewsletterController;
-use App\Http\Controllers\Admin\OccasionController; 
+use App\Http\Controllers\Admin\OccasionController;
 use App\Http\Controllers\Admin\DynamicPageController;
 
 // Admin Routes
@@ -23,7 +23,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 
-    // Protected Routes 
+    // Protected Routes
     Route::middleware(['admin.auth'])->group(function () {
 
         // Dashboard
@@ -35,16 +35,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('hero-sections', App\Http\Controllers\Admin\HeroSectionController::class);
         Route::post('hero-sections/{heroSection}/status', [App\Http\Controllers\Admin\HeroSectionController::class, 'updateStatus'])->name('hero-sections.status');
 
-        // Perfect For Cards Management Routes  
+        // Perfect For Cards Management Routes
         Route::resource('perfect-for-cards', App\Http\Controllers\Admin\PerfectForCardController::class);
         Route::post('perfect-for-cards/{perfectForCard}/status', [App\Http\Controllers\Admin\PerfectForCardController::class, 'updateStatus'])->name('perfect-for-cards.status');
 
         // Broadcasting Solutions Routes
         Route::resource('broadcasting-solutions', BroadcastingSolutionController::class);
         Route::post('broadcasting-solutions/{broadcastingSolution}/status', [BroadcastingSolutionController::class, 'updateStatus'])->name('broadcasting-solutions.status');
-       
-Route::get('broadcasting-solutions/get-section-title', [BroadcastingSolutionController::class, 'getSectionTitle'])->name('admin.broadcasting-solutions.get-section-title');
-Route::post('broadcasting-solutions/update-section-title', [BroadcastingSolutionController::class, 'updateSectionTitle'])->name('admin.broadcasting-solutions.update-section-title');
+
+        Route::get('broadcasting-solutions/get-section-title', [BroadcastingSolutionController::class, 'getSectionTitle'])->name('admin.broadcasting-solutions.get-section-title');
+        Route::post('broadcasting-solutions/update-section-title', [BroadcastingSolutionController::class, 'updateSectionTitle'])->name('admin.broadcasting-solutions.update-section-title');
         Route::post('broadcasting-solutions/sort-order', [BroadcastingSolutionController::class, 'updateSortOrder'])->name('broadcasting-solutions.sort-order');
 
         // Client Management Routes
@@ -56,80 +56,80 @@ Route::post('broadcasting-solutions/update-section-title', [BroadcastingSolution
         Route::post('team-members/{teamMember}/status', [TeamMemberController::class, 'updateStatus'])->name('team-members.status');
         Route::post('team-members/sort-order', [TeamMemberController::class, 'updateSortOrder'])->name('team-members.sort-order');
 
-// Blog Management Routes
-Route::prefix('blog')->name('blog.')->group(function () {
+        // Blog Management Routes
+        Route::prefix('blog')->name('blog.')->group(function () {
 
-    // Categories
-    Route::resource('categories', BlogCategoryController::class);
-    Route::post('categories/{category}/status', [BlogCategoryController::class, 'updateStatus'])->name('categories.status');
-    Route::post('categories/sort-order', [BlogCategoryController::class, 'updateSortOrder'])->name('categories.sort-order');
+            // Categories
+            Route::resource('categories', BlogCategoryController::class);
+            Route::post('categories/{category}/status', [BlogCategoryController::class, 'updateStatus'])->name('categories.status');
+            Route::post('categories/sort-order', [BlogCategoryController::class, 'updateSortOrder'])->name('categories.sort-order');
 
-    // Tags - Fixed explicit routes
-    Route::get('tags', [BlogTagController::class, 'index'])->name('tags.index');
-    Route::post('tags', [BlogTagController::class, 'store'])->name('tags.store');
-    Route::get('tags/search', [BlogTagController::class, 'search'])->name('tags.search');
-    Route::get('tags/{tag}', [BlogTagController::class, 'show'])->name('tags.show');
-    Route::get('tags/{tag}/edit', [BlogTagController::class, 'edit'])->name('tags.edit');
-    Route::put('tags/{tag}', [BlogTagController::class, 'update'])->name('tags.update');
-    Route::delete('tags/{tag}', [BlogTagController::class, 'destroy'])->name('tags.destroy');
-    Route::post('tags/{tag}/status', [BlogTagController::class, 'updateStatus'])->name('tags.status');
+            // Tags - Fixed explicit routes
+            Route::get('tags', [BlogTagController::class, 'index'])->name('tags.index');
+            Route::post('tags', [BlogTagController::class, 'store'])->name('tags.store');
+            Route::get('tags/search', [BlogTagController::class, 'search'])->name('tags.search');
+            Route::get('tags/{tag}', [BlogTagController::class, 'show'])->name('tags.show');
+            Route::get('tags/{tag}/edit', [BlogTagController::class, 'edit'])->name('tags.edit');
+            Route::put('tags/{tag}', [BlogTagController::class, 'update'])->name('tags.update');
+            Route::delete('tags/{tag}', [BlogTagController::class, 'destroy'])->name('tags.destroy');
+            Route::post('tags/{tag}/status', [BlogTagController::class, 'updateStatus'])->name('tags.status');
 
-    // Authors - FIXED ROUTES
-    Route::get('authors', [BlogAuthorController::class, 'index'])->name('authors.index');
-    Route::get('authors/create', [BlogAuthorController::class, 'create'])->name('authors.create');
-    Route::post('authors', [BlogAuthorController::class, 'store'])->name('authors.store');
-    Route::get('authors/{author}', [BlogAuthorController::class, 'show'])->name('authors.show');
-    Route::get('authors/{author}/edit', [BlogAuthorController::class, 'edit'])->name('authors.edit');
-    Route::put('authors/{author}', [BlogAuthorController::class, 'update'])->name('authors.update');
-    Route::delete('authors/{author}', [BlogAuthorController::class, 'destroy'])->name('authors.destroy');
-    Route::post('authors/{author}/status', [BlogAuthorController::class, 'updateStatus'])->name('authors.status');
+            // Authors - FIXED ROUTES
+            Route::get('authors', [BlogAuthorController::class, 'index'])->name('authors.index');
+            Route::get('authors/create', [BlogAuthorController::class, 'create'])->name('authors.create');
+            Route::post('authors', [BlogAuthorController::class, 'store'])->name('authors.store');
+            Route::get('authors/{author}', [BlogAuthorController::class, 'show'])->name('authors.show');
+            Route::get('authors/{author}/edit', [BlogAuthorController::class, 'edit'])->name('authors.edit');
+            Route::put('authors/{author}', [BlogAuthorController::class, 'update'])->name('authors.update');
+            Route::delete('authors/{author}', [BlogAuthorController::class, 'destroy'])->name('authors.destroy');
+            Route::post('authors/{author}/status', [BlogAuthorController::class, 'updateStatus'])->name('authors.status');
 
-    // Blog Posts - Section Title Management Routes (MUST BE FIRST)
-    Route::get('posts/get-section-title', [BlogPostController::class, 'getSectionTitle'])
-        ->name('posts.get-section-title');
-    Route::post('posts/update-section-title', [BlogPostController::class, 'updateSectionTitle'])
-        ->name('posts.update-section-title');
+            // Blog Posts - Section Title Management Routes (MUST BE FIRST)
+            Route::get('posts/get-section-title', [BlogPostController::class, 'getSectionTitle'])
+                ->name('posts.get-section-title');
+            Route::post('posts/update-section-title', [BlogPostController::class, 'updateSectionTitle'])
+                ->name('posts.update-section-title');
 
-    // Blog Posts - Index and Create routes (no parameters)
-    Route::get('posts', [BlogPostController::class, 'index'])->name('posts.index');
-    Route::get('posts/create', [BlogPostController::class, 'create'])->name('posts.create');
-    Route::post('posts', [BlogPostController::class, 'store'])->name('posts.store');
-    
-    // Custom action routes with explicit parameter binding
-    Route::post('posts/{post}/status', [BlogPostController::class, 'updateStatus'])
-        ->name('posts.status')
-        ->where('post', '[0-9]+');
-        
-    Route::post('posts/{post}/duplicate', [BlogPostController::class, 'duplicate'])
-        ->name('posts.duplicate')
-        ->where('post', '[0-9]+');
+            // Blog Posts - Index and Create routes (no parameters)
+            Route::get('posts', [BlogPostController::class, 'index'])->name('posts.index');
+            Route::get('posts/create', [BlogPostController::class, 'create'])->name('posts.create');
+            Route::post('posts', [BlogPostController::class, 'store'])->name('posts.store');
 
-    // Gallery image removal route
-    Route::delete('posts/{post}/gallery-image', [BlogPostController::class, 'removeGalleryImage'])
-        ->name('posts.gallery.remove')
-        ->where('post', '[0-9]+');
-        
-    Route::delete('posts/{post}/media/{media}', [BlogPostController::class, 'deleteMedia'])
-        ->name('posts.media.delete')
-        ->where(['post' => '[0-9]+', 'media' => '[0-9]+']);
-    
-    // Show, Edit, Update, Delete routes (ID-based) - LAST
-    Route::get('posts/{post}', [BlogPostController::class, 'show'])
-        ->name('posts.show')
-        ->where('post', '[0-9]+');
-        
-    Route::get('posts/{post}/edit', [BlogPostController::class, 'edit'])
-        ->name('posts.edit')
-        ->where('post', '[0-9]+');
-        
-    Route::put('posts/{post}', [BlogPostController::class, 'update'])
-        ->name('posts.update')
-        ->where('post', '[0-9]+');
-        
-    Route::delete('posts/{post}', [BlogPostController::class, 'destroy'])
-        ->name('posts.destroy')
-        ->where('post', '[0-9]+');
-});
+            // Custom action routes with explicit parameter binding
+            Route::post('posts/{post}/status', [BlogPostController::class, 'updateStatus'])
+                ->name('posts.status')
+                ->where('post', '[0-9]+');
+
+            Route::post('posts/{post}/duplicate', [BlogPostController::class, 'duplicate'])
+                ->name('posts.duplicate')
+                ->where('post', '[0-9]+');
+
+            // Gallery image removal route
+            Route::delete('posts/{post}/gallery-image', [BlogPostController::class, 'removeGalleryImage'])
+                ->name('posts.gallery.remove')
+                ->where('post', '[0-9]+');
+
+            Route::delete('posts/{post}/media/{media}', [BlogPostController::class, 'deleteMedia'])
+                ->name('posts.media.delete')
+                ->where(['post' => '[0-9]+', 'media' => '[0-9]+']);
+
+            // Show, Edit, Update, Delete routes (ID-based) - LAST
+            Route::get('posts/{post}', [BlogPostController::class, 'show'])
+                ->name('posts.show')
+                ->where('post', '[0-9]+');
+
+            Route::get('posts/{post}/edit', [BlogPostController::class, 'edit'])
+                ->name('posts.edit')
+                ->where('post', '[0-9]+');
+
+            Route::put('posts/{post}', [BlogPostController::class, 'update'])
+                ->name('posts.update')
+                ->where('post', '[0-9]+');
+
+            Route::delete('posts/{post}', [BlogPostController::class, 'destroy'])
+                ->name('posts.destroy')
+                ->where('post', '[0-9]+');
+        });
         // Blog Analytics/Dashboard
         Route::get('blog-analytics', function () {
             $totalPosts = \App\Models\BlogPost::count();
@@ -173,11 +173,14 @@ Route::prefix('blog')->name('blog.')->group(function () {
         // Service Page Content Management
         Route::get('services/{service}/page-content', [ServiceController::class, 'pageContent'])->name('services.page-content');
         Route::put('services/{service}/page-content', [ServiceController::class, 'updatePageContent'])->name('services.update-page-content');
+        Route::get('services/get-section-title', [ServiceController::class, 'getSectionTitle'])->name('services.get-section-title');
+        Route::post('services/update-section-title', [ServiceController::class, 'updateSectionTitle'])->name('services.update-section-title');
 
+        // Products Management - Special routes BEFORE resource routes
         Route::get('products/get-section-title', [App\Http\Controllers\Admin\ProductController::class, 'getSectionTitle'])
-    ->name('products.get-section-title');
-Route::post('products/update-section-title', [App\Http\Controllers\Admin\ProductController::class, 'updateSectionTitle'])
-    ->name('products.update-section-title');
+            ->name('products.get-section-title');
+        Route::post('products/update-section-title', [App\Http\Controllers\Admin\ProductController::class, 'updateSectionTitle'])
+            ->name('products.update-section-title');
 
         // Status update route
         Route::post('products/{product}/status', [App\Http\Controllers\Admin\ProductController::class, 'updateStatus'])->name('products.status');
@@ -192,8 +195,11 @@ Route::post('products/update-section-title', [App\Http\Controllers\Admin\Product
         Route::get('products/{product}/page-content', [App\Http\Controllers\Admin\ProductController::class, 'pageContent'])->name('products.page-content');
         Route::put('products/{product}/page-content', [App\Http\Controllers\Admin\ProductController::class, 'updatePageContent'])->name('products.update-page-content');
 
-        // Resource routes LAST
-        Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+        Route::delete('products/{id}/delete', [App\Http\Controllers\Admin\ProductController::class, 'destroy'])
+            ->name('products.delete')
+            ->where('id', '[0-9]+');
+
+        Route::resource('products', App\Http\Controllers\Admin\ProductController::class)->except(['destroy']);
 
         // About Page Management Routes
         Route::prefix('about')->name('about.')->group(function () {
@@ -294,18 +300,18 @@ Route::post('products/update-section-title', [App\Http\Controllers\Admin\Product
         Route::post('users/bulk-actions', [App\Http\Controllers\Admin\UserController::class, 'bulkActions'])->name('users.bulk-actions');
         Route::get('users/export/csv', [App\Http\Controllers\Admin\UserController::class, 'exportUsers'])->name('users.export');
 
- // ===================== PRICING PLANS MANAGEMENT =====================
+        // ===================== PRICING PLANS MANAGEMENT =====================
         Route::prefix('pricing-plans')->name('pricing-plans.')->group(function () {
-            // Section Title Management Routes 
+            // Section Title Management Routes
             Route::get('/get-section-title', [App\Http\Controllers\Admin\PricingPlanController::class, 'getSectionTitle'])->name('get-section-title');
             Route::post('/update-section-title', [App\Http\Controllers\Admin\PricingPlanController::class, 'updateSectionTitle'])->name('update-section-title');
-            
+
             // Non-parameter routes FIRST - these are static routes that don't conflict
             Route::get('/', [App\Http\Controllers\Admin\PricingPlanController::class, 'index'])->name('index');
             Route::get('/create', [App\Http\Controllers\Admin\PricingPlanController::class, 'create'])->name('create');
             Route::post('/', [App\Http\Controllers\Admin\PricingPlanController::class, 'store'])->name('store');
             Route::post('/sort-order', [App\Http\Controllers\Admin\PricingPlanController::class, 'updateSortOrder'])->name('sort-order');
-            
+
             // Parameter-based routes LAST - these use model binding and can conflict
             Route::get('/{pricingPlan}', [App\Http\Controllers\Admin\PricingPlanController::class, 'show'])->name('show');
             Route::get('/{pricingPlan}/edit', [App\Http\Controllers\Admin\PricingPlanController::class, 'edit'])->name('edit');
@@ -430,9 +436,9 @@ Route::post('products/update-section-title', [App\Http\Controllers\Admin\Product
         });
 
         // Video Sections Management Routes
-Route::resource('video-sections', App\Http\Controllers\Admin\VideoSectionController::class);
-Route::post('video-sections/{videoSection}/status', [App\Http\Controllers\Admin\VideoSectionController::class, 'updateStatus'])->name('video-sections.status');
-Route::post('video-sections/sort-order', [App\Http\Controllers\Admin\VideoSectionController::class, 'updateSortOrder'])->name('video-sections.sort-order');
+        Route::resource('video-sections', App\Http\Controllers\Admin\VideoSectionController::class);
+        Route::post('video-sections/{videoSection}/status', [App\Http\Controllers\Admin\VideoSectionController::class, 'updateStatus'])->name('video-sections.status');
+        Route::post('video-sections/sort-order', [App\Http\Controllers\Admin\VideoSectionController::class, 'updateSortOrder'])->name('video-sections.sort-order');
 
         Route::prefix('security')->name('security.')->group(function () {
 
@@ -447,114 +453,127 @@ Route::post('video-sections/sort-order', [App\Http\Controllers\Admin\VideoSectio
             // Route::get('firewall', [SecurityController::class, 'firewall'])->name('firewall');
             // Route::get('activity-logs', [SecurityController::class, 'activityLogs'])->name('activity-logs');
         });
-        
+
     });
 
-    
-// Service Contact Management Routes
-Route::prefix('service-contact')->name('service-contact.')->group(function () {
-    Route::get('/', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'index'])->name('index');
-    
-    // استخدم ID بدلاً من model binding
-    Route::post('services/{id}/email', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'updateServiceEmail'])
-        ->name('services.email')
-        ->where('id', '[0-9]+');
-        
-    Route::post('products/{id}/email', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'updateProductEmail'])
-        ->name('products.email')
-        ->where('id', '[0-9]+');
-        
-    Route::post('bulk-update', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'bulkUpdateEmails'])->name('bulk-update');
-    Route::post('test-email', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'testEmail'])->name('test-email');
-    Route::get('check-status', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'checkEmailStatus'])->name('check-status');
-});
+    // Service Contact Management Routes
+    Route::prefix('service-contact')->name('service-contact.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'index'])->name('index');
 
-// Newsletter Frontend Routes
-Route::prefix('newsletter')->name('newsletter.')->group(function () {
-    Route::post('/subscribe', [App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('subscribe');
-    Route::post('/unsubscribe', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('unsubscribe');
-    Route::get('/unsubscribe/{email}', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('unsubscribe.get');
-});
+        // استخدم ID بدلاً من model binding
+        Route::post('services/{id}/email', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'updateServiceEmail'])
+            ->name('services.email')
+            ->where('id', '[0-9]+');
 
-  Route::prefix('newsletter')->name('newsletter.')->group(function () {
+        Route::post('products/{id}/email', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'updateProductEmail'])
+            ->name('products.email')
+            ->where('id', '[0-9]+');
+
+        Route::post('bulk-update', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'bulkUpdateEmails'])->name('bulk-update');
+        Route::post('test-email', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'testEmail'])->name('test-email');
+        Route::get('check-status', [App\Http\Controllers\Admin\ServiceContactManagementController::class, 'checkEmailStatus'])->name('check-status');
+    });
+
+    // Newsletter Frontend Routes
+    Route::prefix('newsletter')->name('newsletter.')->group(function () {
+        Route::post('/subscribe', [App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('subscribe');
+        Route::post('/unsubscribe', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('unsubscribe');
+        Route::get('/unsubscribe/{email}', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('unsubscribe.get');
+
+    });
+
+    // ضع هذا داخل routes/admin.php في الـ middleware group
+
+    Route::prefix('newsletter')->name('newsletter.')->group(function () {
+        // ✅ Main Newsletter Management Pages
         Route::get('/', [NewsletterController::class, 'index'])->name('index');
         Route::get('/analytics', [NewsletterController::class, 'analytics'])->name('analytics');
         Route::get('/subscribers', [NewsletterController::class, 'subscribers'])->name('subscribers');
+
+        // ✅ Newsletter Campaign Management
         Route::get('/create', [NewsletterController::class, 'create'])->name('create');
         Route::post('/', [NewsletterController::class, 'store'])->name('store');
-        Route::get('/{newsletter}', [NewsletterController::class, 'show'])->name('show');
         Route::get('/{newsletter}/edit', [NewsletterController::class, 'edit'])->name('edit');
         Route::put('/{newsletter}', [NewsletterController::class, 'update'])->name('update');
-        Route::delete('/{newsletter}', [NewsletterController::class, 'destroy'])->name('destroy');
         Route::post('/send/{newsletter}', [NewsletterController::class, 'send'])->name('send');
-        
-        // Subscriber management
+
+        // ✅ NEW: Subscriber Status & Actions (يجب أن تكون قبل {newsletter} routes)
+        Route::post('/bulk-action', [NewsletterController::class, 'bulkAction'])->name('bulk-action');
+        Route::get('/export', [NewsletterController::class, 'export'])->name('export');
+
+        // ✅ Subscriber Management Actions
         Route::post('/subscribers/import', [NewsletterController::class, 'importSubscribers'])->name('subscribers.import');
         Route::delete('/subscribers/{subscriber}', [NewsletterController::class, 'deleteSubscriber'])->name('subscribers.delete');
+
+        // ✅ Individual Newsletter/Subscriber Actions (مع parameters)
+        Route::get('/{newsletter}', [NewsletterController::class, 'show'])->name('show');
+        Route::delete('/{newsletter}', [NewsletterController::class, 'destroy'])->name('destroy');
+
+        // ✅ NEW: Individual Subscriber Status Updates
+        Route::post('/{newsletter}/status', [NewsletterController::class, 'updateStatus'])->name('update-status');
     });
-// Occasion Management Routes
+    // Occasion Management Routes
 
+    Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
+        // Index - Sections Cards
+        Route::get('/', [DynamicPageController::class, 'index'])->name('index');
 
-Route::prefix('dynamic-pages')->name('dynamic-pages.')->group(function () {
-    // Index - Sections Cards
-    Route::get('/', [DynamicPageController::class, 'index'])->name('index');
-    
-    // Create & Store
-    Route::get('/create', [DynamicPageController::class, 'create'])->name('create');
-    Route::post('/', [DynamicPageController::class, 'store'])->name('store');
-    
-    // Edit Page Settings
-    Route::get('/{page}/edit', [DynamicPageController::class, 'edit'])->name('edit');
-    Route::put('/{page}', [DynamicPageController::class, 'update'])->name('update');
-    
-    // ✅ Routes الجديدة لإدارة تفعيل الصفحة
-    Route::patch('/{page}/toggle-status', [DynamicPageController::class, 'toggleStatus'])->name('toggle-status');
-    Route::put('/{page}/status', [DynamicPageController::class, 'updatePageStatus'])->name('update-status');
-    Route::get('/{page}/status', [DynamicPageController::class, 'getPageStatus'])->name('get-status');
-    Route::put('/{page}/offer-end-date', [DynamicPageController::class, 'updateOfferEndDate'])->name('update-offer-end-date');
-    
-    // Toggle Section Status - Fixed route
-    Route::patch('/{page}/sections/{section}', [DynamicPageController::class, 'toggleSection'])->name('toggle-section');
-    
-    // Reorder Sections - Fixed route  
-    Route::post('/{page}/reorder-sections', [DynamicPageController::class, 'reorderSections'])->name('reorder-sections');
-    
-    // Services Management
-    Route::get('/{page}/services', [DynamicPageController::class, 'services'])->name('services.index');
-    Route::post('/{page}/services', [DynamicPageController::class, 'servicesStore'])->name('services.store');
-    Route::put('/{page}/services/{serviceId}', [DynamicPageController::class, 'servicesUpdate'])->name('services.update');
-    Route::delete('/services/{id}', [DynamicPageController::class, 'servicesDestroy'])->name('services.destroy');
-    
-    // Packages Management
-    Route::get('/{page}/packages', [DynamicPageController::class, 'packages'])->name('packages.index');
-    Route::post('/{page}/packages', [DynamicPageController::class, 'packagesStore'])->name('packages.store');
-    Route::put('/{page}/packages/{packageId}', [DynamicPageController::class, 'packagesUpdate'])->name('packages.update');
-    Route::delete('/packages/{id}', [DynamicPageController::class, 'packagesDestroy'])->name('packages.destroy');
-    
-    // Products Management
-    Route::get('/{page}/products', [DynamicPageController::class, 'products'])->name('products.index');
-    Route::post('/{page}/products', [DynamicPageController::class, 'productsStore'])->name('products.store');
-    Route::put('/{page}/products/{productId}', [DynamicPageController::class, 'productsUpdate'])->name('products.update');
-    Route::delete('/products/{id}', [DynamicPageController::class, 'productsDestroy'])->name('products.destroy');
+        // Create & Store
+        Route::get('/create', [DynamicPageController::class, 'create'])->name('create');
+        Route::post('/', [DynamicPageController::class, 'store'])->name('store');
 
-    // Shop Products Management
-    Route::get('/{page}/shop-products', [DynamicPageController::class, 'shopProducts'])->name('shop-products.index');
-    Route::post('/{page}/shop-products', [DynamicPageController::class, 'shopProductsStore'])->name('shop-products.store');
-    Route::put('/{page}/shop-products/{shopProductId}', [DynamicPageController::class, 'shopProductsUpdate'])->name('shop-products.update');
-    Route::delete('/shop-products/{id}', [DynamicPageController::class, 'shopProductsDestroy'])->name('shop-products.destroy');
-});
-    
+        // Edit Page Settings
+        Route::get('/{page}/edit', [DynamicPageController::class, 'edit'])->name('edit');
+        Route::put('/{page}', [DynamicPageController::class, 'update'])->name('update');
+
+        // ✅ Routes الجديدة لإدارة تفعيل الصفحة
+        Route::patch('/{page}/toggle-status', [DynamicPageController::class, 'toggleStatus'])->name('toggle-status');
+        Route::put('/{page}/status', [DynamicPageController::class, 'updatePageStatus'])->name('update-status');
+        Route::get('/{page}/status', [DynamicPageController::class, 'getPageStatus'])->name('get-status');
+        Route::put('/{page}/offer-end-date', [DynamicPageController::class, 'updateOfferEndDate'])->name('update-offer-end-date');
+
+        // Toggle Section Status - Fixed route
+        Route::patch('/{page}/sections/{section}', [DynamicPageController::class, 'toggleSection'])->name('toggle-section');
+
+        // Reorder Sections - Fixed route
+        Route::post('/{page}/reorder-sections', [DynamicPageController::class, 'reorderSections'])->name('reorder-sections');
+
+        // Services Management
+        Route::get('/{page}/services', [DynamicPageController::class, 'services'])->name('services.index');
+        Route::post('/{page}/services', [DynamicPageController::class, 'servicesStore'])->name('services.store');
+        Route::put('/{page}/services/{serviceId}', [DynamicPageController::class, 'servicesUpdate'])->name('services.update');
+        Route::delete('/services/{id}', [DynamicPageController::class, 'servicesDestroy'])->name('services.destroy');
+
+        // Packages Management
+        Route::get('/{page}/packages', [DynamicPageController::class, 'packages'])->name('packages.index');
+        Route::post('/{page}/packages', [DynamicPageController::class, 'packagesStore'])->name('packages.store');
+        Route::put('/{page}/packages/{packageId}', [DynamicPageController::class, 'packagesUpdate'])->name('packages.update');
+        Route::delete('/packages/{id}', [DynamicPageController::class, 'packagesDestroy'])->name('packages.destroy');
+
+        // Products Management
+        Route::get('/{page}/products', [DynamicPageController::class, 'products'])->name('products.index');
+        Route::post('/{page}/products', [DynamicPageController::class, 'productsStore'])->name('products.store');
+        Route::put('/{page}/products/{productId}', [DynamicPageController::class, 'productsUpdate'])->name('products.update');
+        Route::delete('/products/{id}', [DynamicPageController::class, 'productsDestroy'])->name('products.destroy');
+
+        // Shop Products Management
+        Route::get('/{page}/shop-products', [DynamicPageController::class, 'shopProducts'])->name('shop-products.index');
+        Route::post('/{page}/shop-products', [DynamicPageController::class, 'shopProductsStore'])->name('shop-products.store');
+        Route::put('/{page}/shop-products/{shopProductId}', [DynamicPageController::class, 'shopProductsUpdate'])->name('shop-products.update');
+        Route::delete('/shop-products/{id}', [DynamicPageController::class, 'shopProductsDestroy'])->name('shop-products.destroy');
+    });
+
     // Additional custom routes for occasions
     Route::post('occasions/{id}/status', [App\Http\Controllers\Admin\OccasionController::class, 'updateStatus'])
         ->name('occasions.status')
         ->where('id', '[0-9]+');
-    
-  Route::post('occasions/upload-file', [OccasionController::class, 'uploadFile'])
-    ->name('occasions.uploadFile');
-        
+
+    Route::post('occasions/upload-file', [OccasionController::class, 'uploadFile'])
+      ->name('occasions.uploadFile');
+
     Route::put('occasions/sort-order', [App\Http\Controllers\Admin\OccasionController::class, 'updateSortOrder'])
         ->name('occasions.updateSortOrder');
-        
+
     Route::post('occasions/{id}/duplicate', [App\Http\Controllers\Admin\OccasionController::class, 'duplicate'])
         ->name('occasions.duplicate')
         ->where('id', '[0-9]+');

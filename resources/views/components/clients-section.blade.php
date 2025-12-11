@@ -38,9 +38,9 @@
                     <div class="marquee-content marquee-clients-right-to-left flex items-center gap-10" data-category="streaming">
                         @php
                             $streamingClients = $clientsByCategory['streaming'];
-                            // تكرار العناصر للحصول على حلقة مستمرة
+                            // تكرار العناصر للحصول على حلقة مستمرة - 30 بطاقة
                             $displayClients = collect();
-                            for($i = 0; $i < 20; $i++) { // تقليل العدد لـ 20 بدل 30
+                            for($i = 0; $i < 30; $i++) {
                                 $displayClients->push($streamingClients[$i % $streamingClients->count()]);
                             }
                         @endphp
@@ -80,9 +80,9 @@
                     <div class="marquee-content marquee-clients-left-to-right flex items-center gap-10" data-category="news_sports">
                         @php
                             $newsClients = $clientsByCategory['news_sports'];
-                            // نفس التكرار
+                            // نفس التكرار - 30 بطاقة
                             $displayNewsClients = collect();
-                            for($i = 0; $i < 20; $i++) {
+                            for($i = 0; $i < 30; $i++) {
                                 $displayNewsClients->push($newsClients[$i % $newsClients->count()]);
                             }
                         @endphp
@@ -122,9 +122,9 @@
                     <div class="marquee-content marquee-clients-right-to-left flex items-center gap-10" data-category="tech_gaming">
                         @php
                             $techClients = $clientsByCategory['tech_gaming'];
-                            // نفس التكرار
+                            // نفس التكرار - 30 بطاقة
                             $displayTechClients = collect();
-                            for($i = 0; $i < 20; $i++) {
+                            for($i = 0; $i < 30; $i++) {
                                 $displayTechClients->push($techClients[$i % $techClients->count()]);
                             }
                         @endphp
@@ -184,9 +184,9 @@
                         <div class="marquee-content marquee-scroll-left flex items-center gap-10" data-category="partners">
                             @php
                                 $otherClients = $clientsByCategory['other'];
-                                // نفس التكرار للبارتنرز
+                                // نفس التكرار للبارتنرز - 30 بطاقة
                                 $displayOtherClients = collect();
-                                for($i = 0; $i < 20; $i++) {
+                                for($i = 0; $i < 30; $i++) {
                                     $displayOtherClients->push($otherClients[$i % $otherClients->count()]);
                                 }
                             @endphp
@@ -240,7 +240,7 @@
 </section>
 
 <style>
-/* 🚀 ZERO DELAY MARQUEE SYSTEM */
+/* 🚀 ZERO DELAY MARQUEE SYSTEM - Updated for 30 cards */
 .marquee-container {
     overflow: hidden;
     position: relative;
@@ -269,22 +269,22 @@
     perspective: 1000px;
     transform: translateZ(0);
     
-    /* FIXED WIDTH: 20 cards * (256px + 40px gap) = 5920px */
-    width: 5920px !important;
-    min-width: 5920px !important;
+    /* FIXED WIDTH: 30 cards * (256px + 40px gap) = 8880px */
+    width: 8880px !important;
+    min-width: 8880px !important;
 }
 
 /* 🔥 SEAMLESS ANIMATIONS - ZERO DELAYS */
 .marquee-clients-right-to-left {
-    animation: zero-delay-rtl 50s linear infinite !important;
+    animation: zero-delay-rtl 75s linear infinite !important;
 }
 
 .marquee-clients-left-to-right {
-    animation: zero-delay-ltr 50s linear infinite !important;
+    animation: zero-delay-ltr 75s linear infinite !important;
 }
 
 .marquee-scroll-left {
-    animation: zero-delay-partners 50s linear infinite !important;
+    animation: zero-delay-partners 75s linear infinite !important;
 }
 
 /* 🎯 CRITICAL: Perfect keyframes calculations */
@@ -294,13 +294,13 @@
     }
     100% {
         /* Move exactly half the width for seamless loop */
-        transform: translate3d(-2960px, 0, 0); /* Half of 5920px */
+        transform: translate3d(-4440px, 0, 0); /* Half of 8880px */
     }
 }
 
 @keyframes zero-delay-ltr {
     0% {
-        transform: translate3d(-2960px, 0, 0);
+        transform: translate3d(-4440px, 0, 0);
     }
     100% {
         transform: translate3d(0, 0, 0);
@@ -312,7 +312,7 @@
         transform: translate3d(0, 0, 0);
     }
     100% {
-        transform: translate3d(-2960px, 0, 0);
+        transform: translate3d(-4440px, 0, 0);
     }
 }
 
@@ -378,9 +378,9 @@
 /* RESPONSIVE BREAKPOINTS */
 @media (max-width: 768px) {
     .marquee-content {
-        /* MOBILE: 20 cards * (200px + 32px gap) = 4640px */
-        width: 4640px !important;
-        min-width: 4640px !important;
+        /* MOBILE: 30 cards * (200px + 32px gap) = 6960px */
+        width: 6960px !important;
+        min-width: 6960px !important;
     }
     
     .client-card,
@@ -391,31 +391,31 @@
     
     @keyframes zero-delay-rtl {
         0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-2320px, 0, 0); } /* Half of 4640px */
+        100% { transform: translate3d(-3480px, 0, 0); } /* Half of 6960px */
     }
     
     @keyframes zero-delay-ltr {
-        0% { transform: translate3d(-2320px, 0, 0); }
+        0% { transform: translate3d(-3480px, 0, 0); }
         100% { transform: translate3d(0, 0, 0); }
     }
     
     @keyframes zero-delay-partners {
         0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-2320px, 0, 0); }
+        100% { transform: translate3d(-3480px, 0, 0); }
     }
     
     .marquee-clients-right-to-left,
     .marquee-clients-left-to-right,
     .marquee-scroll-left {
-        animation-duration: 35s !important;
+        animation-duration: 55s !important;
     }
 }
 
 @media (max-width: 480px) {
     .marquee-content {
-        /* SMALL MOBILE: 20 cards * (180px + 24px gap) = 4080px */
-        width: 4080px !important;
-        min-width: 4080px !important;
+        /* SMALL MOBILE: 30 cards * (180px + 24px gap) = 6120px */
+        width: 6120px !important;
+        min-width: 6120px !important;
     }
     
     .client-card,
@@ -426,23 +426,23 @@
     
     @keyframes zero-delay-rtl {
         0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-2040px, 0, 0); } /* Half of 4080px */
+        100% { transform: translate3d(-3060px, 0, 0); } /* Half of 6120px */
     }
     
     @keyframes zero-delay-ltr {
-        0% { transform: translate3d(-2040px, 0, 0); }
+        0% { transform: translate3d(-3060px, 0, 0); }
         100% { transform: translate3d(0, 0, 0); }
     }
     
     @keyframes zero-delay-partners {
         0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-2040px, 0, 0); }
+        100% { transform: translate3d(-3060px, 0, 0); }
     }
     
     .marquee-clients-right-to-left,
     .marquee-clients-left-to-right,
     .marquee-scroll-left {
-        animation-duration: 30s !important;
+        animation-duration: 45s !important;
     }
 }
 
@@ -477,7 +477,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 🚀 ZERO DELAY ANIMATION SYSTEM - COMPLETE VERSION
+    // 🚀 ZERO DELAY ANIMATION SYSTEM - UPDATED FOR 30 CARDS
     class ZeroDelayMarquee {
         constructor() {
             this.marquees = document.querySelectorAll('.marquee-content');
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         init() {
-            console.log('🚀 Initializing Zero Delay Marquee System...');
+            console.log('🚀 Initializing Zero Delay Marquee System for 30 cards...');
             
             // WAIT FOR STYLES TO LOAD
             this.waitForStyles().then(() => {
@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.startMonitoring();
                 this.forceAnimations();
                 
-                console.log('✅ Zero Delay Marquee System Active - NO MORE DELAYS!');
+                console.log('✅ Zero Delay Marquee System Active - 30 cards display ready!');
             });
         }
 
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // ENSURE PROPER DIMENSIONS
                 this.updateMarqueeDimensions(marquee);
                 
-                console.log(`✅ Marquee ${index + 1} configured for zero delays`);
+                console.log(`✅ Marquee ${index + 1} configured for zero delays with 30 cards`);
             });
         }
 
@@ -539,14 +539,14 @@ document.addEventListener('DOMContentLoaded', function() {
             let totalWidth, animationDuration;
             
             if (screenWidth <= 480) {
-                totalWidth = 4080; // 20 * (180 + 24)
-                animationDuration = '30s';
+                totalWidth = 6120; // 30 * (180 + 24)
+                animationDuration = '45s';
             } else if (screenWidth <= 768) {
-                totalWidth = 4640; // 20 * (200 + 32)
-                animationDuration = '35s';
+                totalWidth = 6960; // 30 * (200 + 32)
+                animationDuration = '55s';
             } else {
-                totalWidth = 5920; // 20 * (256 + 40)
-                animationDuration = '50s';
+                totalWidth = 8880; // 30 * (256 + 40)
+                animationDuration = '75s';
             }
             
             marquee.style.width = totalWidth + 'px';
@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Performance monitoring
             this.startPerformanceMonitoring();
             
-            console.log('🔍 Animation monitoring started');
+            console.log('🔍 Animation monitoring started for 30-card system');
         }
 
         checkAnimationHealth() {
@@ -813,6 +813,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    console.log('🎯 Zero Delay Marquee Script Loaded - Ready for action!');
+    console.log('🎯 Zero Delay Marquee Script Loaded - Ready for 30 cards display!');
 });
 </script>

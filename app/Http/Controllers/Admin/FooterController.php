@@ -16,7 +16,30 @@ class FooterController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
+        // Define boolean fields that might not be sent when unchecked
+        $booleanFields = [
+            'newsletter_enabled',
+            'show_services_section',
+            'show_company_section', 
+            'show_legal_section',
+            'show_social_media',
+            'show_trust_badges'
+        ];
+
+        // Merge boolean fields with default false values
+        $mergedRequest = $request->all();
+        foreach ($booleanFields as $field) {
+            if (!$request->has($field)) {
+                $mergedRequest[$field] = false;
+            } else {
+                $mergedRequest[$field] = true;
+            }
+        }
+
+        // Create a new request with merged data for validation
+        $request->merge($mergedRequest);
+
+        $validatedData = $request->validate([
             // Newsletter
             'newsletter_enabled' => 'boolean',
             'newsletter_title' => 'required|string|max:255',
@@ -64,7 +87,7 @@ class FooterController extends Controller
         ]);
 
         $settings = FooterSetting::getSettings();
-        $settings->update($request->all());
+        $settings->update($validatedData);
 
         return redirect()->route('admin.footer.index')
             ->with('success', 'Footer settings updated successfully.');

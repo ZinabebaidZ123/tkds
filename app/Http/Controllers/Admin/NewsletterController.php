@@ -104,6 +104,35 @@ class NewsletterController extends Controller
         }
     }
 
+    public function destroy(Newsletter $newsletter)
+    {
+        try {
+            $email = $newsletter->email;
+            $newsletter->delete();
+
+            Log::info('Newsletter subscriber deleted', [
+                'email' => $email,
+                'deleted_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subscriber deleted successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to delete newsletter subscriber', [
+                'id' => $newsletter->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete subscriber'
+            ], 500);
+        }
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([

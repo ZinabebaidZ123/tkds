@@ -69,6 +69,9 @@ class ServiceController extends Controller
                 'status' => 'required|in:active,inactive',
                 'is_featured' => 'nullable|boolean',
                 'sort_order' => 'required|integer|min:0',
+                'section_title_part1' => 'nullable|string|max:255',
+                'section_title_part2' => 'nullable|string|max:255',
+                'section_subtitle' => 'nullable|string|max:500',
             ]);
 
             Log::info('Validation passed', ['validated_data' => $validatedData]);
@@ -181,6 +184,9 @@ class ServiceController extends Controller
                 'status' => 'required|in:active,inactive',
                 'is_featured' => 'nullable|boolean',
                 'sort_order' => 'required|integer|min:0',
+                'section_title_part1' => 'nullable|string|max:255',
+                'section_title_part2' => 'nullable|string|max:255',
+                'section_subtitle' => 'nullable|string|max:500',
             ]);
 
             DB::beginTransaction();
@@ -250,114 +256,114 @@ class ServiceController extends Controller
         }
     }
 
-   public function destroy(Service $service)
-{
-    try {
-        Log::info('DELETE request received', [
-            'service_id' => $service->id,
-            'service_title' => $service->title,
-            'request_method' => request()->method(),
-            'request_url' => request()->url(),
-            'user_ip' => request()->ip(),
-            'user_agent' => request()->userAgent()
-        ]);
-
-        DB::beginTransaction();
-
-        // Delete main image
-        if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
-            try {
-                if (Storage::disk('public')->exists($service->image)) {
-                    Storage::disk('public')->delete($service->image);
-                    Log::info('Main image deleted successfully', ['path' => $service->image]);
-                } else {
-                    Log::warning('Main image file not found', ['path' => $service->image]);
-                }
-            } catch (Exception $e) {
-                Log::warning('Failed to delete main image: ' . $e->getMessage(), ['path' => $service->image]);
-            }
-        }
-
-        // Delete hero image if exists
-        if ($service->hero_image && !filter_var($service->hero_image, FILTER_VALIDATE_URL)) {
-            try {
-                if (Storage::disk('public')->exists($service->hero_image)) {
-                    Storage::disk('public')->delete($service->hero_image);
-                    Log::info('Hero image deleted successfully', ['path' => $service->hero_image]);
-                } else {
-                    Log::warning('Hero image file not found', ['path' => $service->hero_image]);
-                }
-            } catch (Exception $e) {
-                Log::warning('Failed to delete hero image: ' . $e->getMessage(), ['path' => $service->hero_image]);
-            }
-        }
-
-        // Store service info before deletion
-        $serviceInfo = [
-            'id' => $service->id,
-            'title' => $service->title,
-            'slug' => $service->slug
-        ];
-
-        // Delete the service
-        $service->delete();
-        Log::info('Service deleted successfully from database', $serviceInfo);
-
-        DB::commit();
-
-        // Return success response for AJAX or redirect for regular form submission
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Service deleted successfully.',
-                'service' => $serviceInfo
+    public function destroy(Service $service)
+    {
+        try {
+            Log::info('DELETE request received', [
+                'service_id' => $service->id,
+                'service_title' => $service->title,
+                'request_method' => request()->method(),
+                'request_url' => request()->url(),
+                'user_ip' => request()->ip(),
+                'user_agent' => request()->userAgent()
             ]);
+
+            DB::beginTransaction();
+
+            // Delete main image
+            if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
+                try {
+                    if (Storage::disk('public')->exists($service->image)) {
+                        Storage::disk('public')->delete($service->image);
+                        Log::info('Main image deleted successfully', ['path' => $service->image]);
+                    } else {
+                        Log::warning('Main image file not found', ['path' => $service->image]);
+                    }
+                } catch (Exception $e) {
+                    Log::warning('Failed to delete main image: ' . $e->getMessage(), ['path' => $service->image]);
+                }
+            }
+
+            // Delete hero image if exists
+            if ($service->hero_image && !filter_var($service->hero_image, FILTER_VALIDATE_URL)) {
+                try {
+                    if (Storage::disk('public')->exists($service->hero_image)) {
+                        Storage::disk('public')->delete($service->hero_image);
+                        Log::info('Hero image deleted successfully', ['path' => $service->hero_image]);
+                    } else {
+                        Log::warning('Hero image file not found', ['path' => $service->hero_image]);
+                    }
+                } catch (Exception $e) {
+                    Log::warning('Failed to delete hero image: ' . $e->getMessage(), ['path' => $service->hero_image]);
+                }
+            }
+
+            // Store service info before deletion
+            $serviceInfo = [
+                'id' => $service->id,
+                'title' => $service->title,
+                'slug' => $service->slug
+            ];
+
+            // Delete the service
+            $service->delete();
+            Log::info('Service deleted successfully from database', $serviceInfo);
+
+            DB::commit();
+
+            // Return success response for AJAX or redirect for regular form submission
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Service deleted successfully.',
+                    'service' => $serviceInfo
+                ]);
+            }
+
+            return redirect()->route('admin.services.index')
+                ->with('success', 'Service "' . $serviceInfo['title'] . '" deleted successfully.');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
+            Log::error('Service not found for deletion', [
+                'requested_service_id' => request()->route('service'),
+                'error' => $e->getMessage(),
+                'request_url' => request()->url()
+            ]);
+
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Service not found.'
+                ], 404);
+            }
+
+            return redirect()->route('admin.services.index')
+                ->with('error', 'Service not found.');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Error deleting service', [
+                'service_id' => $service->id ?? 'unknown',
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'request_data' => request()->all(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete service: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Failed to delete service: ' . $e->getMessage());
         }
-
-        return redirect()->route('admin.services.index')
-            ->with('success', 'Service "' . $serviceInfo['title'] . '" deleted successfully.');
-
-    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        DB::rollBack();
-        Log::error('Service not found for deletion', [
-            'requested_service_id' => request()->route('service'),
-            'error' => $e->getMessage(),
-            'request_url' => request()->url()
-        ]);
-
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Service not found.'
-            ], 404);
-        }
-
-        return redirect()->route('admin.services.index')
-            ->with('error', 'Service not found.');
-
-    } catch (Exception $e) {
-        DB::rollBack();
-        
-        Log::error('Error deleting service', [
-            'service_id' => $service->id ?? 'unknown',
-            'error_message' => $e->getMessage(),
-            'error_file' => $e->getFile(),
-            'error_line' => $e->getLine(),
-            'request_data' => request()->all(),
-            'stack_trace' => $e->getTraceAsString()
-        ]);
-
-        if (request()->expectsJson() || request()->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete service: ' . $e->getMessage()
-            ], 500);
-        }
-
-        return redirect()->back()
-            ->with('error', 'Failed to delete service: ' . $e->getMessage());
     }
-}
 
     public function updateStatus(Request $request, Service $service)
     {
@@ -519,6 +525,94 @@ class ServiceController extends Controller
         }
     }
 
+    /**
+     * Get section title data for management
+     */
+    public function getSectionTitle()
+    {
+        try {
+            $sectionData = Service::getSectionTitleData();
+            
+            return response()->json([
+                'success' => true,
+                'title_part1' => $sectionData['title_part1'],
+                'title_part2' => $sectionData['title_part2'],
+                'subtitle' => $sectionData['subtitle']
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error getting services section title: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get section title data',
+                'title_part1' => 'Achieve Your',
+                'title_part2' => 'Goals',
+                'subtitle' => 'Our Services'
+            ]);
+        }
+    }
+
+    /**
+     * Update section title data
+     */
+    public function updateSectionTitle(Request $request)
+    {
+        $request->validate([
+            'title_part1' => 'nullable|string|max:255',
+            'title_part2' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update the first active service or create default values for all services
+            $firstService = Service::active()->ordered()->first();
+            
+            if ($firstService) {
+                $firstService->update([
+                    'section_title_part1' => $request->title_part1,
+                    'section_title_part2' => $request->title_part2,
+                    'section_subtitle' => $request->subtitle
+                ]);
+                
+                Log::info('Services section title updated for first service', [
+                    'service_id' => $firstService->id,
+                    'title_part1' => $request->title_part1,
+                    'title_part2' => $request->title_part2,
+                    'subtitle' => $request->subtitle
+                ]);
+            } else {
+                // If no services exist, we'll show a warning
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please create at least one service first to manage section titles.'
+                ], 422);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Services section title updated successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Error updating services section title: ' . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update section title: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     private function setDefaultValues(&$data)
     {
         // Set default hero values if not provided, using safe array access
@@ -576,98 +670,111 @@ class ServiceController extends Controller
         if (!isset($data['use_cases'])) {
             $data['use_cases'] = '[]';
         }
+
+        // Set default section title values
+        if (!isset($data['section_title_part1']) || empty($data['section_title_part1'])) {
+            $data['section_title_part1'] = 'Achieve Your';
+        }
+        
+        if (!isset($data['section_title_part2']) || empty($data['section_title_part2'])) {
+            $data['section_title_part2'] = 'Goals';
+        }
+        
+        if (!isset($data['section_subtitle']) || empty($data['section_subtitle'])) {
+            $data['section_subtitle'] = 'Our Services';
+        }
     }
 
     // أضف هذا الmethod الجديد في ServiceController.php
-public function deleteService($id)
-{
-    try {
-        // Find service by ID manually instead of model binding
-        $service = Service::findOrFail($id);
-        
-        Log::info('DELETE request received', [
-            'service_id' => $service->id,
-            'service_title' => $service->title,
-            'request_method' => request()->method(),
-            'request_url' => request()->url(),
-        ]);
+    public function deleteService($id)
+    {
+        try {
+            // Find service by ID manually instead of model binding
+            $service = Service::findOrFail($id);
+            
+            Log::info('DELETE request received', [
+                'service_id' => $service->id,
+                'service_title' => $service->title,
+                'request_method' => request()->method(),
+                'request_url' => request()->url(),
+            ]);
 
-        DB::beginTransaction();
+            DB::beginTransaction();
 
-        // Delete main image
-        if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
-            try {
-                if (Storage::disk('public')->exists($service->image)) {
-                    Storage::disk('public')->delete($service->image);
-                    Log::info('Main image deleted successfully', ['path' => $service->image]);
-                } else {
-                    Log::warning('Main image file not found', ['path' => $service->image]);
+            // Delete main image
+            if ($service->image && !filter_var($service->image, FILTER_VALIDATE_URL)) {
+                try {
+                    if (Storage::disk('public')->exists($service->image)) {
+                        Storage::disk('public')->delete($service->image);
+                        Log::info('Main image deleted successfully', ['path' => $service->image]);
+                    } else {
+                        Log::warning('Main image file not found', ['path' => $service->image]);
+                    }
+                } catch (Exception $e) {
+                    Log::warning('Failed to delete main image: ' . $e->getMessage(), ['path' => $service->image]);
                 }
-            } catch (Exception $e) {
-                Log::warning('Failed to delete main image: ' . $e->getMessage(), ['path' => $service->image]);
             }
-        }
 
-        // Delete hero image if exists
-        if ($service->hero_image && !filter_var($service->hero_image, FILTER_VALIDATE_URL)) {
-            try {
-                if (Storage::disk('public')->exists($service->hero_image)) {
-                    Storage::disk('public')->delete($service->hero_image);
-                    Log::info('Hero image deleted successfully', ['path' => $service->hero_image]);
-                } else {
-                    Log::warning('Hero image file not found', ['path' => $service->hero_image]);
+            // Delete hero image if exists
+            if ($service->hero_image && !filter_var($service->hero_image, FILTER_VALIDATE_URL)) {
+                try {
+                    if (Storage::disk('public')->exists($service->hero_image)) {
+                        Storage::disk('public')->delete($service->hero_image);
+                        Log::info('Hero image deleted successfully', ['path' => $service->hero_image]);
+                    } else {
+                        Log::warning('Hero image file not found', ['path' => $service->hero_image]);
+                    }
+                } catch (Exception $e) {
+                    Log::warning('Failed to delete hero image: ' . $e->getMessage(), ['path' => $service->hero_image]);
                 }
-            } catch (Exception $e) {
-                Log::warning('Failed to delete hero image: ' . $e->getMessage(), ['path' => $service->hero_image]);
             }
+
+            // Store service info before deletion
+            $serviceInfo = [
+                'id' => $service->id,
+                'title' => $service->title,
+                'slug' => $service->slug
+            ];
+
+            // Delete the service
+            $service->delete();
+            Log::info('Service deleted successfully from database', $serviceInfo);
+
+            DB::commit();
+
+            // Always return JSON response for AJAX
+            return response()->json([
+                'success' => true,
+                'message' => 'Service deleted successfully.',
+                'service' => $serviceInfo
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
+            Log::error('Service not found for deletion', [
+                'requested_service_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Service not found.'
+            ], 404);
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Error deleting service', [
+                'service_id' => $id,
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete service: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Store service info before deletion
-        $serviceInfo = [
-            'id' => $service->id,
-            'title' => $service->title,
-            'slug' => $service->slug
-        ];
-
-        // Delete the service
-        $service->delete();
-        Log::info('Service deleted successfully from database', $serviceInfo);
-
-        DB::commit();
-
-        // Always return JSON response for AJAX
-        return response()->json([
-            'success' => true,
-            'message' => 'Service deleted successfully.',
-            'service' => $serviceInfo
-        ]);
-
-    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        DB::rollBack();
-        Log::error('Service not found for deletion', [
-            'requested_service_id' => $id,
-            'error' => $e->getMessage(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Service not found.'
-        ], 404);
-
-    } catch (Exception $e) {
-        DB::rollBack();
-        
-        Log::error('Error deleting service', [
-            'service_id' => $id,
-            'error_message' => $e->getMessage(),
-            'error_file' => $e->getFile(),
-            'error_line' => $e->getLine(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to delete service: ' . $e->getMessage()
-        ], 500);
     }
-}
 }

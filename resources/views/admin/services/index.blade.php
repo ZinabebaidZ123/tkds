@@ -88,7 +88,212 @@
                 </div>
             </div>
         </div>
+        
+<!-- Services Section Title & Subtitle Form -->
+        @php
+            $sectionData = \App\Models\Service::getSectionTitleData();
+        @endphp
 
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+            <div class="px-6 py-4 bg-gradient-to-r from-primary/10 to-secondary/10 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-heading mr-2 text-primary"></i>
+                    Services Section Title & Subtitle
+                </h3>
+                <p class="text-gray-600 text-sm mt-1">Edit the main title and subtitle for the services section on homepage</p>
+            </div>
+            
+            <form id="servicesSectionTitleForm" class="p-6">
+                @csrf
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Left Column - Title Parts -->
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-xl border border-primary/10">
+                            <h4 class="text-md font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-heading mr-2 text-primary"></i>
+                                Section Title
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-4">
+                                Create a dynamic title like "Achieve Your <span class="text-primary font-semibold">Goals</span>"
+                            </p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="services_title_part1" class="block text-sm font-medium text-gray-700 mb-2">
+                                        First Part
+                                    </label>
+                                    <input type="text" 
+                                           id="services_title_part1"
+                                           name="title_part1"
+                                           value="{{ $sectionData['title_part1'] }}"
+                                           placeholder="e.g., Achieve Your"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200">
+                                </div>
+                                
+                                <div>
+                                    <label for="services_title_part2" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Second Part (Highlighted)
+                                    </label>
+                                    <input type="text" 
+                                           id="services_title_part2"
+                                           name="title_part2"
+                                           value="{{ $sectionData['title_part2'] }}"
+                                           placeholder="e.g., Goals"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200">
+                                </div>
+                            </div>
+                            
+                            <!-- Preview -->
+                            <div class="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                                <p class="text-sm text-gray-600 mb-2">Preview:</p>
+                                <div id="servicesTitlePreview" class="text-xl font-bold text-gray-900">
+                                    <span id="servicesPart1Preview">{{ $sectionData['title_part1'] }}</span>
+                                    <span id="servicesPart2Preview" class="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">{{ $sectionData['title_part2'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Subtitle -->
+                    <div class="space-y-6">
+                        <div>
+                            <label for="services_subtitle" class="block text-sm font-medium text-gray-700 mb-2">
+                                Section Subtitle
+                                <span class="text-gray-500 font-normal">- Appears below the main title</span>
+                            </label>
+                            <textarea id="services_subtitle" 
+                                      name="subtitle"
+                                      rows="4"
+                                      placeholder="e.g., Our Services"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200">{{ $sectionData['subtitle'] }}</textarea>
+                        </div>
+
+
+                        <!-- Save Button -->
+                        <div class="pt-4">
+                            <button type="submit" 
+                                    class="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl hover:from-secondary hover:to-primary transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                                <span class="save-text">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Save Changes
+                                </span>
+                                <span class="save-loading hidden">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                                    Saving...
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <script>
+        // Services Section Title Preview functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const servicesTitlePart1 = document.getElementById('services_title_part1');
+            const servicesTitlePart2 = document.getElementById('services_title_part2');
+            const servicesPart1Preview = document.getElementById('servicesPart1Preview');
+            const servicesPart2Preview = document.getElementById('servicesPart2Preview');
+            const servicesTitleLengthElement = document.getElementById('servicessTitleLength');
+            const servicesSeoScoreElement = document.getElementById('servicesSeoScore');
+            
+            if (servicesTitlePart1 && servicesTitlePart2 && servicesPart1Preview && servicesPart2Preview) {
+                function updateServicesTitlePreview() {
+                    const part1 = servicesTitlePart1.value || 'Achieve Your';
+                    const part2 = servicesTitlePart2.value || 'Goals';
+                    
+                    servicesPart1Preview.textContent = part1;
+                    servicesPart2Preview.textContent = part2;
+                    
+                    // Update title length
+                    const totalLength = (part1 + ' ' + part2).length;
+                    if (servicesTitleLengthElement) {
+                        servicesTitleLengthElement.textContent = totalLength + ' chars';
+                    }
+                    
+                    // Update SEO score based on length
+                    if (servicesSeoScoreElement) {
+                        let seoScore = 'Poor';
+                        let seoColor = 'text-red-900';
+                        
+                        if (totalLength >= 30 && totalLength <= 60) {
+                            seoScore = 'Excellent';
+                            seoColor = 'text-green-900';
+                        } else if (totalLength >= 20 && totalLength <= 70) {
+                            seoScore = 'Good';
+                            seoColor = 'text-green-900';
+                        } else if (totalLength >= 10 && totalLength <= 80) {
+                            seoScore = 'Fair';
+                            seoColor = 'text-yellow-900';
+                        }
+                        
+                        servicesSeoScoreElement.textContent = seoScore;
+                        servicesSeoScoreElement.className = `text-sm font-bold ${seoColor}`;
+                    }
+                }
+                
+                // Initial update
+                updateServicesTitlePreview();
+                
+                // Add event listeners for real-time preview
+                servicesTitlePart1.addEventListener('input', updateServicesTitlePreview);
+                servicesTitlePart2.addEventListener('input', updateServicesTitlePreview);
+            }
+        });
+
+        // Services Section Title Form Submit
+        const servicesSectionTitleForm = document.getElementById('servicesSectionTitleForm');
+        if (servicesSectionTitleForm) {
+            servicesSectionTitleForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const saveText = submitBtn.querySelector('.save-text');
+                const saveLoading = submitBtn.querySelector('.save-loading');
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                saveText.classList.add('hidden');
+                saveLoading.classList.remove('hidden');
+                
+                const formData = {
+                    title_part1: document.getElementById('services_title_part1').value,
+                    title_part2: document.getElementById('services_title_part2').value,
+                    subtitle: document.getElementById('services_subtitle').value
+                };
+                
+                fetch('/admin/services/update-section-title', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Services section title updated successfully!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to update services section title');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Failed to update services section title', 'error');
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    saveText.classList.remove('hidden');
+                    saveLoading.classList.add('hidden');
+                });
+            });
+        }
+        </script>
         <!-- Services Content -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">

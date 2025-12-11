@@ -44,7 +44,10 @@ class Service extends Model
         'cta_description',
         'cta_button_text',
         'cta_button_link',
-        'related_services'
+        'related_services',
+        'section_title_part1',
+        'section_title_part2',
+        'section_subtitle'
     ];
 
     protected $casts = [
@@ -267,5 +270,38 @@ class Service extends Model
     public function getCtaButtonText(): string
     {
         return $this->cta_button_text ?? 'Get Started Today';
+    }
+
+    /**
+     * Get the section title with HTML formatting
+     */
+    public function getSectionTitle(): string
+    {
+        $part1 = $this->section_title_part1 ?? 'Achieve Your';
+        $part2 = $this->section_title_part2 ?? 'Goals';
+        
+        return $part1 . ' <span class="text-gradient bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">' . $part2 . '</span>';
+    }
+
+    /**
+     * Get the section subtitle
+     */
+    public function getSectionSubtitle(): string
+    {
+        return $this->section_subtitle ?? 'Our Services';
+    }
+
+    /**
+     * Get section title data for admin management
+     */
+    public static function getSectionTitleData(): array
+    {
+        $firstService = self::active()->ordered()->first();
+        
+        return [
+            'title_part1' => $firstService->section_title_part1 ?? 'Achieve Your',
+            'title_part2' => $firstService->section_title_part2 ?? 'Goals',
+            'subtitle' => $firstService->section_subtitle ?? 'Our Services'
+        ];
     }
 }

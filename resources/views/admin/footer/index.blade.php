@@ -50,7 +50,7 @@
                         <label class="text-sm font-medium text-gray-700">Enable Newsletter</label>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="newsletter_enabled" value="1" 
-                                   {{ $settings->newsletter_enabled ? 'checked' : '' }}
+                                   {{ old('newsletter_enabled', $settings->newsletter_enabled) ? 'checked' : '' }}
                                    class="sr-only peer">
                             <div class="w-11 h-6 bg-gray-200 rounded-full peer relative peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-200 peer-checked:bg-blue-600"></div>
                         </label>
@@ -167,7 +167,7 @@
                         <label class="text-sm font-medium text-gray-700">Show Social Media</label>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="show_social_media" value="1" 
-                                   {{ $settings->show_social_media ? 'checked' : '' }}
+                                   {{ old('show_social_media', $settings->show_social_media) ? 'checked' : '' }}
                                    class="sr-only peer">
                             <div class="w-11 h-6 bg-gray-200 rounded-full peer relative peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-200 peer-checked:bg-purple-600"></div>
                         </label>
@@ -213,7 +213,7 @@
                             <label class="text-sm font-medium text-gray-700">{{ $label }}</label>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" name="{{ $field }}" value="1" 
-                                       {{ $settings->$field ? 'checked' : '' }}
+                                       {{ old($field, $settings->$field) ? 'checked' : '' }}
                                        class="sr-only peer">
                                 <div class="w-11 h-6 bg-gray-200 rounded-full peer relative peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-200 peer-checked:bg-indigo-600"></div>
                             </label>
@@ -260,8 +260,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Footer Status</label>
                         <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                            <option value="active" {{ $settings->status === 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ $settings->status === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="active" {{ old('status', $settings->status) === 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status', $settings->status) === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
                 </div>
